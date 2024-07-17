@@ -27,6 +27,7 @@ impl From<Language> for MatchingConfiguration<'_> {
                     "import_declaration",
                     "class_declaration",
                     "interface_declaration",
+                    "enum_declaration"
                 ]
                 .into(),
                 handlers: MatchingHandlers::from(Language::Java),
