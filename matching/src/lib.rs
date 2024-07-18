@@ -12,20 +12,21 @@ use model::cst_node::Terminal;
 use unordered_pair::UnorderedPair;
 
 /**
- * TODO: This probably belongs on the node declaration itself, but moving the identifiers extraction there would be a pain now.
- * Furthermore, in the future, we want to move the extraction of identifiers from programmatic code to use Tree Sitter query syntax.
+ * TODO: This probably belongs on the node declaration itself, but for that we
+ * need to move the identifiers extraction into there which would be a pain now.
+ * Furthermore, in the future, we want to move the extraction of identifiers
+ * from programmatic code to use Tree Sitter query syntax.
  */
 fn are_nodes_matching_representations_equal<'a>(
     left: &'a model::CSTNode,
     right: &'a model::CSTNode,
     config: &'a MatchingConfiguration<'a>,
 ) -> bool {
-    if config.kinds_with_label.contains(left.kind())
-        && config.kinds_with_label.contains(right.kind())
-    {
-        return config.handlers.compute_matching_score(left, right) == Some(1);
-    } else {
-        match (left, right) {
+    config
+        .handlers
+        .compute_matching_score(left, right)
+        .map(|score| score == 1)
+        .unwrap_or(match (left, right) {
             (
                 model::CSTNode::NonTerminal(left_non_terminal),
                 model::CSTNode::NonTerminal(right_non_terminal),
@@ -35,8 +36,7 @@ fn are_nodes_matching_representations_equal<'a>(
                     && left_terminal.value == right_terminal.value
             }
             (_, _) => false,
-        }
-    }
+        })
 }
 
 pub fn calculate_matchings<'a>(
