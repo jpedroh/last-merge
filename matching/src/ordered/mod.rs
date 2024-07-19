@@ -1,5 +1,5 @@
 use crate::{
-    matching_configuration::MatchingConfiguration, matching_entry::MatchingEntry, Matchings,
+    matching_configuration::MatchingConfiguration, matching_entry::MatchingEntry, MatchingRepresentation, Matchings
 };
 use model::{cst_node::NonTerminal, CSTNode};
 use unordered_pair::UnorderedPair;
@@ -36,10 +36,7 @@ pub fn calculate_matchings<'a>(
                 ..
             }),
         ) => {
-            let root_matching: usize = config
-                .handlers
-                .compute_matching_score(left, right)
-                .unwrap_or((left.kind() == right.kind()).into());
+            let root_matching: usize = (left.get_matching_representation() == right.get_matching_representation()).into();
 
             let m = children_left.len();
             let n = children_right.len();

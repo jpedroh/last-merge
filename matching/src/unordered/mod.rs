@@ -32,8 +32,5 @@ pub fn calculate_matchings<'a>(
 }
 
 fn all_children_labeled(node: &NonTerminal, config: &MatchingConfiguration) -> bool {
-    node.children
-        .iter()
-        .filter(|child| !config.delimiters.contains(child.kind()))
-        .all(|child| config.kinds_with_label.contains(child.kind()))
+    node.children.iter().all(|child| child.get_identifier().is_some())
 }

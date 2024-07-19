@@ -8,35 +8,23 @@ pub mod unordered;
 use matching_configuration::MatchingConfiguration;
 pub use matching_entry::MatchingEntry;
 pub use matchings::Matchings;
-use model::cst_node::Terminal;
+use model::{cst_node::Terminal, CSTNode};
 use unordered_pair::UnorderedPair;
 
-/**
- * TODO: This probably belongs on the node declaration itself, but for that we
- * need to move the identifiers extraction into there which would be a pain now.
- * Furthermore, in the future, we want to move the extraction of identifiers
- * from programmatic code to use Tree Sitter query syntax.
- */
-fn are_nodes_matching_representations_equal<'a>(
-    left: &'a model::CSTNode,
-    right: &'a model::CSTNode,
-    config: &'a MatchingConfiguration<'a>,
-) -> bool {
-    config
-        .handlers
-        .compute_matching_score(left, right)
-        .map(|score| score == 1)
-        .unwrap_or(match (left, right) {
-            (
-                model::CSTNode::NonTerminal(left_non_terminal),
-                model::CSTNode::NonTerminal(right_non_terminal),
-            ) => left_non_terminal.kind == right_non_terminal.kind,
-            (model::CSTNode::Terminal(left_terminal), model::CSTNode::Terminal(right_terminal)) => {
-                left_terminal.kind == right_terminal.kind
-                    && left_terminal.value == right_terminal.value
-            }
-            (_, _) => false,
-        })
+trait MatchingRepresentation {
+    fn get_matching_representation(&self) -> Vec<&str>;
+}
+
+impl MatchingRepresentation for CSTNode<'_> {
+    fn get_matching_representation(&self) -> Vec<&str> {
+        match self {
+            CSTNode::NonTerminal(non_terminal) => match non_terminal.get_identifier() {
+                Some(identifier) => identifier,
+                None => vec![non_terminal.kind],
+            },
+            CSTNode::Terminal(terminal) => vec![terminal.kind, terminal.value],
+        }
+    }
 }
 
 pub fn calculate_matchings<'a>(
@@ -44,7 +32,7 @@ pub fn calculate_matchings<'a>(
     right: &'a model::CSTNode,
     config: &'a MatchingConfiguration<'a>,
 ) -> Matchings<'a> {
-    if !are_nodes_matching_representations_equal(left, right, config) {
+    if left.get_matching_representation() != right.get_matching_representation() {
         return Matchings::empty();
     }
 

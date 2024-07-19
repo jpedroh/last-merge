@@ -64,6 +64,13 @@ impl CSTNode<'_> {
     pub fn get_tree_size(&self) -> usize {
         self.get_subtree_size() + 1
     }
+
+    pub fn get_identifier(&self) -> Option<Vec<&str>> {
+        match self {
+            CSTNode::Terminal(node) => Some(vec![node.kind, node.value]),
+            CSTNode::NonTerminal(node) => node.get_identifier()
+        }
+    }
 }
 
 #[derive(Debug, Default, Clone)]
@@ -74,7 +81,7 @@ pub struct NonTerminal<'a> {
     pub start_position: Point,
     pub end_position: Point,
     pub are_children_unordered: bool,
-    pub identifier: Option<String>,
+    pub identifier: Option<Vec<&'a str>>,
 }
 
 impl<'a> PartialEq for NonTerminal<'a> {
@@ -110,8 +117,8 @@ impl NonTerminal<'_> {
         })
     }
 
-    pub fn get_identifier(&self) -> Option<&String> {
-        self.identifier.as_ref()
+    pub fn get_identifier(&self) -> Option<Vec<&str>> {
+        self.identifier.clone()
     }
 }
 

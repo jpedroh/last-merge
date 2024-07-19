@@ -508,6 +508,7 @@ mod tests {
                             is_block_end_delimiter: false,
                         }),
                     ],
+                    identifier: Some(vec!["main"]),
                     ..Default::default()
                 }),
                 CSTNode::Terminal(Terminal {
@@ -561,6 +562,7 @@ mod tests {
                             is_block_end_delimiter: false,
                         }),
                     ],
+                    identifier: Some(vec!["main"]),
                     ..Default::default()
                 }),
                 CSTNode::Terminal(Terminal {
@@ -681,6 +683,7 @@ mod tests {
                             is_block_end_delimiter: false,
                         }),
                     ],
+                    identifier: Some(vec!["method"]),
                     ..Default::default()
                 }),
                 CSTNode::Terminal(Terminal {
@@ -750,6 +753,7 @@ mod tests {
                             is_block_end_delimiter: false,
                         }),
                     ],
+                    identifier: Some(vec!["method"]),
                     ..Default::default()
                 }),
                 CSTNode::Terminal(Terminal {
