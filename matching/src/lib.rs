@@ -11,12 +11,40 @@ pub use matchings::Matchings;
 use model::cst_node::Terminal;
 use unordered_pair::UnorderedPair;
 
+/**
+ * TODO: This probably belongs on the node declaration itself, but for that we
+ * need to move the identifiers extraction into there which would be a pain now.
+ * Furthermore, in the future, we want to move the extraction of identifiers
+ * from programmatic code to use Tree Sitter query syntax.
+ */
+fn are_nodes_matching_representations_equal<'a>(
+    left: &'a model::CSTNode,
+    right: &'a model::CSTNode,
+    config: &'a MatchingConfiguration<'a>,
+) -> bool {
+    config
+        .handlers
+        .compute_matching_score(left, right)
+        .map(|score| score == 1)
+        .unwrap_or(match (left, right) {
+            (
+                model::CSTNode::NonTerminal(left_non_terminal),
+                model::CSTNode::NonTerminal(right_non_terminal),
+            ) => left_non_terminal.kind == right_non_terminal.kind,
+            (model::CSTNode::Terminal(left_terminal), model::CSTNode::Terminal(right_terminal)) => {
+                left_terminal.kind == right_terminal.kind
+                    && left_terminal.value == right_terminal.value
+            }
+            (_, _) => false,
+        })
+}
+
 pub fn calculate_matchings<'a>(
     left: &'a model::CSTNode,
     right: &'a model::CSTNode,
     config: &'a MatchingConfiguration<'a>,
 ) -> Matchings<'a> {
-    if left.kind() != right.kind() {
+    if !are_nodes_matching_representations_equal(left, right, config) {
         return Matchings::empty();
     }
 
@@ -84,32 +112,5 @@ mod tests {
         let left_right_matching = matchings.get_matching_entry(&left, &right).unwrap();
         assert_eq!(1, left_right_matching.score);
         assert!(left_right_matching.is_perfect_match);
-    }
-
-    #[test]
-    fn two_terminal_nodes_have_a_match_with_score_zero_if_they_have_different_value() {
-        let left = CSTNode::Terminal(Terminal {
-            id: uuid::Uuid::new_v4(),
-            kind: "kind",
-            value: "value_a",
-            start_position: Point { row: 0, column: 0 },
-            end_position: Point { row: 0, column: 7 },
-            is_block_end_delimiter: false,
-        });
-        let right = CSTNode::Terminal(Terminal {
-            id: uuid::Uuid::new_v4(),
-            kind: "kind",
-            value: "value_b",
-            start_position: Point { row: 0, column: 0 },
-            end_position: Point { row: 0, column: 7 },
-            is_block_end_delimiter: false,
-        });
-
-        let matching_configuration = MatchingConfiguration::default();
-        let matchings = calculate_matchings(&left, &right, &matching_configuration);
-
-        let left_right_matching = matchings.get_matching_entry(&left, &right).unwrap();
-        assert_eq!(0, left_right_matching.score);
-        assert!(!left_right_matching.is_perfect_match);
     }
 }
