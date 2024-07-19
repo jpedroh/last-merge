@@ -39,6 +39,7 @@ fn explore_node<'a>(node: Node, src: &'a str, config: &'a ParserConfiguration) -
                 .map(|child| explore_node(child, src, config))
                 .collect(),
             are_children_unordered: config.kinds_with_unordered_children.contains(node.kind()),
+            identifier: None,
         })
     }
 }

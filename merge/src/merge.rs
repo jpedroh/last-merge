@@ -98,6 +98,7 @@ mod tests {
                 start_position: Point { row: 0, column: 0 },
                 end_position: Point { row: 0, column: 7 },
                 children: vec![],
+                ..Default::default()
             }),
             &Matchings::empty(),
             &Matchings::empty(),

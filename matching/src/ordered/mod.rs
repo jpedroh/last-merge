@@ -128,6 +128,7 @@ mod tests {
             start_position: Point { row: 0, column: 0 },
             end_position: Point { row: 1, column: 7 },
             children: vec![child.clone()],
+            ..Default::default()
         });
         let right = CSTNode::NonTerminal(NonTerminal {
             id: uuid::Uuid::new_v4(),
@@ -136,6 +137,7 @@ mod tests {
             start_position: Point { row: 0, column: 0 },
             end_position: Point { row: 1, column: 7 },
             children: vec![child.clone()],
+            ..Default::default()
         });
 
         let matching_configuration = MatchingConfiguration::default();
@@ -173,6 +175,7 @@ mod tests {
             children: vec![left_child.clone()],
             start_position: Point { row: 1, column: 0 },
             end_position: Point { row: 0, column: 7 },
+            ..Default::default()
         });
         let right = CSTNode::NonTerminal(NonTerminal {
             id: uuid::Uuid::new_v4(),
@@ -181,6 +184,7 @@ mod tests {
             children: vec![right_child.clone()],
             start_position: Point { row: 1, column: 0 },
             end_position: Point { row: 0, column: 7 },
+            ..Default::default()
         });
 
         let matching_configuration = MatchingConfiguration::from(Language::Java);
@@ -216,6 +220,7 @@ mod tests {
             start_position: Point { row: 0, column: 0 },
             end_position: Point { row: 0, column: 7 },
             children: vec![common_child.clone()],
+            ..Default::default()
         });
         let right = CSTNode::NonTerminal(NonTerminal {
             id: uuid::Uuid::new_v4(),
@@ -224,6 +229,7 @@ mod tests {
             start_position: Point { row: 0, column: 0 },
             end_position: Point { row: 0, column: 7 },
             children: vec![common_child.clone(), unique_right_child],
+            ..Default::default()
         });
 
         let matching_configuration = MatchingConfiguration::from(language::Language::Java);
@@ -252,6 +258,7 @@ mod tests {
             start_position: Point { row: 0, column: 0 },
             end_position: Point { row: 0, column: 7 },
             children: vec![common_child.clone()],
+            ..Default::default()
         });
         let right = CSTNode::NonTerminal(NonTerminal {
             id: uuid::Uuid::new_v4(),
@@ -260,6 +267,7 @@ mod tests {
             start_position: Point { row: 0, column: 0 },
             end_position: Point { row: 0, column: 7 },
             children: vec![common_child.clone()],
+            ..Default::default()
         });
 
         let matching_configuration = MatchingConfiguration::from(language::Language::Java);
@@ -279,6 +287,7 @@ mod tests {
             end_position: Point { row: 0, column: 7 },
             value: "value_b",
             is_block_end_delimiter: false,
+            ..Default::default()
         });
 
         let intermediate = CSTNode::NonTerminal(NonTerminal {
@@ -288,6 +297,7 @@ mod tests {
             start_position: Point { row: 0, column: 0 },
             end_position: Point { row: 0, column: 7 },
             children: vec![leaf],
+            ..Default::default()
         });
 
         let left = CSTNode::NonTerminal(NonTerminal {
@@ -297,6 +307,7 @@ mod tests {
             start_position: Point { row: 0, column: 0 },
             end_position: Point { row: 0, column: 7 },
             children: vec![intermediate.clone()],
+            ..Default::default()
         });
         let right = CSTNode::NonTerminal(NonTerminal {
             id: uuid::Uuid::new_v4(),
@@ -305,6 +316,7 @@ mod tests {
             start_position: Point { row: 0, column: 0 },
             end_position: Point { row: 0, column: 7 },
             children: vec![intermediate.clone()],
+            ..Default::default()
         });
 
         let matching_configuration = MatchingConfiguration::default();

@@ -74,6 +74,7 @@ pub struct NonTerminal<'a> {
     pub start_position: Point,
     pub end_position: Point,
     pub are_children_unordered: bool,
+    pub identifier: Option<String>,
 }
 
 impl<'a> PartialEq for NonTerminal<'a> {
@@ -107,6 +108,10 @@ impl NonTerminal<'_> {
         self.children.iter().fold(String::from(""), |acc, node| {
             format!("{} {}", acc, node.contents())
         })
+    }
+
+    pub fn get_identifier(&self) -> Option<&String> {
+        self.identifier.as_ref()
     }
 }
 
