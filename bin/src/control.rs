@@ -62,8 +62,6 @@ pub fn run_tool_on_merge_scenario(
     let base_tree =
         parsing::parse_string(base, &parser_configuration).map_err(ExecutionError::ParsingError)?;
     log::info!("Finished parsing base file");
-    // return Ok(ExecutionResult::WithConflicts("result".to_string()));
-
     log::info!("Started parsing left file");
     let left_tree =
         parsing::parse_string(left, &parser_configuration).map_err(ExecutionError::ParsingError)?;
