@@ -4,15 +4,15 @@ pub trait IdentifierExtractor {
     fn extract_identifier_from_node<'a>(&self, node: Node, src: &'a str) -> Option<Vec<&'a str>>;
 }
 
-pub struct RegularExpressionIdentifierExtractor(&'static str);
+pub struct RegularExpression(&'static str);
 
-impl RegularExpressionIdentifierExtractor {
+impl RegularExpression {
     pub fn new(regex: &'static str) -> Self {
         Self(regex)
     }
 }
 
-impl IdentifierExtractor for RegularExpressionIdentifierExtractor {
+impl IdentifierExtractor for RegularExpression {
     fn extract_identifier_from_node<'a>(&self, node: Node, src: &'a str) -> Option<Vec<&'a str>> {
         let identifier = regex::Regex::new(self.0)
             .unwrap()
@@ -22,15 +22,15 @@ impl IdentifierExtractor for RegularExpressionIdentifierExtractor {
     }
 }
 
-pub struct TreeSitterQueryIdentifierExtractor(&'static str);
+pub struct TreeSitterQuery(&'static str);
 
-impl TreeSitterQueryIdentifierExtractor {
+impl TreeSitterQuery {
     pub fn new(query: &'static str) -> Self {
         Self(query)
     }
 }
 
-impl IdentifierExtractor for TreeSitterQueryIdentifierExtractor {
+impl IdentifierExtractor for TreeSitterQuery {
     fn extract_identifier_from_node<'a>(&self, node: Node, src: &'a str) -> Option<Vec<&'a str>> {
         let query = Query::new(node.language(), self.0).ok()?;
         let mut cursor = QueryCursor::new();

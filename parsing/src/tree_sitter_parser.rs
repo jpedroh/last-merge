@@ -3,7 +3,7 @@ use parsing_handlers::ParsingHandlers;
 use std::collections::{HashMap, HashSet};
 
 use crate::identifier_extractor::{
-    IdentifierExtractor, RegularExpressionIdentifierExtractor, TreeSitterQueryIdentifierExtractor,
+    IdentifierExtractor, RegularExpression, TreeSitterQuery,
 };
 
 pub struct ParserConfiguration {
@@ -32,38 +32,38 @@ impl From<Language> for ParserConfiguration {
                 identifier_extractors: {
                     let mut map: HashMap<&'static str, Box<dyn IdentifierExtractor>> =
                         HashMap::new();
-                    map.insert("constructor_declaration", Box::new(TreeSitterQueryIdentifierExtractor::new(r#"(constructor_declaration name: (identifier) @method_name [parameters: (formal_parameters [ (formal_parameter type: (_) @argument_type) (spread_parameter (type_identifier) @spread_parameter "..." @spread_indicator) ]) _ ])"#)));
-                    map.insert("method_declaration", Box::new(TreeSitterQueryIdentifierExtractor::new(r#"(method_declaration name: (identifier) @method_name [parameters: (formal_parameters [ (formal_parameter type: (_) @argument_type) (spread_parameter (type_identifier) @spread_parameter "..." @spread_indicator) ]) _ ])"#)));
+                    map.insert("constructor_declaration", Box::new(TreeSitterQuery::new(r#"(constructor_declaration name: (identifier) @method_name [parameters: (formal_parameters [ (formal_parameter type: (_) @argument_type) (spread_parameter (type_identifier) @spread_parameter "..." @spread_indicator) ]) _ ])"#)));
+                    map.insert("method_declaration", Box::new(TreeSitterQuery::new(r#"(method_declaration name: (identifier) @method_name [parameters: (formal_parameters [ (formal_parameter type: (_) @argument_type) (spread_parameter (type_identifier) @spread_parameter "..." @spread_indicator) ]) _ ])"#)));
                     map.insert(
                         "field_declaration",
-                        Box::new(TreeSitterQueryIdentifierExtractor::new(
+                        Box::new(TreeSitterQuery::new(
                             r#"(variable_declarator name: _ @name)"#,
                         )),
                     );
                     map.insert(
                         "import_declaration",
-                        Box::new(TreeSitterQueryIdentifierExtractor::new(
+                        Box::new(TreeSitterQuery::new(
                             r#"(import_declaration ( scoped_identifier ) @namespace)"#,
                         )),
                     );
 
                     map.insert(
                         "class_declaration",
-                        Box::new(RegularExpressionIdentifierExtractor::new(
+                        Box::new(RegularExpression::new(
                             r#"class [A-Za-z_][A-Za-z0-9_]*"#,
                         )),
                     );
 
                     map.insert(
                         "enum_declaration",
-                        Box::new(RegularExpressionIdentifierExtractor::new(
+                        Box::new(RegularExpression::new(
                             r#"enum [A-Za-z_][A-Za-z0-9_]*"#,
                         )),
                     );
 
                     map.insert(
                         "interface_declaration",
-                        Box::new(RegularExpressionIdentifierExtractor::new(
+                        Box::new(RegularExpression::new(
                             r#"interface [A-Za-z_][A-Za-z0-9_]*"#,
                         )),
                     );
