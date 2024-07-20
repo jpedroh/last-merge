@@ -65,10 +65,10 @@ impl CSTNode<'_> {
         self.get_subtree_size() + 1
     }
 
-    pub fn get_identifier(&self) -> Option<Vec<&str>> {
+    pub fn has_identifier(&self) -> bool {
         match self {
-            CSTNode::Terminal(node) => Some(vec![node.kind, node.value]),
-            CSTNode::NonTerminal(node) => node.get_identifier(),
+            CSTNode::Terminal(_) => true,
+            CSTNode::NonTerminal(node) => node.get_identifier().is_some(),
         }
     }
 }
@@ -117,8 +117,8 @@ impl NonTerminal<'_> {
         })
     }
 
-    pub fn get_identifier(&self) -> Option<Vec<&str>> {
-        self.identifier.clone()
+    pub fn get_identifier(&self) -> Option<&Vec<&str>> {
+        self.identifier.as_ref()
     }
 }
 
@@ -172,5 +172,9 @@ impl<'a> Hash for Terminal<'a> {
 impl Terminal<'_> {
     pub fn contents(&self) -> String {
         String::from(self.value)
+    }
+
+    pub fn get_identifier(&self) -> (&str, &str) {
+        (self.kind, self.value)
     }
 }

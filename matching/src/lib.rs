@@ -1,3 +1,4 @@
+mod matches;
 mod matching;
 pub mod matching_configuration;
 mod matching_entry;
@@ -5,34 +6,18 @@ mod matchings;
 pub mod ordered;
 pub mod unordered;
 
+use matches::Matches;
 use matching_configuration::MatchingConfiguration;
 pub use matching_entry::MatchingEntry;
 pub use matchings::Matchings;
-use model::{cst_node::Terminal, CSTNode};
 use unordered_pair::UnorderedPair;
-
-trait MatchingRepresentation {
-    fn get_matching_representation(&self) -> Vec<&str>;
-}
-
-impl MatchingRepresentation for CSTNode<'_> {
-    fn get_matching_representation(&self) -> Vec<&str> {
-        match self {
-            CSTNode::NonTerminal(non_terminal) => match non_terminal.get_identifier() {
-                Some(identifier) => identifier,
-                None => vec![non_terminal.kind],
-            },
-            CSTNode::Terminal(terminal) => vec![terminal.kind, terminal.value],
-        }
-    }
-}
 
 pub fn calculate_matchings<'a>(
     left: &'a model::CSTNode,
     right: &'a model::CSTNode,
     config: &'a MatchingConfiguration<'a>,
 ) -> Matchings<'a> {
-    if left.get_matching_representation() != right.get_matching_representation() {
+    if !left.matches(right) {
         return Matchings::empty();
     }
 
@@ -49,12 +34,12 @@ pub fn calculate_matchings<'a>(
             }
         }
         (
-            model::CSTNode::Terminal(Terminal {
+            model::CSTNode::Terminal(model::cst_node::Terminal {
                 kind: kind_left,
                 value: value_left,
                 ..
             }),
-            model::CSTNode::Terminal(Terminal {
+            model::CSTNode::Terminal(model::cst_node::Terminal {
                 kind: kind_right,
                 value: value_right,
                 ..

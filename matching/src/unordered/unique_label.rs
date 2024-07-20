@@ -28,8 +28,15 @@ pub fn calculate_matchings<'a>(
 
             for child_left in children_left {
                 for child_right in children_right {
-                    let is_same_identifier = child_left.get_identifier().is_some()
-                        && child_left.get_identifier() == child_right.get_identifier();
+                    let is_same_identifier = match (child_left, child_right) {
+                        (CSTNode::Terminal(left), CSTNode::Terminal(right)) => {
+                            left.get_identifier() == right.get_identifier()
+                        }
+                        (CSTNode::NonTerminal(left), CSTNode::NonTerminal(right)) => {
+                            left.get_identifier() == right.get_identifier()
+                        }
+                        (_, _) => false,
+                    };
 
                     if is_same_identifier {
                         let child_matchings =
