@@ -2,6 +2,7 @@ use matching_handlers::MatchingHandlers;
 use model::Language;
 
 pub struct MatchingConfiguration<'a> {
+    #[allow(dead_code)]
     pub(crate) handlers: MatchingHandlers<'a>,
 }
 
