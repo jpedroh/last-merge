@@ -2,9 +2,7 @@ use model::Language;
 use parsing_handlers::ParsingHandlers;
 use std::collections::{HashMap, HashSet};
 
-use crate::identifier_extractor::{
-    IdentifierExtractor, RegularExpression, TreeSitterQuery,
-};
+use crate::identifier_extractor::{IdentifierExtractor, RegularExpression, TreeSitterQuery};
 
 pub struct ParserConfiguration {
     pub(crate) language: tree_sitter::Language,
@@ -49,16 +47,12 @@ impl From<Language> for ParserConfiguration {
 
                     map.insert(
                         "class_declaration",
-                        Box::new(RegularExpression::new(
-                            r#"class [A-Za-z_][A-Za-z0-9_]*"#,
-                        )),
+                        Box::new(RegularExpression::new(r#"class [A-Za-z_][A-Za-z0-9_]*"#)),
                     );
 
                     map.insert(
                         "enum_declaration",
-                        Box::new(RegularExpression::new(
-                            r#"enum [A-Za-z_][A-Za-z0-9_]*"#,
-                        )),
+                        Box::new(RegularExpression::new(r#"enum [A-Za-z_][A-Za-z0-9_]*"#)),
                     );
 
                     map.insert(
