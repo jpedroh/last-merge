@@ -11,13 +11,7 @@ impl Matches for CSTNode<'_> {
                 left.get_identifier() == right.get_identifier()
             }
             (CSTNode::NonTerminal(left), CSTNode::NonTerminal(right)) => {
-                if let (Some(left_identifier), Some(right_identifier)) =
-                    (left.get_identifier(), right.get_identifier())
-                {
-                    left_identifier == right_identifier
-                } else {
-                    left.kind == right.kind
-                }
+                left.kind == right.kind && left.get_identifier() == right.get_identifier()
             }
             (_, _) => false,
         }
