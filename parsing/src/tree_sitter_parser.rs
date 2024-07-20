@@ -41,7 +41,7 @@ impl From<Language> for ParserConfiguration {
                     map.insert(
                         "import_declaration",
                         Box::new(TreeSitterQuery::new(
-                            r#"(import_declaration ( scoped_identifier ) @namespace)"#,
+                            r#"(import_declaration "import" _ @resource)"#,
                         )),
                     );
 
