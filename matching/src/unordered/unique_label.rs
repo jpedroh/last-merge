@@ -28,8 +28,9 @@ pub fn calculate_matchings<'a>(
 
             for child_left in children_left {
                 for child_right in children_right {
-                    let is_same_identifier = child_left.get_identifier().is_some() && child_left.get_identifier() == child_right.get_identifier();
-                
+                    let is_same_identifier = child_left.get_identifier().is_some()
+                        && child_left.get_identifier() == child_right.get_identifier();
+
                     if is_same_identifier {
                         let child_matchings =
                             crate::calculate_matchings(child_left, child_right, config);

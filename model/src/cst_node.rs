@@ -68,7 +68,7 @@ impl CSTNode<'_> {
     pub fn get_identifier(&self) -> Option<Vec<&str>> {
         match self {
             CSTNode::Terminal(node) => Some(vec![node.kind, node.value]),
-            CSTNode::NonTerminal(node) => node.get_identifier()
+            CSTNode::NonTerminal(node) => node.get_identifier(),
         }
     }
 }

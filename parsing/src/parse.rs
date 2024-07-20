@@ -7,6 +7,11 @@ use model::{
 };
 use tree_sitter::{Node, Query, QueryCursor};
 
+enum IdentifierExtractor {
+    RegularExpression(&'static str),
+    TreeSitterQuery(&'static str),
+}
+
 fn extract_identifier_from_node<'a>(
     node: Node,
     src: &'a str,
@@ -15,7 +20,8 @@ fn extract_identifier_from_node<'a>(
     let queries = HashMap::from([
         (
             "constructor_declaration",
-            r#"
+            IdentifierExtractor::TreeSitterQuery(
+                r#"
             (
     constructor_declaration
     name:
@@ -35,7 +41,7 @@ fn extract_identifier_from_node<'a>(
             @argument_type
         )
         (
-            spread_parameter (type_identifier) @spread
+            spread_parameter (type_identifier) @spread_parameter "..." @spread_indicator
         )
         ]
     )
@@ -45,10 +51,12 @@ fn extract_identifier_from_node<'a>(
 
             
             "#,
+            ),
         ),
         (
             "method_declaration",
-            r#"
+            IdentifierExtractor::TreeSitterQuery(
+                r#"
             (
     method_declaration
     name:
@@ -68,7 +76,7 @@ fn extract_identifier_from_node<'a>(
             @argument_type
         )
         (
-            spread_parameter (type_identifier) @spread
+            spread_parameter (type_identifier) @spread_parameter "..." @spread_indicator
         )
         ]
     )
@@ -78,55 +86,78 @@ fn extract_identifier_from_node<'a>(
 
             
             "#,
+            ),
         ),
         (
             "field_declaration",
-            r#"(variable_declarator name: _ @name)"#,
+            IdentifierExtractor::TreeSitterQuery(r#"(variable_declarator name: _ @name)"#),
         ),
         (
             "import_declaration",
-            r#"(import_declaration ( scoped_identifier ) @namespace)"#,
+            IdentifierExtractor::TreeSitterQuery(
+                r#"(import_declaration ( scoped_identifier ) @namespace)"#,
+            ),
         ),
         (
             "class_declaration",
-            r#"(class_declaration name: (identifier) @name)"#,
+            IdentifierExtractor::RegularExpression(
+                r#"class [A-Za-z_][A-Za-z0-9_]*"#,
+            ),
         ),
         (
             "enum_declaration",
-            r#"(enum_declaration name: (identifier) @name)"#,
+            IdentifierExtractor::RegularExpression(
+                r#"enum [A-Za-z_][A-Za-z0-9_]*"#,
+            ),
         ),
         (
             "interface_declaration",
-            r#"(interface_declaration name: (identifier) @name)"#,
+            IdentifierExtractor::RegularExpression(
+                r#"interface [A-Za-z_][A-Za-z0-9_]*"#,
+            ),
         ),
     ]);
 
-    let query_string = queries.get(node.kind())?;
-    log::debug!("Using {:?} as query_string", query_string);
-    let query = Query::new(config.language, &query_string).ok()?;
-    let mut cursor = QueryCursor::new();
-    let identifier = cursor
-    .matches(&query, node, src.as_bytes())
-    .into_iter()
-    .flat_map(|a_match| {
-        a_match
-            .captures
-            .iter()
-            .filter(|capture| {
-                capture.node.start_byte() >= node.start_byte()
-                    && capture.node.end_byte() <= node.end_byte()
+    let identifier_extractor = queries.get(node.kind())?;
 
+    let identifier = match identifier_extractor {
+        IdentifierExtractor::RegularExpression(regex) => {
+            let identifier = regex::Regex::new(regex)
+                .unwrap()
+                .find(node.utf8_text(src.as_bytes()).ok()?)
+                .map(|m| m.as_str())?;
+            Some(vec![identifier])
+        }
+        IdentifierExtractor::TreeSitterQuery(query_string) => {
+            let query = Query::new(config.language, query_string).ok()?;
+            let mut cursor = QueryCursor::new();
+            let identifier = cursor
+                .matches(&query, node, src.as_bytes())
+                .into_iter()
+                .flat_map(|a_match| {
+                    a_match
+                        .captures
+                        .iter()
+                        .filter(|capture| {
+                            capture.node.start_byte() >= node.start_byte()
+                                && capture.node.end_byte() <= node.end_byte()
+                        })
+                        .filter_map(|capture_index| {
+                            capture_index.node.utf8_text(src.as_bytes()).ok()
+                        })
+                })
+                .collect();
+            Some(identifier)
+        }
+    };
 
+    log::debug!(
+        "Found {:?} as identifier for node {:?}",
+        identifier,
+        node.utf8_text(src.as_bytes()).ok()?
+    );
 
-            })
-            .filter_map(|capture_index| capture_index.node.utf8_text(src.as_bytes()).ok())
-    })
-    .collect();
-
-    log::debug!("Found {:?} as identifier for node {:?}", identifier, node.utf8_text(src.as_bytes()).unwrap());
-
-    Some(identifier
-    )
+    identifier
 }
 
 fn explore_node<'a>(node: Node, src: &'a str, config: &'a ParserConfiguration) -> CSTNode<'a> {
