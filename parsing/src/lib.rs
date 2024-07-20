@@ -1,3 +1,4 @@
+mod identifier_extractor;
 mod parse;
 mod tree_sitter_parser;
 
