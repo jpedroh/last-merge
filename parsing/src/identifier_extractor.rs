@@ -1,5 +1,5 @@
 use regex::Regex;
-use tree_sitter::{Node, Query, QueryCursor};
+use tree_sitter::{Language, Node, Query, QueryCursor};
 
 pub trait IdentifierExtractor {
     fn extract_identifier_from_node<'a>(&self, node: Node, src: &'a str) -> Option<Vec<&'a str>>;
@@ -9,9 +9,10 @@ pub struct RegularExpression(Regex);
 
 impl RegularExpression {
     pub fn new(regex: &'static str) -> Self {
-        let regex_query = regex::Regex::new(regex)
-            .expect("Invalid regex provided for building RegularExpression");
-        Self(regex_query)
+        Self(
+            regex::Regex::new(regex)
+                .expect("Invalid regex provided for building RegularExpression"),
+        )
     }
 }
 
@@ -23,20 +24,22 @@ impl IdentifierExtractor for RegularExpression {
     }
 }
 
-pub struct TreeSitterQuery(&'static str);
+pub struct TreeSitterQuery(Query);
 
 impl TreeSitterQuery {
-    pub fn new(query: &'static str) -> Self {
-        Self(query)
+    pub fn new(query: &'static str, language: Language) -> Self {
+        Self(
+            Query::new(language, query)
+                .expect("Invalid Query provided for building TreeSitterQuery"),
+        )
     }
 }
 
 impl IdentifierExtractor for TreeSitterQuery {
     fn extract_identifier_from_node<'a>(&self, node: Node, src: &'a str) -> Option<Vec<&'a str>> {
-        let query = Query::new(node.language(), self.0).ok()?;
         let mut cursor = QueryCursor::new();
         let identifier = cursor
-            .matches(&query, node, src.as_bytes())
+            .matches(&self.0, node, src.as_bytes())
             .flat_map(|a_match| {
                 a_match
                     .captures

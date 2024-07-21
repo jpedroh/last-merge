@@ -30,18 +30,20 @@ impl From<Language> for ParserConfiguration {
                 identifier_extractors: {
                     let mut map: HashMap<&'static str, Box<dyn IdentifierExtractor>> =
                         HashMap::new();
-                    map.insert("constructor_declaration", Box::new(TreeSitterQuery::new(r#"(constructor_declaration name: (identifier) @method_name [parameters: (formal_parameters [ (formal_parameter type: (_) @argument_type) (spread_parameter (type_identifier) @spread_parameter "..." @spread_indicator) ]) _ ])"#)));
-                    map.insert("method_declaration", Box::new(TreeSitterQuery::new(r#"(method_declaration name: (identifier) @method_name [parameters: (formal_parameters [ (formal_parameter type: (_) @argument_type) (spread_parameter (type_identifier) @spread_parameter "..." @spread_indicator) ]) _ ])"#)));
+                    map.insert("constructor_declaration", Box::new(TreeSitterQuery::new(r#"(constructor_declaration name: (identifier) @method_name [parameters: (formal_parameters [ (formal_parameter type: (_) @argument_type) (spread_parameter (type_identifier) @spread_parameter "..." @spread_indicator) ]) _ ])"#, tree_sitter_java::language())));
+                    map.insert("method_declaration", Box::new(TreeSitterQuery::new(r#"(method_declaration name: (identifier) @method_name [parameters: (formal_parameters [ (formal_parameter type: (_) @argument_type) (spread_parameter (type_identifier) @spread_parameter "..." @spread_indicator) ]) _ ])"#, tree_sitter_java::language())));
                     map.insert(
                         "field_declaration",
                         Box::new(TreeSitterQuery::new(
                             r#"(variable_declarator name: _ @name)"#,
+                            tree_sitter_java::language(),
                         )),
                     );
                     map.insert(
                         "import_declaration",
                         Box::new(TreeSitterQuery::new(
                             r#"(import_declaration "import" _ @resource)"#,
+                            tree_sitter_java::language(),
                         )),
                     );
 
