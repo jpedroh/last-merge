@@ -1,24 +1,25 @@
+use regex::Regex;
 use tree_sitter::{Node, Query, QueryCursor};
 
 pub trait IdentifierExtractor {
     fn extract_identifier_from_node<'a>(&self, node: Node, src: &'a str) -> Option<Vec<&'a str>>;
 }
 
-pub struct RegularExpression(&'static str);
+pub struct RegularExpression(Regex);
 
 impl RegularExpression {
     pub fn new(regex: &'static str) -> Self {
-        Self(regex)
+        let regex_query = regex::Regex::new(regex)
+            .expect("Invalid regex provided for building RegularExpression");
+        Self(regex_query)
     }
 }
 
 impl IdentifierExtractor for RegularExpression {
     fn extract_identifier_from_node<'a>(&self, node: Node, src: &'a str) -> Option<Vec<&'a str>> {
-        let identifier = regex::Regex::new(self.0)
-            .unwrap()
+        self.0
             .find(node.utf8_text(src.as_bytes()).ok()?)
-            .map(|m| m.as_str())?;
-        Some(vec![identifier])
+            .map(|m| vec![m.as_str()])
     }
 }
 
