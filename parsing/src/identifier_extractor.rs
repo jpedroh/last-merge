@@ -1,5 +1,5 @@
 use regex::Regex;
-use tree_sitter::{Language, Node, Query, QueryCursor};
+use tree_sitter::{Language, Node, Query, QueryCapture, QueryCursor};
 
 pub trait IdentifierExtractor {
     fn extract_identifier_from_node<'a>(&self, node: Node, src: &'a str) -> Option<Vec<&'a str>>;
@@ -41,16 +41,19 @@ impl IdentifierExtractor for TreeSitterQuery {
         let identifier = cursor
             .matches(&self.0, node, src.as_bytes())
             .flat_map(|a_match| {
-                a_match
-                    .captures
-                    .iter()
-                    .filter(|capture| {
-                        capture.node.start_byte() >= node.start_byte()
-                            && capture.node.end_byte() <= node.end_byte()
-                    })
-                    .filter_map(|capture_index| capture_index.node.utf8_text(src.as_bytes()).ok())
+                a_match.captures.iter().filter_map(|capture| {
+                    if capture_is_within_node_bounds(capture, &node) {
+                        capture.node.utf8_text(src.as_bytes()).ok()
+                    } else {
+                        None
+                    }
+                })
             })
             .collect();
         Some(identifier)
     }
+}
+
+fn capture_is_within_node_bounds(capture: &QueryCapture, node: &Node) -> bool {
+    capture.node.start_byte() >= node.start_byte() && capture.node.end_byte() <= node.end_byte()
 }
