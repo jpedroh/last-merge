@@ -1,4 +1,3 @@
-use matching::matching_configuration::MatchingConfiguration;
 use model::language::Language;
 use parsing::ParserConfiguration;
 
@@ -43,8 +42,7 @@ fn the_perfect_matching_calculation_is_correct() -> Result<(), Box<dyn std::erro
         &config,
     )?;
 
-    let matching_configuration = MatchingConfiguration::from(Language::Java);
-    let matchings = matching::calculate_matchings(&left, &right, &matching_configuration);
+    let matchings = matching::calculate_matchings(&left, &right);
     assert!(
         matchings
             .get_matching_entry(&left, &right)

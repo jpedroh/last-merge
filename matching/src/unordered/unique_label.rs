@@ -1,13 +1,9 @@
 use model::{cst_node::NonTerminal, CSTNode};
 use unordered_pair::UnorderedPair;
 
-use crate::{matching_configuration::MatchingConfiguration, MatchingEntry, Matchings};
+use crate::{MatchingEntry, Matchings};
 
-pub fn calculate_matchings<'a>(
-    left: &'a CSTNode,
-    right: &'a CSTNode,
-    config: &'a MatchingConfiguration<'a>,
-) -> crate::Matchings<'a> {
+pub fn calculate_matchings<'a>(left: &'a CSTNode, right: &'a CSTNode) -> crate::Matchings<'a> {
     match (left, right) {
         (
             CSTNode::NonTerminal(NonTerminal {
@@ -39,8 +35,7 @@ pub fn calculate_matchings<'a>(
                     };
 
                     if is_same_identifier {
-                        let child_matchings =
-                            crate::calculate_matchings(child_left, child_right, config);
+                        let child_matchings = crate::calculate_matchings(child_left, child_right);
 
                         if let Some(matching_entry) =
                             child_matchings.get_matching_entry(child_left, child_right)

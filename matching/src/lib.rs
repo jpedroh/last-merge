@@ -1,13 +1,11 @@
 mod matches;
 mod matching;
-pub mod matching_configuration;
 mod matching_entry;
 mod matchings;
 pub mod ordered;
 pub mod unordered;
 
 use matches::Matches;
-use matching_configuration::MatchingConfiguration;
 pub use matching_entry::MatchingEntry;
 pub use matchings::Matchings;
 use unordered_pair::UnorderedPair;
@@ -15,7 +13,6 @@ use unordered_pair::UnorderedPair;
 pub fn calculate_matchings<'a>(
     left: &'a model::CSTNode,
     right: &'a model::CSTNode,
-    config: &'a MatchingConfiguration<'a>,
 ) -> Matchings<'a> {
     if !left.matches(right) {
         return Matchings::empty();
@@ -28,9 +25,9 @@ pub fn calculate_matchings<'a>(
         ) => {
             if non_terminal_left.are_children_unordered && non_terminal_right.are_children_unordered
             {
-                unordered::calculate_matchings(left, right, config)
+                unordered::calculate_matchings(left, right)
             } else {
-                ordered::calculate_matchings(left, right, config)
+                ordered::calculate_matchings(left, right)
             }
         }
         (
@@ -57,7 +54,7 @@ pub fn calculate_matchings<'a>(
 
 #[cfg(test)]
 mod tests {
-    use crate::{calculate_matchings, matching_configuration::MatchingConfiguration};
+    use crate::calculate_matchings;
     use model::{cst_node::Terminal, CSTNode, Point};
 
     #[test]
@@ -79,8 +76,7 @@ mod tests {
             is_block_end_delimiter: false,
         });
 
-        let matching_configuration = MatchingConfiguration::default();
-        let matchings = calculate_matchings(&left, &right, &matching_configuration);
+        let matchings = calculate_matchings(&left, &right);
 
         let left_right_matching = matchings.get_matching_entry(&left, &right).unwrap();
         assert_eq!(1, left_right_matching.score);
