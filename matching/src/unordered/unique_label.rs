@@ -28,12 +28,17 @@ pub fn calculate_matchings<'a>(
 
             for child_left in children_left {
                 for child_right in children_right {
-                    let is_same_identifier = config
-                        .handlers
-                        .compute_matching_score(child_left, child_right)
-                        .unwrap_or_else(|| (child_left.kind() == child_right.kind()).into());
+                    let is_same_identifier = match (child_left, child_right) {
+                        (CSTNode::Terminal(left), CSTNode::Terminal(right)) => {
+                            left.get_identifier() == right.get_identifier()
+                        }
+                        (CSTNode::NonTerminal(left), CSTNode::NonTerminal(right)) => {
+                            left.get_identifier() == right.get_identifier()
+                        }
+                        (_, _) => false,
+                    };
 
-                    if is_same_identifier == 1 {
+                    if is_same_identifier {
                         let child_matchings =
                             crate::calculate_matchings(child_left, child_right, config);
 

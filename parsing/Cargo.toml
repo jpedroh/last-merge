@@ -8,6 +8,7 @@ edition = "2021"
 [dependencies]
 tree-sitter = "0.20.9"
 tree-sitter-java = "0.20.0"
+regex = "1.10.5"
 model = { path = "../model" }
 parsing_handlers = { path = "../parsing_handlers" }
 log = { workspace = true }

@@ -64,6 +64,13 @@ impl CSTNode<'_> {
     pub fn get_tree_size(&self) -> usize {
         self.get_subtree_size() + 1
     }
+
+    pub fn has_identifier(&self) -> bool {
+        match self {
+            CSTNode::Terminal(_) => true,
+            CSTNode::NonTerminal(node) => node.get_identifier().is_some(),
+        }
+    }
 }
 
 #[derive(Debug, Default, Clone)]
@@ -74,6 +81,7 @@ pub struct NonTerminal<'a> {
     pub start_position: Point,
     pub end_position: Point,
     pub are_children_unordered: bool,
+    pub identifier: Option<Vec<&'a str>>,
 }
 
 impl<'a> PartialEq for NonTerminal<'a> {
@@ -107,6 +115,10 @@ impl NonTerminal<'_> {
         self.children.iter().fold(String::from(""), |acc, node| {
             format!("{} {}", acc, node.contents())
         })
+    }
+
+    pub fn get_identifier(&self) -> Option<&Vec<&str>> {
+        self.identifier.as_ref()
     }
 }
 
@@ -160,5 +172,9 @@ impl<'a> Hash for Terminal<'a> {
 impl Terminal<'_> {
     pub fn contents(&self) -> String {
         String::from(self.value)
+    }
+
+    pub fn get_identifier(&self) -> (&str, &str) {
+        (self.kind, self.value)
     }
 }

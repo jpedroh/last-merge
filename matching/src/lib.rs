@@ -1,3 +1,4 @@
+mod matches;
 mod matching;
 pub mod matching_configuration;
 mod matching_entry;
@@ -5,46 +6,18 @@ mod matchings;
 pub mod ordered;
 pub mod unordered;
 
+use matches::Matches;
 use matching_configuration::MatchingConfiguration;
 pub use matching_entry::MatchingEntry;
 pub use matchings::Matchings;
-use model::cst_node::Terminal;
 use unordered_pair::UnorderedPair;
-
-/**
- * TODO: This probably belongs on the node declaration itself, but for that we
- * need to move the identifiers extraction into there which would be a pain now.
- * Furthermore, in the future, we want to move the extraction of identifiers
- * from programmatic code to use Tree Sitter query syntax.
- */
-fn are_nodes_matching_representations_equal<'a>(
-    left: &'a model::CSTNode,
-    right: &'a model::CSTNode,
-    config: &'a MatchingConfiguration<'a>,
-) -> bool {
-    config
-        .handlers
-        .compute_matching_score(left, right)
-        .map(|score| score == 1)
-        .unwrap_or(match (left, right) {
-            (
-                model::CSTNode::NonTerminal(left_non_terminal),
-                model::CSTNode::NonTerminal(right_non_terminal),
-            ) => left_non_terminal.kind == right_non_terminal.kind,
-            (model::CSTNode::Terminal(left_terminal), model::CSTNode::Terminal(right_terminal)) => {
-                left_terminal.kind == right_terminal.kind
-                    && left_terminal.value == right_terminal.value
-            }
-            (_, _) => false,
-        })
-}
 
 pub fn calculate_matchings<'a>(
     left: &'a model::CSTNode,
     right: &'a model::CSTNode,
     config: &'a MatchingConfiguration<'a>,
 ) -> Matchings<'a> {
-    if !are_nodes_matching_representations_equal(left, right, config) {
+    if !left.matches(right) {
         return Matchings::empty();
     }
 
@@ -61,12 +34,12 @@ pub fn calculate_matchings<'a>(
             }
         }
         (
-            model::CSTNode::Terminal(Terminal {
+            model::CSTNode::Terminal(model::cst_node::Terminal {
                 kind: kind_left,
                 value: value_left,
                 ..
             }),
-            model::CSTNode::Terminal(Terminal {
+            model::CSTNode::Terminal(model::cst_node::Terminal {
                 kind: kind_right,
                 value: value_right,
                 ..

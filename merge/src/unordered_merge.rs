@@ -234,6 +234,7 @@ mod tests {
                     is_block_end_delimiter: true,
                 }),
             ],
+            ..Default::default()
         });
 
         let parent_a = CSTNode::NonTerminal(NonTerminal {
@@ -268,6 +269,7 @@ mod tests {
                     is_block_end_delimiter: true,
                 }),
             ],
+            ..Default::default()
         });
 
         let parent_b = CSTNode::NonTerminal(NonTerminal {
@@ -294,6 +296,7 @@ mod tests {
                     is_block_end_delimiter: true,
                 }),
             ],
+            ..Default::default()
         });
 
         let merge = MergedCSTNode::NonTerminal {
@@ -345,6 +348,7 @@ mod tests {
                     is_block_end_delimiter: true,
                 }),
             ],
+            ..Default::default()
         });
 
         let parent_a = CSTNode::NonTerminal(NonTerminal {
@@ -376,6 +380,7 @@ mod tests {
                         end_position: model::Point { row: 0, column: 1 },
                         is_block_end_delimiter: false,
                     })],
+                    ..Default::default()
                 }),
                 CSTNode::Terminal(Terminal {
                     id: uuid::Uuid::new_v4(),
@@ -386,6 +391,7 @@ mod tests {
                     is_block_end_delimiter: true,
                 }),
             ],
+            ..Default::default()
         });
 
         let parent_b = CSTNode::NonTerminal(NonTerminal {
@@ -417,6 +423,7 @@ mod tests {
                         end_position: model::Point { row: 0, column: 1 },
                         is_block_end_delimiter: false,
                     })],
+                    ..Default::default()
                 }),
                 CSTNode::Terminal(Terminal {
                     id: uuid::Uuid::new_v4(),
@@ -427,6 +434,7 @@ mod tests {
                     is_block_end_delimiter: true,
                 }),
             ],
+            ..Default::default()
         });
 
         let expected_merge = MergedCSTNode::NonTerminal {
@@ -500,6 +508,8 @@ mod tests {
                             is_block_end_delimiter: false,
                         }),
                     ],
+                    identifier: Some(vec!["main"]),
+                    ..Default::default()
                 }),
                 CSTNode::Terminal(Terminal {
                     id: uuid::Uuid::new_v4(),
@@ -510,6 +520,7 @@ mod tests {
                     is_block_end_delimiter: true,
                 }),
             ],
+            ..Default::default()
         });
 
         let parent_a = CSTNode::NonTerminal(NonTerminal {
@@ -551,6 +562,8 @@ mod tests {
                             is_block_end_delimiter: false,
                         }),
                     ],
+                    identifier: Some(vec!["main"]),
+                    ..Default::default()
                 }),
                 CSTNode::Terminal(Terminal {
                     id: uuid::Uuid::new_v4(),
@@ -561,6 +574,7 @@ mod tests {
                     is_block_end_delimiter: true,
                 }),
             ],
+            ..Default::default()
         });
 
         let parent_b = CSTNode::NonTerminal(NonTerminal {
@@ -587,6 +601,7 @@ mod tests {
                     is_block_end_delimiter: true,
                 }),
             ],
+            ..Default::default()
         });
 
         let expected_merge = MergedCSTNode::NonTerminal {
@@ -668,6 +683,8 @@ mod tests {
                             is_block_end_delimiter: false,
                         }),
                     ],
+                    identifier: Some(vec!["method"]),
+                    ..Default::default()
                 }),
                 CSTNode::Terminal(Terminal {
                     id: uuid::Uuid::new_v4(),
@@ -678,6 +695,7 @@ mod tests {
                     is_block_end_delimiter: true,
                 }),
             ],
+            ..Default::default()
         });
 
         let parent_a = CSTNode::NonTerminal(NonTerminal {
@@ -735,6 +753,8 @@ mod tests {
                             is_block_end_delimiter: false,
                         }),
                     ],
+                    identifier: Some(vec!["method"]),
+                    ..Default::default()
                 }),
                 CSTNode::Terminal(Terminal {
                     id: uuid::Uuid::new_v4(),
@@ -745,6 +765,7 @@ mod tests {
                     is_block_end_delimiter: true,
                 }),
             ],
+            ..Default::default()
         });
 
         let parent_b = CSTNode::NonTerminal(NonTerminal {
@@ -771,6 +792,7 @@ mod tests {
                     is_block_end_delimiter: true,
                 }),
             ],
+            ..Default::default()
         });
 
         assert_merge_output_is(
@@ -868,6 +890,7 @@ mod tests {
             end_position: Point { row: 0, column: 7 },
             children: vec![],
             are_children_unordered: true,
+            ..Default::default()
         };
         let kind_b = NonTerminal {
             id: uuid::Uuid::new_v4(),
@@ -876,6 +899,7 @@ mod tests {
             end_position: Point { row: 0, column: 7 },
             children: vec![],
             are_children_unordered: true,
+            ..Default::default()
         };
 
         let matchings = Matchings::empty();

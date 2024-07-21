@@ -34,6 +34,7 @@ pub fn tweak_import_declarations(root: CSTNode<'_>) -> CSTNode<'_> {
                 start_position: import_declarations_start,
                 end_position: import_declarations_end,
                 are_children_unordered: true,
+                identifier: None,
             });
 
             let first_import_declaration_index = program
@@ -63,6 +64,7 @@ pub fn tweak_import_declarations(root: CSTNode<'_>) -> CSTNode<'_> {
                 end_position: program.end_position,
                 children: new_program_children,
                 are_children_unordered: program.are_children_unordered,
+                identifier: program.identifier,
             })
         }
     }
