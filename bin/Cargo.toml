@@ -10,7 +10,6 @@ merge = { path = "../merge" }
 model = { path = "../model" }
 parsing = { path = "../parsing" }
 matching = { path = "../matching" }
-matching_handlers = { path = "../matching_handlers" }
 assert_cmd = "2.0.12"
 clap = { version = "4.4.8", features = ["derive"] }
 log = { workspace = true }

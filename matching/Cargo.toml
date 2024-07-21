@@ -7,7 +7,6 @@ edition = "2021"
 
 [dependencies]
 model = { path = "../model" }
-matching_handlers = { path = "../matching_handlers" }
 unordered-pair = "0.2.4"
 log = { workspace = true }
 pathfinding = "4.9.1"

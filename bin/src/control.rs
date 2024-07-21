@@ -3,7 +3,7 @@ use std::{
     fmt::{self, Display},
 };
 
-use matching::{matching_configuration, MatchingEntry};
+use matching::MatchingEntry;
 use parsing::ParserConfiguration;
 
 #[derive(Debug)]
@@ -62,27 +62,27 @@ pub fn run_tool_on_merge_scenario(
     let base_tree =
         parsing::parse_string(base, &parser_configuration).map_err(ExecutionError::ParsingError)?;
     log::info!("Finished parsing base file");
+
     log::info!("Started parsing left file");
     let left_tree =
         parsing::parse_string(left, &parser_configuration).map_err(ExecutionError::ParsingError)?;
     log::info!("Finished parsing left file");
+
     log::info!("Started parsing right file");
     let right_tree = parsing::parse_string(right, &parser_configuration)
         .map_err(ExecutionError::ParsingError)?;
     log::info!("Finished parsing right file");
 
-    let matching_configuration = matching_configuration::MatchingConfiguration::from(language);
     log::info!("Started calculation of matchings between left and base");
-    let matchings_left_base =
-        matching::calculate_matchings(&left_tree, &base_tree, &matching_configuration);
+    let matchings_left_base = matching::calculate_matchings(&left_tree, &base_tree);
     log::info!("Finished calculation of matchings between left and base");
+
     log::info!("Started calculation of matchings between right and base");
-    let matchings_right_base =
-        matching::calculate_matchings(&right_tree, &base_tree, &matching_configuration);
+    let matchings_right_base = matching::calculate_matchings(&right_tree, &base_tree);
     log::info!("Finished calculation of matchings between right and base");
+
     log::info!("Started calculation of matchings between left and right");
-    let matchings_left_right =
-        matching::calculate_matchings(&left_tree, &right_tree, &matching_configuration);
+    let matchings_left_right = matching::calculate_matchings(&left_tree, &right_tree);
     log::info!("Finished calculation of matchings between left and right");
 
     log::info!("Starting merge of the trees");
@@ -119,10 +119,8 @@ pub fn run_diff_on_files(
         .map_err(ExecutionError::ParsingError)?;
     log::info!("Finished parsing right file");
 
-    let matching_configuration = matching_configuration::MatchingConfiguration::from(language);
     log::info!("Started calculation of matchings between left and right");
-    let matchings_left_right =
-        matching::calculate_matchings(&left_tree_root, &right_tree_root, &matching_configuration);
+    let matchings_left_right = matching::calculate_matchings(&left_tree_root, &right_tree_root);
     log::info!("Finished calculation of matchings between left and right");
 
     Ok(matchings_left_right

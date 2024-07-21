@@ -1,7 +1,4 @@
-use crate::{
-    matches::Matches, matching_configuration::MatchingConfiguration, matching_entry::MatchingEntry,
-    Matchings,
-};
+use crate::{matches::Matches, matching_entry::MatchingEntry, Matchings};
 use model::{cst_node::NonTerminal, CSTNode};
 use unordered_pair::UnorderedPair;
 
@@ -21,11 +18,7 @@ impl<'a> Default for Entry<'a> {
     }
 }
 
-pub fn calculate_matchings<'a>(
-    left: &'a CSTNode,
-    right: &'a CSTNode,
-    config: &'a MatchingConfiguration<'a>,
-) -> Matchings<'a> {
+pub fn calculate_matchings<'a>(left: &'a CSTNode, right: &'a CSTNode) -> Matchings<'a> {
     match (left, right) {
         (
             CSTNode::NonTerminal(NonTerminal {
@@ -50,7 +43,7 @@ pub fn calculate_matchings<'a>(
                     let left_child = children_left.get(i - 1).unwrap();
                     let right_child = children_right.get(j - 1).unwrap();
 
-                    let w = crate::calculate_matchings(left_child, right_child, config);
+                    let w = crate::calculate_matchings(left_child, right_child);
                     let matching = w
                         .get_matching_entry(left_child, right_child)
                         .unwrap_or_default();
@@ -103,7 +96,6 @@ pub fn calculate_matchings<'a>(
 
 #[cfg(test)]
 mod tests {
-    use crate::MatchingConfiguration;
     use model::{
         cst_node::{NonTerminal, Terminal},
         language, CSTNode, Language, Point,
@@ -138,8 +130,7 @@ mod tests {
             ..Default::default()
         });
 
-        let matching_configuration = MatchingConfiguration::default();
-        let matchings = super::calculate_matchings(&left, &right, &matching_configuration);
+        let matchings = super::calculate_matchings(&left, &right);
 
         let child_matching = matchings.get_matching_entry(&child, &child);
         assert!(child_matching.is_some());
@@ -185,8 +176,7 @@ mod tests {
             ..Default::default()
         });
 
-        let matching_configuration = MatchingConfiguration::from(Language::Java);
-        let matchings = super::calculate_matchings(&left, &right, &matching_configuration);
+        let matchings = super::calculate_matchings(&left, &right);
         assert!(matchings
             .get_matching_entry(&left_child, &right_child)
             .is_none())
@@ -230,8 +220,7 @@ mod tests {
             ..Default::default()
         });
 
-        let matching_configuration = MatchingConfiguration::from(language::Language::Java);
-        let matchings = super::calculate_matchings(&left, &right, &matching_configuration);
+        let matchings = super::calculate_matchings(&left, &right);
 
         let left_right_matchings = matchings.get_matching_entry(&left, &right).unwrap();
         assert_eq!(2, left_right_matchings.score);
@@ -268,8 +257,7 @@ mod tests {
             ..Default::default()
         });
 
-        let matching_configuration = MatchingConfiguration::from(language::Language::Java);
-        let matchings = super::calculate_matchings(&left, &right, &matching_configuration);
+        let matchings = super::calculate_matchings(&left, &right);
 
         let left_right_matchings = matchings.get_matching_entry(&left, &right).unwrap();
         assert_eq!(2, left_right_matchings.score);
@@ -317,8 +305,7 @@ mod tests {
             ..Default::default()
         });
 
-        let matching_configuration = MatchingConfiguration::default();
-        let matchings = super::calculate_matchings(&left, &right, &matching_configuration);
+        let matchings = super::calculate_matchings(&left, &right);
 
         let intermediate_matching = matchings
             .get_matching_entry(&intermediate, &intermediate)

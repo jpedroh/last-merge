@@ -89,7 +89,6 @@ dependencies = [
  "env_logger",
  "log",
  "matching",
- "matching_handlers",
  "merge",
  "model",
  "parsing",
@@ -341,20 +340,11 @@ name = "matching"
 version = "0.1.0"
 dependencies = [
  "log",
- "matching_handlers",
  "model",
  "parsing",
  "pathfinding",
  "unordered-pair",
  "uuid",
-]
-
-[[package]]
-name = "matching_handlers"
-version = "0.1.0"
-dependencies = [
- "log",
- "model",
 ]
 
 [[package]]
@@ -370,7 +360,6 @@ dependencies = [
  "diffy",
  "log",
  "matching",
- "matching_handlers",
  "model",
  "uuid",
 ]
