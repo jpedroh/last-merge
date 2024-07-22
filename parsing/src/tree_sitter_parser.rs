@@ -2,7 +2,7 @@ use model::Language;
 use parsing_handlers::ParsingHandlers;
 use std::collections::{HashMap, HashSet};
 
-use crate::identifier_extractor::{IdentifierExtractor, RegularExpression, TreeSitterQuery};
+use crate::identifier_extractor::{IdentifierExtractor, TreeSitterQuery};
 
 pub struct ParserConfiguration {
     pub(crate) language: tree_sitter::Language,
@@ -30,8 +30,20 @@ impl From<Language> for ParserConfiguration {
                 identifier_extractors: {
                     let mut map: HashMap<&'static str, Box<dyn IdentifierExtractor>> =
                         HashMap::new();
-                    map.insert("constructor_declaration", Box::new(TreeSitterQuery::new(r#"(constructor_declaration name: (identifier) @method_name [parameters: (formal_parameters [ (formal_parameter type: (_) @argument_type) (spread_parameter (type_identifier) @spread_parameter "..." @spread_indicator) ]) _ ])"#, tree_sitter_java::language())));
-                    map.insert("method_declaration", Box::new(TreeSitterQuery::new(r#"(method_declaration name: (identifier) @method_name [parameters: (formal_parameters [ (formal_parameter type: (_) @argument_type) (spread_parameter (type_identifier) @spread_parameter "..." @spread_indicator) ]) _ ])"#, tree_sitter_java::language())));
+                    map.insert(
+                        "constructor_declaration",
+                        Box::new(TreeSitterQuery::new(
+                            r#"(constructor_declaration name: (identifier) @method_name parameters: (formal_parameters ([ (formal_parameter type: _@parameter_type) (spread_parameter (type_identifier) @parameter_type "..." @parameter_type _) ] "," ?) *))"#,
+                            tree_sitter_java::language(),
+                        )),
+                    );
+                    map.insert(
+                        "method_declaration",
+                        Box::new(TreeSitterQuery::new(
+                            r#"(method_declaration name: (identifier) @method_name parameters: (formal_parameters ([ (formal_parameter type: _@parameter_type) (spread_parameter (type_identifier) @parameter_type "..." @parameter_type _) ] "," ?) *))"#,
+                            tree_sitter_java::language(),
+                        )),
+                    );
                     map.insert(
                         "field_declaration",
                         Box::new(TreeSitterQuery::new(
@@ -42,25 +54,32 @@ impl From<Language> for ParserConfiguration {
                     map.insert(
                         "import_declaration",
                         Box::new(TreeSitterQuery::new(
-                            r#"(import_declaration "import" _ @resource)"#,
+                            r#"(import_declaration "import" "static"? @resource (scoped_identifier) @resource (asterisk)? @resource)"#,
                             tree_sitter_java::language(),
                         )),
                     );
 
                     map.insert(
                         "class_declaration",
-                        Box::new(RegularExpression::new(r#"class [A-Za-z_][A-Za-z0-9_]*"#)),
+                        Box::new(TreeSitterQuery::new(
+                            r#"(class_declaration (identifier) @class_name)"#,
+                            tree_sitter_java::language(),
+                        )),
                     );
 
                     map.insert(
                         "enum_declaration",
-                        Box::new(RegularExpression::new(r#"enum [A-Za-z_][A-Za-z0-9_]*"#)),
+                        Box::new(TreeSitterQuery::new(
+                            r#"(enum_declaration (identifier) @class_name)"#,
+                            tree_sitter_java::language(),
+                        )),
                     );
 
                     map.insert(
                         "interface_declaration",
-                        Box::new(RegularExpression::new(
-                            r#"interface [A-Za-z_][A-Za-z0-9_]*"#,
+                        Box::new(TreeSitterQuery::new(
+                            r#"(interface_declaration (identifier) @class_name)"#,
+                            tree_sitter_java::language(),
                         )),
                     );
                     map

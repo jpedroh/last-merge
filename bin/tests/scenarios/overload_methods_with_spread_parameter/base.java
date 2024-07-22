@@ -7,6 +7,7 @@ import java.io.StringReader;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.*;
 
 import org.junit.BeforeClass;
 
