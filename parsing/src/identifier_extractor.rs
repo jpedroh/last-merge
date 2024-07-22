@@ -1,4 +1,4 @@
-use tree_sitter::{Language, Node, Query, QueryCapture, QueryCursor};
+use tree_sitter::{Language, Node, Query, QueryCursor};
 
 pub trait IdentifierExtractor {
     fn extract_identifier_from_node<'a>(&self, node: Node, src: &'a str) -> Option<Vec<&'a str>>;
@@ -19,13 +19,9 @@ impl IdentifierExtractor for TreeSitterQuery {
     fn extract_identifier_from_node<'a>(&self, node: Node, src: &'a str) -> Option<Vec<&'a str>> {
         let mut cursor = QueryCursor::new();
         cursor
+            .set_byte_range(node.byte_range())
             .matches(&self.0, node, src.as_bytes())
-            .find(|a_match| {
-                a_match
-                    .captures
-                    .iter()
-                    .all(|a_capture| capture_is_within_node_bounds(a_capture, &node))
-            })
+            .next()
             .map(|a_match| {
                 a_match
                     .captures
@@ -34,8 +30,4 @@ impl IdentifierExtractor for TreeSitterQuery {
                     .collect()
             })
     }
-}
-
-fn capture_is_within_node_bounds(capture: &QueryCapture, node: &Node) -> bool {
-    capture.node.start_byte() >= node.start_byte() && capture.node.end_byte() <= node.end_byte()
 }
