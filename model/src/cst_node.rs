@@ -120,6 +120,10 @@ impl NonTerminal<'_> {
     pub fn get_identifier(&self) -> Option<&Vec<&str>> {
         self.identifier.as_ref()
     }
+
+    pub fn get_children(&self) -> &[CSTNode] {
+        self.children.as_slice()
+    }
 }
 
 impl<'a> TryFrom<&'a CSTNode<'a>> for &'a NonTerminal<'a> {

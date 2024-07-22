@@ -1,34 +1,25 @@
-use model::{cst_node::NonTerminal, CSTNode};
 use unordered_pair::UnorderedPair;
 
-use crate::{MatchingEntry, Matchings};
+use crate::{matches::Matches, MatchingEntry, Matchings};
 
-pub fn calculate_matchings<'a>(left: &'a CSTNode, right: &'a CSTNode) -> crate::Matchings<'a> {
+pub fn calculate_matchings<'a>(
+    left: &'a model::CSTNode,
+    right: &'a model::CSTNode,
+) -> Matchings<'a> {
     match (left, right) {
-        (
-            CSTNode::NonTerminal(NonTerminal {
-                kind: kind_left,
-                children: children_left,
-                ..
-            }),
-            CSTNode::NonTerminal(NonTerminal {
-                kind: kind_right,
-                children: children_right,
-                ..
-            }),
-        ) => {
-            let root_matching: usize = (kind_left == kind_right).into();
+        (model::CSTNode::NonTerminal(nt_left), model::CSTNode::NonTerminal(nt_right)) => {
+            let root_matching: usize = left.matches(right).into();
 
             let mut sum = 0;
             let mut result = Matchings::empty();
 
-            for child_left in children_left {
-                for child_right in children_right {
+            for child_left in nt_left.get_children() {
+                for child_right in nt_right.get_children() {
                     let is_same_identifier = match (child_left, child_right) {
-                        (CSTNode::Terminal(left), CSTNode::Terminal(right)) => {
+                        (model::CSTNode::Terminal(left), model::CSTNode::Terminal(right)) => {
                             left.get_identifier() == right.get_identifier()
                         }
-                        (CSTNode::NonTerminal(left), CSTNode::NonTerminal(right)) => {
+                        (model::CSTNode::NonTerminal(left), model::CSTNode::NonTerminal(right)) => {
                             left.get_identifier() == right.get_identifier()
                         }
                         (_, _) => false,

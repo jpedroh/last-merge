@@ -26,7 +26,7 @@ pub fn unordered_merge<'a>(
     let mut result_children = vec![];
     let mut processed_nodes: HashSet<uuid::Uuid> = HashSet::new();
 
-    for left_child in left.children.iter() {
+    for left_child in left.get_children().iter() {
         if let CSTNode::Terminal(Terminal {
             is_block_end_delimiter,
             ..
@@ -85,7 +85,7 @@ pub fn unordered_merge<'a>(
     }
 
     for right_child in right
-        .children
+        .get_children()
         .iter()
         .filter(|node| !processed_nodes.contains(&node.id()))
     {

@@ -20,8 +20,8 @@ pub fn ordered_merge<'a>(
 
     let mut result_children = vec![];
 
-    let mut children_left_it = left.children.iter();
-    let mut children_right_it = right.children.iter();
+    let mut children_left_it = left.get_children().iter();
+    let mut children_right_it = right.get_children().iter();
 
     let mut cur_left_option = children_left_it.next();
     let mut cur_right_option = children_right_it.next();

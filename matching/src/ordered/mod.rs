@@ -1,5 +1,4 @@
 use crate::{matches::Matches, matching_entry::MatchingEntry, Matchings};
-use model::{cst_node::NonTerminal, CSTNode};
 use unordered_pair::UnorderedPair;
 
 #[derive(PartialEq, Eq, Debug, Clone)]
@@ -18,30 +17,24 @@ impl<'a> Default for Entry<'a> {
     }
 }
 
-pub fn calculate_matchings<'a>(left: &'a CSTNode, right: &'a CSTNode) -> Matchings<'a> {
+pub fn calculate_matchings<'a>(
+    left: &'a model::CSTNode,
+    right: &'a model::CSTNode,
+) -> Matchings<'a> {
     match (left, right) {
-        (
-            CSTNode::NonTerminal(NonTerminal {
-                children: children_left,
-                ..
-            }),
-            CSTNode::NonTerminal(NonTerminal {
-                children: children_right,
-                ..
-            }),
-        ) => {
+        (model::CSTNode::NonTerminal(nt_left), model::CSTNode::NonTerminal(nt_right)) => {
             let root_matching: usize = (left.matches(right)).into();
 
-            let m = children_left.len();
-            let n = children_right.len();
+            let m = nt_left.get_children().len();
+            let n = nt_right.get_children().len();
 
             let mut matrix_m = vec![vec![0; n + 1]; m + 1];
             let mut matrix_t = vec![vec![Entry::default(); n + 1]; m + 1];
 
             for i in 1..m + 1 {
                 for j in 1..n + 1 {
-                    let left_child = children_left.get(i - 1).unwrap();
-                    let right_child = children_right.get(j - 1).unwrap();
+                    let left_child = nt_left.get_children().get(i - 1).unwrap();
+                    let right_child = nt_right.get_children().get(j - 1).unwrap();
 
                     let w = crate::calculate_matchings(left_child, right_child);
                     let matching = w
@@ -98,7 +91,7 @@ pub fn calculate_matchings<'a>(left: &'a CSTNode, right: &'a CSTNode) -> Matchin
 mod tests {
     use model::{
         cst_node::{NonTerminal, Terminal},
-        language, CSTNode, Language, Point,
+        CSTNode, Point,
     };
 
     #[test]

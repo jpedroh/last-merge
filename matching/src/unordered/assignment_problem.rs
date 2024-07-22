@@ -1,36 +1,26 @@
 use std::cmp::max;
 
-use model::{cst_node::NonTerminal, CSTNode};
 use pathfinding::{kuhn_munkres::Weights, matrix};
 use unordered_pair::UnorderedPair;
 
-use crate::{MatchingEntry, Matchings};
+use crate::{matches::Matches, MatchingEntry, Matchings};
 
 pub fn calculate_matchings<'a>(
-    left: &'a CSTNode<'a>,
-    right: &'a CSTNode<'a>,
-) -> crate::Matchings<'a> {
+    left: &'a model::CSTNode<'a>,
+    right: &'a model::CSTNode<'a>,
+) -> Matchings<'a> {
     match (left, right) {
-        (
-            CSTNode::NonTerminal(NonTerminal {
-                kind: kind_left,
-                children: children_left,
-                ..
-            }),
-            CSTNode::NonTerminal(NonTerminal {
-                kind: kind_right,
-                children: children_right,
-                ..
-            }),
-        ) => {
-            if kind_left != kind_right {
+        (model::CSTNode::NonTerminal(nt_left), model::CSTNode::NonTerminal(nt_right)) => {
+            if !left.matches(right) {
                 return Matchings::empty();
             }
 
-            let children_matchings = children_left
+            let children_matchings = nt_left
+                .get_children()
                 .iter()
                 .map(|left_child| {
-                    children_right
+                    nt_right
+                        .get_children()
                         .iter()
                         .map(|right_child| {
                             let w = crate::calculate_matchings(left_child, right_child);
@@ -52,8 +42,8 @@ pub fn calculate_matchings<'a>(
 }
 
 fn solve_assignment_problem<'a>(
-    left: &'a CSTNode,
-    right: &'a CSTNode,
+    left: &'a model::CSTNode,
+    right: &'a model::CSTNode,
     children_matchings: Vec<Vec<(usize, Matchings<'a>)>>,
 ) -> Matchings<'a> {
     let m = children_matchings.len();
