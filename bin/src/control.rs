@@ -119,6 +119,9 @@ pub fn run_diff_on_files(
         .map_err(ExecutionError::ParsingError)?;
     log::info!("Finished parsing right file");
 
+    log::info!("Left tree size: {}", left_tree_root.get_tree_size());
+    log::info!("Right tree size: {}", right_tree_root.get_tree_size());
+
     log::info!("Started calculation of matchings between left and right");
     let matchings_left_right = matching::calculate_matchings(&left_tree_root, &right_tree_root);
     log::info!("Finished calculation of matchings between left and right");
