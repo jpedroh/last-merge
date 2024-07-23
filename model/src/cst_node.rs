@@ -117,8 +117,8 @@ impl NonTerminal<'_> {
         })
     }
 
-    pub fn get_identifier(&self) -> Option<&Vec<&str>> {
-        self.identifier.as_ref()
+    pub fn get_identifier(&self) -> Option<&[&str]> {
+        self.identifier.as_deref()
     }
 
     pub fn get_children(&self) -> &[CSTNode] {
