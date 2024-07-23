@@ -23,8 +23,9 @@ pub fn unordered_merge<'a>(
         ));
     }
 
-    let mut result_children = vec![];
-    let mut processed_nodes: HashSet<uuid::Uuid> = HashSet::new();
+    let max_capacity = left.get_children().len() + right.get_children().len();
+    let mut result_children = Vec::with_capacity(max_capacity);
+    let mut processed_nodes = HashSet::with_capacity(max_capacity);
 
     for left_child in left.get_children().iter() {
         if let CSTNode::Terminal(Terminal {

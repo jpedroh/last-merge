@@ -18,7 +18,8 @@ pub fn ordered_merge<'a>(
         ));
     }
 
-    let mut result_children = vec![];
+    let mut result_children =
+        Vec::with_capacity(left.get_children().len() + right.get_children().len());
 
     let mut children_left_it = left.get_children().iter();
     let mut children_right_it = right.get_children().iter();
