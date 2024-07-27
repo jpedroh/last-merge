@@ -1,6 +1,7 @@
 use std::{
     error::Error,
-    fmt::{self, Display}, time::Instant,
+    fmt::{self, Display},
+    time::Instant,
 };
 
 use matching::MatchingEntry;
@@ -79,17 +80,26 @@ pub fn run_tool_on_merge_scenario(
     let start = Instant::now();
     log::info!("Started calculation of matchings between left and base");
     let matchings_left_base = matching::calculate_matchings(&left_tree, &base_tree);
-    log::info!("Finished calculation of matchings between left and base in {:?}", start.elapsed());
+    log::info!(
+        "Finished calculation of matchings between left and base in {:?}",
+        start.elapsed()
+    );
 
     let start = Instant::now();
     log::info!("Started calculation of matchings between right and base");
     let matchings_right_base = matching::calculate_matchings(&right_tree, &base_tree);
-    log::info!("Finished calculation of matchings between right and base in {:?}", start.elapsed());
+    log::info!(
+        "Finished calculation of matchings between right and base in {:?}",
+        start.elapsed()
+    );
 
     let start = Instant::now();
     log::info!("Started calculation of matchings between left and right");
     let matchings_left_right = matching::calculate_matchings(&left_tree, &right_tree);
-    log::info!("Finished calculation of matchings between left and right in {:?}", start.elapsed());
+    log::info!(
+        "Finished calculation of matchings between left and right in {:?}",
+        start.elapsed()
+    );
 
     let start = Instant::now();
     log::info!("Starting merge of the trees");
