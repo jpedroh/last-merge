@@ -30,10 +30,16 @@ pub fn ordered_merge<'a>(
     while let (Some(cur_left), Some(cur_right)) = (cur_left_option, cur_right_option) {
         let matching_base_left = base_left_matchings.find_matching_for(cur_left);
         let matching_base_right = base_right_matchings.find_matching_for(cur_right);
-        let left_matching_in_right = left_right_matchings.find_matching_for(cur_left);
-        let right_matching_in_left = left_right_matchings.find_matching_for(cur_right);
+        let left_matching_in_right = right
+            .get_children()
+            .iter()
+            .find_map(|right_child| left_right_matchings.get_matching_entry(cur_left, right_child));
+        let right_matching_in_left = left
+            .get_children()
+            .iter()
+            .find_map(|left_child| left_right_matchings.get_matching_entry(left_child, cur_right));
         let has_bidirectional_matching_left_right =
-            left_right_matchings.has_bidirectional_matching(cur_left, cur_right);
+            left_matching_in_right.is_some() && right_matching_in_left.is_some();
 
         match (
             has_bidirectional_matching_left_right,
