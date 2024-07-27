@@ -7,6 +7,8 @@ pub fn merge_terminals<'a>(
     left: &'a Terminal<'a>,
     right: &'a Terminal<'a>,
 ) -> Result<MergedCSTNode<'a>, MergeError> {
+    log::trace!("Calling merge terminal");
+    
     // Nodes of different kind, early return
     if left.kind != right.kind {
         return Err(MergeError::NodesWithDifferentKinds(
@@ -15,11 +17,16 @@ pub fn merge_terminals<'a>(
         ));
     }
 
+    let left_equals_base = left.value == base.value;
+    let right_equals_base = right.value == base.value;
+
     // Unchanged
-    if left.value == base.value && right.value == base.value {
+    if left_equals_base && right_equals_base {
+        log::trace!("Unchanged");
         Ok(base.into())
     // Changed in both
-    } else if left.value != base.value && right.value != base.value {
+    } else if !left_equals_base && !right_equals_base {
+        log::trace!("Changed in both");
         match diffy::merge(base.value, left.value, right.value) {
             Ok(value) => Ok(MergedCSTNode::Terminal {
                 kind: base.kind,
@@ -31,10 +38,12 @@ pub fn merge_terminals<'a>(
             }),
         }
     // Only left changed
-    } else if left.value != base.value {
+    } else if right_equals_base {
+        log::trace!("Only left changed");
         Ok(left.into())
     // Only right changed
     } else {
+        log::trace!("Only right changed");
         Ok(right.into())
     }
 }
