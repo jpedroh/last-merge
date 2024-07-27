@@ -219,7 +219,7 @@ mod tests {
     use std::{borrow::Cow, vec};
 
     use matching::{ordered, Matchings};
-    use model::{cst_node::NonTerminal, cst_node::Terminal, CSTNode, Language, Point};
+    use model::{cst_node::NonTerminal, cst_node::Terminal, CSTNode, Point};
 
     use crate::{MergeError, MergedCSTNode};
 

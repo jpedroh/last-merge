@@ -142,7 +142,7 @@ mod tests {
     use matching::{unordered::calculate_matchings, Matchings};
     use model::{
         cst_node::{NonTerminal, Terminal},
-        CSTNode, Language, Point,
+        CSTNode, Point,
     };
 
     use crate::{MergeError, MergedCSTNode};
