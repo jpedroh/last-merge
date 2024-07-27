@@ -72,14 +72,14 @@ pub fn ordered_merge<'a>(
                 if !matching_base_right.is_perfect_match {
                     result_children.push(MergedCSTNode::Conflict {
                         left: None,
-                        right: Some(Box::new(cur_right.to_owned().into())),
+                        right: Some(Box::new(cur_right.into())),
                     });
                 }
 
                 cur_right_option = children_right_it.next();
             }
             (false, Some(_), Some(_), None, None) => {
-                result_children.push(cur_right.to_owned().into());
+                result_children.push(cur_right.into());
 
                 cur_right_option = children_right_it.next();
             }
@@ -87,19 +87,19 @@ pub fn ordered_merge<'a>(
                 if !matching_base_right.is_perfect_match {
                     result_children.push(MergedCSTNode::Conflict {
                         left: None,
-                        right: Some(Box::new(cur_right.to_owned().into())),
+                        right: Some(Box::new(cur_right.into())),
                     })
                 }
                 cur_right_option = children_right_it.next();
             }
             (false, Some(_), None, None, None) => {
-                result_children.push(cur_right.to_owned().into());
+                result_children.push(cur_right.into());
                 cur_right_option = children_right_it.next();
             }
             (false, None, Some(matching_base_left), Some(_), Some(_)) => {
                 if !matching_base_left.is_perfect_match {
                     result_children.push(MergedCSTNode::Conflict {
-                        left: Some(Box::new(cur_left.to_owned().into())),
+                        left: Some(Box::new(cur_left.into())),
                         right: None,
                     });
                 }
@@ -109,7 +109,7 @@ pub fn ordered_merge<'a>(
             (false, None, Some(matching_base_left), Some(_), None) => {
                 if !matching_base_left.is_perfect_match {
                     result_children.push(MergedCSTNode::Conflict {
-                        left: Some(Box::new(cur_left.to_owned().into())),
+                        left: Some(Box::new(cur_left.into())),
                         right: None,
                     })
                 }
@@ -122,16 +122,16 @@ pub fn ordered_merge<'a>(
                 ) {
                     (true, true) => {}
                     (true, false) => result_children.push(MergedCSTNode::Conflict {
-                        left: Some(Box::new(cur_left.to_owned().into())),
+                        left: Some(Box::new(cur_left.into())),
                         right: None,
                     }),
                     (false, true) => result_children.push(MergedCSTNode::Conflict {
                         left: None,
-                        right: Some(Box::new(cur_right.to_owned().into())),
+                        right: Some(Box::new(cur_right.into())),
                     }),
                     (false, false) => result_children.push(MergedCSTNode::Conflict {
-                        left: Some(Box::new(cur_left.to_owned().into())),
-                        right: Some(Box::new(cur_right.to_owned().into())),
+                        left: Some(Box::new(cur_left.into())),
+                        right: Some(Box::new(cur_right.into())),
                     }),
                 };
 
@@ -139,11 +139,11 @@ pub fn ordered_merge<'a>(
                 cur_right_option = children_right_it.next();
             }
             (false, None, Some(matching_base_left), None, None) => {
-                result_children.push(cur_right.to_owned().into());
+                result_children.push(cur_right.into());
 
                 if !matching_base_left.is_perfect_match {
                     result_children.push(MergedCSTNode::Conflict {
-                        left: Some(Box::new(cur_left.to_owned().into())),
+                        left: Some(Box::new(cur_left.into())),
                         right: None,
                     })
                 }
@@ -152,19 +152,19 @@ pub fn ordered_merge<'a>(
                 cur_right_option = children_right_it.next();
             }
             (false, None, None, Some(_), Some(_)) => {
-                result_children.push(cur_left.to_owned().into());
+                result_children.push(cur_left.into());
                 cur_left_option = children_left_it.next();
             }
             (false, None, None, Some(_), None) => {
-                result_children.push(cur_left.to_owned().into());
+                result_children.push(cur_left.into());
                 cur_left_option = children_left_it.next();
             }
             (false, None, None, None, Some(matching_base_right)) => {
-                result_children.push(cur_left.to_owned().into());
+                result_children.push(cur_left.into());
                 if !matching_base_right.is_perfect_match {
                     result_children.push(MergedCSTNode::Conflict {
                         left: None,
-                        right: Some(Box::new(cur_right.to_owned().into())),
+                        right: Some(Box::new(cur_right.into())),
                     })
                 }
 
@@ -173,8 +173,8 @@ pub fn ordered_merge<'a>(
             }
             (false, None, None, None, None) => {
                 result_children.push(MergedCSTNode::Conflict {
-                    left: Some(Box::new(cur_left.to_owned().into())),
-                    right: Some(Box::new(cur_right.to_owned().into())),
+                    left: Some(Box::new(cur_left.into())),
+                    right: Some(Box::new(cur_right.into())),
                 });
 
                 cur_left_option = children_left_it.next();
@@ -193,12 +193,12 @@ pub fn ordered_merge<'a>(
     }
 
     while let Some(cur_left) = cur_left_option {
-        result_children.push(cur_left.to_owned().into());
+        result_children.push(cur_left.into());
         cur_left_option = children_left_it.next();
     }
 
     while let Some(cur_right) = cur_right_option {
-        result_children.push(cur_right.to_owned().into());
+        result_children.push(cur_right.into());
         cur_right_option = children_right_it.next();
     }
 
@@ -210,7 +210,7 @@ pub fn ordered_merge<'a>(
 
 #[cfg(test)]
 mod tests {
-    use std::vec;
+    use std::{borrow::Cow, vec};
 
     use matching::{ordered, Matchings};
     use model::{cst_node::NonTerminal, cst_node::Terminal, CSTNode, Language, Point};
@@ -302,11 +302,13 @@ mod tests {
             ..Default::default()
         });
 
+        let expected_merge = (&tree).into();
+
         assert_merge_is_correct_and_idempotent_with_respect_to_parent_side(
             &tree,
             &tree,
             &tree,
-            &tree.clone().into(),
+            &expected_merge,
         )
     }
 
@@ -348,12 +350,13 @@ mod tests {
             ],
             ..Default::default()
         });
+        let expected_merge = (&parent).into();
 
         assert_merge_is_correct_and_idempotent_with_respect_to_parent_side(
             &base,
             &parent,
             &parent,
-            &parent.clone().into(),
+            &expected_merge,
         )
     }
 
@@ -401,7 +404,7 @@ mod tests {
             kind: "kind",
             children: vec![MergedCSTNode::Terminal {
                 kind: "kind_a",
-                value: "value_a".to_string(),
+                value: Cow::Borrowed("value_a"),
             }],
         };
 
@@ -483,11 +486,11 @@ mod tests {
             children: vec![
                 MergedCSTNode::Terminal {
                     kind: "kind_a",
-                    value: "value_a".to_string(),
+                    value: Cow::Borrowed("value_a"),
                 },
                 MergedCSTNode::Terminal {
                     kind: "kind_b",
-                    value: "value_b".to_string(),
+                    value: Cow::Borrowed("value_b"),
                 },
             ],
         };
@@ -559,7 +562,7 @@ mod tests {
 
             children: vec![MergedCSTNode::Terminal {
                 kind: "kind_b",
-                value: "value_b".to_string(),
+                value: Cow::Borrowed("value_b"),
             }],
         };
 
@@ -676,7 +679,7 @@ mod tests {
                         kind: "another_subtree",
                         children: vec![MergedCSTNode::Terminal {
                             kind: "kind_b",
-                            value: "value_b".to_string(),
+                            value: Cow::Borrowed("value_b"),
                         }],
                     },
                     MergedCSTNode::Conflict {
@@ -685,7 +688,7 @@ mod tests {
                             kind: "subtree",
                             children: vec![MergedCSTNode::Terminal {
                                 kind: "kind_c",
-                                value: "value_c".to_string(),
+                                value: Cow::Borrowed("value_c"),
                             }],
                         })),
                     },
@@ -702,7 +705,7 @@ mod tests {
                         kind: "another_subtree",
                         children: vec![MergedCSTNode::Terminal {
                             kind: "kind_b",
-                            value: "value_b".to_string(),
+                            value: Cow::Borrowed("value_b"),
                         }],
                     },
                     MergedCSTNode::Conflict {
@@ -710,7 +713,7 @@ mod tests {
                             kind: "subtree",
                             children: vec![MergedCSTNode::Terminal {
                                 kind: "kind_c",
-                                value: "value_c".to_string(),
+                                value: Cow::Borrowed("value_c"),
                             }],
                         })),
                         right: None,
@@ -778,11 +781,11 @@ mod tests {
                 children: vec![MergedCSTNode::Conflict {
                     left: Some(Box::new(MergedCSTNode::Terminal {
                         kind: "kind_a",
-                        value: "value_a".to_string(),
+                        value: Cow::Borrowed("value_a"),
                     })),
                     right: Some(Box::new(MergedCSTNode::Terminal {
                         kind: "kind_b",
-                        value: "value_b".to_string(),
+                        value: Cow::Borrowed("value_b"),
                     })),
                 }],
             },
@@ -868,7 +871,7 @@ mod tests {
 
             children: vec![MergedCSTNode::Terminal {
                 kind: "kind_b",
-                value: "value_b".to_string(),
+                value: Cow::Borrowed("value_b"),
             }],
         };
 
@@ -977,14 +980,14 @@ mod tests {
                             kind: "subtree",
                             children: vec![MergedCSTNode::Terminal {
                                 kind: "kind_c",
-                                value: "value_c".to_string(),
+                                value: Cow::Borrowed("value_c"),
                             }],
                         })),
                         right: None,
                     },
                     MergedCSTNode::Terminal {
                         kind: "kind_a",
-                        value: "value_a".to_string(),
+                        value: Cow::Borrowed("value_a"),
                     },
                 ],
             },
@@ -1003,13 +1006,13 @@ mod tests {
                             kind: "subtree",
                             children: vec![MergedCSTNode::Terminal {
                                 kind: "kind_c",
-                                value: "value_c".to_string(),
+                                value: Cow::Borrowed("value_c"),
                             }],
                         })),
                     },
                     MergedCSTNode::Terminal {
                         kind: "kind_a",
-                        value: "value_a".to_string(),
+                        value: Cow::Borrowed("value_a"),
                     },
                 ],
             },
@@ -1113,15 +1116,15 @@ mod tests {
             children: vec![
                 MergedCSTNode::Terminal {
                     kind: "kind_a",
-                    value: "value_a".to_string(),
+                    value: Cow::Borrowed("value_a"),
                 },
                 MergedCSTNode::Terminal {
                     kind: "kind_b",
-                    value: "value_b".to_string(),
+                    value: Cow::Borrowed("value_b"),
                 },
                 MergedCSTNode::Terminal {
                     kind: "kind_c",
-                    value: "value_c".to_string(),
+                    value: Cow::Borrowed("value_c"),
                 },
             ],
         };
@@ -1202,7 +1205,7 @@ mod tests {
 
             children: vec![MergedCSTNode::Terminal {
                 kind: "kind_a",
-                value: "value_a".to_string(),
+                value: Cow::Borrowed("value_a"),
             }],
         };
 
@@ -1306,13 +1309,13 @@ mod tests {
                             kind: "subtree",
                             children: vec![MergedCSTNode::Terminal {
                                 kind: "kind_b",
-                                value: "value_c".to_string(),
+                                value: Cow::Borrowed("value_c"),
                             }],
                         })),
                     },
                     MergedCSTNode::Terminal {
                         kind: "kind_a",
-                        value: "value_a".to_string(),
+                        value: Cow::Borrowed("value_a"),
                     },
                 ],
             },
@@ -1329,14 +1332,14 @@ mod tests {
                             kind: "subtree",
                             children: vec![MergedCSTNode::Terminal {
                                 kind: "kind_b",
-                                value: "value_c".to_string(),
+                                value: Cow::Borrowed("value_c"),
                             }],
                         })),
                         right: None,
                     },
                     MergedCSTNode::Terminal {
                         kind: "kind_a",
-                        value: "value_a".to_string(),
+                        value: Cow::Borrowed("value_a"),
                     },
                 ],
             },
@@ -1405,11 +1408,11 @@ mod tests {
             children: vec![
                 MergedCSTNode::Terminal {
                     kind: "kind_c",
-                    value: "value_c".to_string(),
+                    value: Cow::Borrowed("value_c"),
                 },
                 MergedCSTNode::Terminal {
                     kind: "kind_a",
-                    value: "value_a".to_string(),
+                    value: Cow::Borrowed("value_a"),
                 },
             ],
         };
@@ -1607,7 +1610,7 @@ mod tests {
                         kind: "subtree_b",
                         children: vec![MergedCSTNode::Terminal {
                             kind: "kind_c",
-                            value: "value_c".to_string(),
+                            value: Cow::Borrowed("value_c"),
                         }],
                     })),
                     right: None,
@@ -1626,7 +1629,7 @@ mod tests {
                         kind: "subtree_b",
                         children: vec![MergedCSTNode::Terminal {
                             kind: "kind_c",
-                            value: "value_c".to_string(),
+                            value: Cow::Borrowed("value_c"),
                         }],
                     })),
                 }],
