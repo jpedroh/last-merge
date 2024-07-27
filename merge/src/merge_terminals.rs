@@ -8,7 +8,7 @@ pub fn merge_terminals<'a>(
     right: &'a Terminal<'a>,
 ) -> Result<MergedCSTNode<'a>, MergeError> {
     log::trace!("Calling merge terminal");
-    
+
     // Nodes of different kind, early return
     if left.kind != right.kind {
         return Err(MergeError::NodesWithDifferentKinds(
