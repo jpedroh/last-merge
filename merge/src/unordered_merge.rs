@@ -39,7 +39,8 @@ pub fn unordered_merge<'a>(
         }
 
         let matching_base_left = base_left_matchings.find_matching_for(left_child);
-        let matching_left_right = left_right_matchings.find_matching_for(left_child);
+        let matching_left_right =
+            left_right_matchings.find_matching_node_in_children(left_child, right.get_children());
 
         match (matching_base_left, matching_left_right) {
             // Added only by left
@@ -91,7 +92,8 @@ pub fn unordered_merge<'a>(
         .filter(|node| !processed_nodes.contains(&node.id()))
     {
         let matching_base_right = base_right_matchings.find_matching_for(right_child);
-        let matching_left_right = left_right_matchings.find_matching_for(right_child);
+        let matching_left_right =
+            left_right_matchings.find_matching_node_in_children(right_child, left.get_children());
 
         match (matching_base_right, matching_left_right) {
             // Added only by right
@@ -142,7 +144,7 @@ mod tests {
     use matching::{unordered::calculate_matchings, Matchings};
     use model::{
         cst_node::{NonTerminal, Terminal},
-        CSTNode, Language, Point,
+        CSTNode, Point,
     };
 
     use crate::{MergeError, MergedCSTNode};

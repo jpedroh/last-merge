@@ -19,9 +19,9 @@ impl<'a> Matchings<'a> {
     }
 
     pub fn from_single(key: UnorderedPair<&'a CSTNode>, value: MatchingEntry) -> Self {
-        let mut matching_entries = HashMap::new();
-        matching_entries.insert(key, value);
-        Matchings { matching_entries }
+        Matchings {
+            matching_entries: HashMap::from([(key, value)]),
+        }
     }
 
     pub fn new(matching_entries: HashMap<UnorderedPair<&'a CSTNode<'a>>, MatchingEntry>) -> Self {
@@ -48,20 +48,27 @@ impl<'a> Matchings<'a> {
             })
     }
 
+    pub fn find_matching_node_in_children(
+        &'a self,
+        a_node: &'a CSTNode<'a>,
+        children: &'a [CSTNode<'a>],
+    ) -> Option<Matching> {
+        children.iter().find_map(|child| {
+            let matching_entry = self.get_matching_entry(child, a_node)?;
+            Some(Matching {
+                matching_node: child,
+                score: matching_entry.score,
+                is_perfect_match: matching_entry.is_perfect_match,
+            })
+        })
+    }
+
     pub fn get_matching_entry(
         &'a self,
         left: &'a CSTNode<'a>,
         right: &'a CSTNode<'a>,
     ) -> Option<&MatchingEntry> {
         self.matching_entries.get(&UnorderedPair(left, right))
-    }
-
-    pub fn has_bidirectional_matching(
-        &'a self,
-        left: &'a CSTNode<'a>,
-        right: &'a CSTNode<'a>,
-    ) -> bool {
-        self.find_matching_for(left).is_some() && self.find_matching_for(right).is_some()
     }
 
     pub fn extend(&mut self, matchings: Matchings<'a>) {
