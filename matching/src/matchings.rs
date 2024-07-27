@@ -8,58 +8,47 @@ use crate::matching_entry::MatchingEntry;
 
 #[derive(Debug, Clone)]
 pub struct Matchings<'a> {
-    pub matching_entries: HashMap<UnorderedPair<&'a CSTNode<'a>>, MatchingEntry>,
+    matching_entries: HashMap<UnorderedPair<&'a CSTNode<'a>>, MatchingEntry>,
+    individual_matchings: HashMap<&'a CSTNode<'a>, &'a CSTNode<'a>>,
 }
 
 impl<'a> Matchings<'a> {
     pub fn empty() -> Self {
         Matchings {
             matching_entries: HashMap::new(),
+            individual_matchings: HashMap::new(),
         }
     }
 
     pub fn from_single(key: UnorderedPair<&'a CSTNode>, value: MatchingEntry) -> Self {
         Matchings {
             matching_entries: HashMap::from([(key, value)]),
+            individual_matchings: HashMap::from([(key.0, key.1), (key.1, key.0)]),
         }
     }
 
     pub fn new(matching_entries: HashMap<UnorderedPair<&'a CSTNode<'a>>, MatchingEntry>) -> Self {
-        Matchings { matching_entries }
+        Matchings {
+            individual_matchings: {
+                matching_entries
+                    .keys()
+                    .into_iter()
+                    .flat_map(|key| [(key.0, key.1), (key.1, key.0)])
+                    .collect::<HashMap<&'a CSTNode<'a>, &'a CSTNode<'a>>>()
+            },
+            matching_entries,
+        }
     }
 
     pub fn find_matching_for(&self, a_node: &'a CSTNode) -> Option<Matching> {
-        self.matching_entries
-            .iter()
-            .find(|(UnorderedPair(left, right), ..)| {
-                left.id() == a_node.id() || right.id() == a_node.id()
-            })
-            .map(|(UnorderedPair(left, right), matching)| {
-                let matching_node = if left.id() == a_node.id() {
-                    right
-                } else {
-                    left
-                };
-                Matching {
-                    matching_node,
-                    score: matching.score,
-                    is_perfect_match: matching.is_perfect_match,
-                }
-            })
-    }
-
-    pub fn find_matching_node_in_children(
-        &'a self,
-        a_node: &'a CSTNode<'a>,
-        children: &'a [CSTNode<'a>],
-    ) -> Option<Matching> {
-        children.iter().find_map(|child| {
-            let matching_entry = self.get_matching_entry(child, a_node)?;
-            Some(Matching {
-                matching_node: child,
-                score: matching_entry.score,
-                is_perfect_match: matching_entry.is_perfect_match,
-            })
+        let matching_node = self.individual_matchings.get(a_node)?;
+        let matching_entry = self
+            .matching_entries
+            .get(&UnorderedPair(a_node, matching_node))?;
+        Some(Matching {
+            matching_node,
+            score: matching_entry.score,
+            is_perfect_match: matching_entry.is_perfect_match,
         })
     }
 
@@ -72,6 +61,14 @@ impl<'a> Matchings<'a> {
     }
 
     pub fn extend(&mut self, matchings: Matchings<'a>) {
+        self.individual_matchings.extend(
+            matchings
+                .matching_entries
+                .keys()
+                .into_iter()
+                .flat_map(|key| [(key.0, key.1), (key.1, key.0)])
+                .collect::<HashMap<&'a CSTNode<'a>, &'a CSTNode<'a>>>(),
+        );
         self.matching_entries.extend(matchings);
     }
 }
