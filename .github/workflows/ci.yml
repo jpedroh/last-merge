@@ -27,6 +27,19 @@ jobs:
         with:
           command: clippy
           args: --all-features
+  rustfmt:
+    runs-on: ubuntu-latest
+    env:
+      RUSTFLAGS: "-Dwarnings"
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+      - uses: actions-rs/cargo@v1
+        with:
+          command: fmt
+          args: --check
   test:
     runs-on: ubuntu-latest
     steps:
