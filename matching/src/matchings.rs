@@ -32,7 +32,6 @@ impl<'a> Matchings<'a> {
             individual_matchings: {
                 matching_entries
                     .keys()
-                    .into_iter()
                     .flat_map(|key| [(key.0, key.1), (key.1, key.0)])
                     .collect::<HashMap<&'a CSTNode<'a>, &'a CSTNode<'a>>>()
             },
@@ -65,7 +64,6 @@ impl<'a> Matchings<'a> {
             matchings
                 .matching_entries
                 .keys()
-                .into_iter()
                 .flat_map(|key| [(key.0, key.1), (key.1, key.0)])
                 .collect::<HashMap<&'a CSTNode<'a>, &'a CSTNode<'a>>>(),
         );
