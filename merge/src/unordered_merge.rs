@@ -44,7 +44,7 @@ pub fn unordered_merge<'a>(
         match (matching_base_left, matching_left_right) {
             // Added only by left
             (None, None) => {
-                result_children.push(left_child.to_owned().into());
+                result_children.push(left_child.into());
                 processed_nodes.insert(left_child.id());
             }
             (None, Some(right_matching)) => {
@@ -64,7 +64,7 @@ pub fn unordered_merge<'a>(
                 // Changed in left, conflict!
                 if !matching_base_left.is_perfect_match {
                     result_children.push(MergedCSTNode::Conflict {
-                        left: Some(Box::new(left_child.to_owned().into())),
+                        left: Some(Box::new(left_child.into())),
                         right: None,
                     })
                 }
@@ -96,7 +96,7 @@ pub fn unordered_merge<'a>(
         match (matching_base_right, matching_left_right) {
             // Added only by right
             (None, None) => {
-                result_children.push(right_child.to_owned().into());
+                result_children.push(right_child.into());
             }
             (None, Some(matching_left_right)) => {
                 result_children.push(merge(
@@ -114,7 +114,7 @@ pub fn unordered_merge<'a>(
                 if !matching_base_right.is_perfect_match {
                     result_children.push(MergedCSTNode::Conflict {
                         left: None,
-                        right: Some(Box::new(right_child.to_owned().into())),
+                        right: Some(Box::new(right_child.into())),
                     })
                 }
             }
@@ -299,15 +299,15 @@ mod tests {
             children: vec![
                 MergedCSTNode::Terminal {
                     kind: "{",
-                    value: String::from("{"),
+                    value: std::borrow::Cow::Borrowed("{"),
                 },
                 MergedCSTNode::Terminal {
                     kind: "method_declaration",
-                    value: String::from("main"),
+                    value: std::borrow::Cow::Borrowed("main"),
                 },
                 MergedCSTNode::Terminal {
                     kind: "}",
-                    value: String::from("}"),
+                    value: std::borrow::Cow::Borrowed("}"),
                 },
             ],
         };
@@ -437,18 +437,18 @@ mod tests {
             children: vec![
                 MergedCSTNode::Terminal {
                     kind: "{",
-                    value: String::from("{"),
+                    value: std::borrow::Cow::Borrowed("{"),
                 },
                 MergedCSTNode::NonTerminal {
                     kind: "a_method_declaration",
                     children: vec![MergedCSTNode::Terminal {
                         kind: "identifier",
-                        value: String::from("main"),
+                        value: std::borrow::Cow::Borrowed("main"),
                     }],
                 },
                 MergedCSTNode::Terminal {
                     kind: "}",
-                    value: String::from("}"),
+                    value: std::borrow::Cow::Borrowed("}"),
                 },
             ],
         };
@@ -604,11 +604,11 @@ mod tests {
             children: vec![
                 MergedCSTNode::Terminal {
                     kind: "{",
-                    value: String::from("{"),
+                    value: std::borrow::Cow::Borrowed("{"),
                 },
                 MergedCSTNode::Terminal {
                     kind: "}",
-                    value: String::from("}"),
+                    value: std::borrow::Cow::Borrowed("}"),
                 },
             ],
         };
@@ -799,7 +799,7 @@ mod tests {
                 children: vec![
                     MergedCSTNode::Terminal {
                         kind: "{",
-                        value: String::from("{"),
+                        value: std::borrow::Cow::Borrowed("{"),
                     },
                     MergedCSTNode::Conflict {
                         left: Some(Box::new(MergedCSTNode::NonTerminal {
@@ -807,19 +807,19 @@ mod tests {
                             children: vec![
                                 MergedCSTNode::Terminal {
                                     kind: "formal_parameters",
-                                    value: String::from("formal_parameters"),
+                                    value: std::borrow::Cow::Borrowed("formal_parameters"),
                                 },
                                 MergedCSTNode::Terminal {
                                     kind: "identifier",
-                                    value: String::from("method"),
+                                    value: std::borrow::Cow::Borrowed("method"),
                                 },
                                 MergedCSTNode::Terminal {
                                     kind: "kind_a",
-                                    value: String::from("value_a"),
+                                    value: std::borrow::Cow::Borrowed("value_a"),
                                 },
                                 MergedCSTNode::Terminal {
                                     kind: "kind_b",
-                                    value: String::from("new_value_b"),
+                                    value: std::borrow::Cow::Borrowed("new_value_b"),
                                 },
                             ],
                         })),
@@ -827,7 +827,7 @@ mod tests {
                     },
                     MergedCSTNode::Terminal {
                         kind: "}",
-                        value: String::from("}"),
+                        value: std::borrow::Cow::Borrowed("}"),
                     },
                 ],
             },
@@ -841,7 +841,7 @@ mod tests {
                 children: vec![
                     MergedCSTNode::Terminal {
                         kind: "{",
-                        value: String::from("{"),
+                        value: std::borrow::Cow::Borrowed("{"),
                     },
                     MergedCSTNode::Conflict {
                         left: None,
@@ -850,26 +850,26 @@ mod tests {
                             children: vec![
                                 MergedCSTNode::Terminal {
                                     kind: "formal_parameters",
-                                    value: String::from("formal_parameters"),
+                                    value: std::borrow::Cow::Borrowed("formal_parameters"),
                                 },
                                 MergedCSTNode::Terminal {
                                     kind: "identifier",
-                                    value: String::from("method"),
+                                    value: std::borrow::Cow::Borrowed("method"),
                                 },
                                 MergedCSTNode::Terminal {
                                     kind: "kind_a",
-                                    value: String::from("value_a"),
+                                    value: std::borrow::Cow::Borrowed("value_a"),
                                 },
                                 MergedCSTNode::Terminal {
                                     kind: "kind_b",
-                                    value: String::from("new_value_b"),
+                                    value: std::borrow::Cow::Borrowed("new_value_b"),
                                 },
                             ],
                         })),
                     },
                     MergedCSTNode::Terminal {
                         kind: "}",
-                        value: String::from("}"),
+                        value: std::borrow::Cow::Borrowed("}"),
                     },
                 ],
             },

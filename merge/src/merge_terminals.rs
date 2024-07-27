@@ -17,25 +17,25 @@ pub fn merge_terminals<'a>(
 
     // Unchanged
     if left.value == base.value && right.value == base.value {
-        Ok(base.to_owned().into())
+        Ok(base.into())
     // Changed in both
     } else if left.value != base.value && right.value != base.value {
         match diffy::merge(base.value, left.value, right.value) {
             Ok(value) => Ok(MergedCSTNode::Terminal {
                 kind: base.kind,
-                value,
+                value: std::borrow::Cow::Owned(value),
             }),
             Err(value) => Ok(MergedCSTNode::Terminal {
                 kind: base.kind,
-                value,
+                value: std::borrow::Cow::Owned(value),
             }),
         }
     // Only left changed
     } else if left.value != base.value {
-        Ok(left.to_owned().into())
+        Ok(left.into())
     // Only right changed
     } else {
-        Ok(right.to_owned().into())
+        Ok(right.into())
     }
 }
 
@@ -75,7 +75,7 @@ mod tests {
             &node,
             &node,
             &node,
-            &node.clone().into(),
+            &(&node).into(),
         )
     }
 
@@ -113,7 +113,7 @@ mod tests {
             &right,
             &MergedCSTNode::Terminal {
                 kind: "kind",
-                value: "left\nvalue\nright".to_string(),
+                value: std::borrow::Cow::Borrowed("left\nvalue\nright"),
             },
         )
     }
@@ -150,7 +150,7 @@ mod tests {
             merge_terminals(&base, &left, &right)?,
            MergedCSTNode::Terminal {
                 kind: "kind",
-                value: "<<<<<<< ours\nleft_value||||||| original\nvalue=======\nright_value>>>>>>> theirs\n".to_string()
+                value: std::borrow::Cow::Borrowed("<<<<<<< ours\nleft_value||||||| original\nvalue=======\nright_value>>>>>>> theirs\n")
             }
         );
 
@@ -181,7 +181,7 @@ mod tests {
             &base_and_left,
             &base_and_left,
             &changed_parent,
-            &changed_parent.clone().into(),
+            &(&changed_parent).into(),
         )
     }
 

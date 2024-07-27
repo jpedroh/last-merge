@@ -9,7 +9,7 @@ use model::{
 pub enum MergedCSTNode<'a> {
     Terminal {
         kind: &'a str,
-        value: String,
+        value: std::borrow::Cow<'a, str>,
     },
     NonTerminal {
         kind: &'a str,
@@ -21,28 +21,25 @@ pub enum MergedCSTNode<'a> {
     },
 }
 
-impl<'a> From<CSTNode<'a>> for MergedCSTNode<'a> {
-    fn from(val: CSTNode<'a>) -> Self {
+impl<'a> From<&'a CSTNode<'a>> for MergedCSTNode<'a> {
+    fn from(val: &'a CSTNode<'a>) -> Self {
         match val {
-            CSTNode::Terminal(Terminal { kind, value, .. }) => MergedCSTNode::Terminal {
-                kind,
-                value: value.to_string(),
-            },
+            CSTNode::Terminal(terminal) => terminal.into(),
             CSTNode::NonTerminal(NonTerminal { kind, children, .. }) => {
                 MergedCSTNode::NonTerminal {
                     kind,
-                    children: children.into_iter().map(|node| node.into()).collect(),
+                    children: children.iter().map(|node| node.into()).collect(),
                 }
             }
         }
     }
 }
 
-impl<'a> From<Terminal<'a>> for MergedCSTNode<'a> {
-    fn from(val: Terminal<'a>) -> Self {
+impl<'a> From<&'a Terminal<'a>> for MergedCSTNode<'a> {
+    fn from(val: &'a Terminal<'a>) -> Self {
         MergedCSTNode::Terminal {
             kind: val.kind,
-            value: val.value.to_string(),
+            value: std::borrow::Cow::Borrowed(val.value),
         }
     }
 }
