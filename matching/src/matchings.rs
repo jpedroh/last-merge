@@ -48,6 +48,16 @@ impl<'a> Matchings<'a> {
             })
     }
 
+    pub fn find_matching_node_in_children(
+        &'a self,
+        a_node: &'a CSTNode<'a>,
+        children: &'a [CSTNode<'a>],
+    ) -> Option<&'a MatchingEntry> {
+        children
+            .iter()
+            .find_map(|left_child| self.get_matching_entry(left_child, a_node))
+    }
+
     pub fn get_matching_entry(
         &'a self,
         left: &'a CSTNode<'a>,
