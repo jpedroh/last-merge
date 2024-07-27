@@ -1,6 +1,6 @@
 use std::{
     error::Error,
-    fmt::{self, Display},
+    fmt::{self, Display}, time::Instant,
 };
 
 use matching::MatchingEntry;
@@ -58,33 +58,40 @@ pub fn run_tool_on_merge_scenario(
 
     let parser_configuration = ParserConfiguration::from(language);
 
+    let start = Instant::now();
     log::info!("Started parsing base file");
     let base_tree =
         parsing::parse_string(base, &parser_configuration).map_err(ExecutionError::ParsingError)?;
-    log::info!("Finished parsing base file");
+    log::info!("Finished parsing base file in {:?}", start.elapsed());
 
+    let start = Instant::now();
     log::info!("Started parsing left file");
     let left_tree =
         parsing::parse_string(left, &parser_configuration).map_err(ExecutionError::ParsingError)?;
-    log::info!("Finished parsing left file");
+    log::info!("Finished parsing left file in {:?}", start.elapsed());
 
+    let start = Instant::now();
     log::info!("Started parsing right file");
     let right_tree = parsing::parse_string(right, &parser_configuration)
         .map_err(ExecutionError::ParsingError)?;
-    log::info!("Finished parsing right file");
+    log::info!("Finished parsing right file in {:?}", start.elapsed());
 
+    let start = Instant::now();
     log::info!("Started calculation of matchings between left and base");
     let matchings_left_base = matching::calculate_matchings(&left_tree, &base_tree);
-    log::info!("Finished calculation of matchings between left and base");
+    log::info!("Finished calculation of matchings between left and base in {:?}", start.elapsed());
 
+    let start = Instant::now();
     log::info!("Started calculation of matchings between right and base");
     let matchings_right_base = matching::calculate_matchings(&right_tree, &base_tree);
-    log::info!("Finished calculation of matchings between right and base");
+    log::info!("Finished calculation of matchings between right and base in {:?}", start.elapsed());
 
+    let start = Instant::now();
     log::info!("Started calculation of matchings between left and right");
     let matchings_left_right = matching::calculate_matchings(&left_tree, &right_tree);
-    log::info!("Finished calculation of matchings between left and right");
+    log::info!("Finished calculation of matchings between left and right in {:?}", start.elapsed());
 
+    let start = Instant::now();
     log::info!("Starting merge of the trees");
     let result = merge::merge(
         &base_tree,
@@ -95,7 +102,7 @@ pub fn run_tool_on_merge_scenario(
         &matchings_left_right,
     )
     .map_err(ExecutionError::MergeError)?;
-    log::info!("Finished merge of the trees");
+    log::info!("Finished merge of the trees in {:?}", start.elapsed());
 
     match result.has_conflict() {
         true => Ok(ExecutionResult::WithConflicts(result.to_string())),
