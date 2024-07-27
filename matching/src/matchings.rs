@@ -52,10 +52,15 @@ impl<'a> Matchings<'a> {
         &'a self,
         a_node: &'a CSTNode<'a>,
         children: &'a [CSTNode<'a>],
-    ) -> Option<&'a MatchingEntry> {
-        children
-            .iter()
-            .find_map(|left_child| self.get_matching_entry(left_child, a_node))
+    ) -> Option<Matching> {
+        children.iter().find_map(|child| {
+            let matching_entry = self.get_matching_entry(child, a_node)?;
+            Some(Matching {
+                matching_node: child,
+                score: matching_entry.score,
+                is_perfect_match: matching_entry.is_perfect_match,
+            })
+        })
     }
 
     pub fn get_matching_entry(
