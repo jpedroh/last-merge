@@ -61,25 +61,25 @@ impl Display for MergedCSTNode<'_> {
             MergedCSTNode::Conflict { left, right } => match (left, right) {
                 (Some(left), Some(right)) => {
                     writeln!(f)?;
-                    writeln!(f, "<<<<<<<<<")?;
+                    writeln!(f, "<<<<<<<")?;
                     writeln!(f, "{}", left)?;
-                    writeln!(f, "=========")?;
+                    writeln!(f, "=======")?;
                     writeln!(f, "{}", right)?;
-                    writeln!(f, ">>>>>>>>>")
+                    writeln!(f, ">>>>>>>")
                 }
                 (Some(left), None) => {
                     writeln!(f)?;
-                    writeln!(f, "<<<<<<<<<")?;
+                    writeln!(f, "<<<<<<<")?;
                     writeln!(f, "{}", left)?;
-                    writeln!(f, "=========")?;
-                    writeln!(f, ">>>>>>>>>")
+                    writeln!(f, "=======")?;
+                    writeln!(f, ">>>>>>>")
                 }
                 (None, Some(right)) => {
                     writeln!(f)?;
-                    writeln!(f, "<<<<<<<<<")?;
-                    writeln!(f, "=========")?;
+                    writeln!(f, "<<<<<<<")?;
+                    writeln!(f, "=======")?;
                     writeln!(f, "{}", right)?;
-                    writeln!(f, ">>>>>>>>>")
+                    writeln!(f, ">>>>>>>")
                 }
                 (None, None) => unreachable!("Invalid conflict provided"),
             },
