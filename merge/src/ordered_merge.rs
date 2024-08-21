@@ -575,157 +575,151 @@ mod tests {
         )
     }
 
-    // #[test]
-    // fn it_merges_when_one_parent_adds_a_node_and_removes_from_another_that_was_changed(
-    // ) -> Result<(), MergeError> {
-    //     let base = CSTNode::NonTerminal(NonTerminal {
-    //         id: uuid::Uuid::new_v4(),
-    //         kind: "kind",
-    //         are_children_unordered: false,
-    //         start_position: Point { row: 0, column: 0 },
-    //         end_position: Point { row: 0, column: 7 },
-    //         children: vec![CSTNode::NonTerminal(NonTerminal {
-    //             id: uuid::Uuid::new_v4(),
-    //             kind: "subtree",
-    //             are_children_unordered: false,
-    //             start_position: Point { row: 0, column: 0 },
-    //             end_position: Point { row: 0, column: 7 },
-    //             children: vec![CSTNode::Terminal(Terminal {
-    //                 id: uuid::Uuid::new_v4(),
-    //                 kind: "kind_a",
-    //                 start_position: Point { row: 0, column: 0 },
-    //                 end_position: Point { row: 0, column: 7 },
-    //                 value: "value_a",
-    //                 is_block_end_delimiter: false,
-    //             })],
-    //             ..Default::default()
-    //         })],
-    //         ..Default::default()
-    //     });
+    #[test]
+    fn it_merges_when_one_parent_adds_a_node_and_removes_from_another_that_was_changed(
+    ) -> Result<(), MergeError> {
+        let base = CSTNode::NonTerminal(NonTerminal {
+            id: uuid::Uuid::new_v4(),
+            kind: "kind",
+            are_children_unordered: false,
+            start_position: Point { row: 0, column: 0 },
+            end_position: Point { row: 0, column: 7 },
+            children: vec![CSTNode::NonTerminal(NonTerminal {
+                id: uuid::Uuid::new_v4(),
+                kind: "subtree",
+                are_children_unordered: false,
+                start_position: Point { row: 0, column: 0 },
+                end_position: Point { row: 0, column: 7 },
+                children: vec![CSTNode::Terminal(Terminal {
+                    id: uuid::Uuid::new_v4(),
+                    kind: "kind_a",
+                    start_position: Point { row: 0, column: 0 },
+                    end_position: Point { row: 0, column: 7 },
+                    value: "value_a",
+                    is_block_end_delimiter: false,
+                })],
+                ..Default::default()
+            })],
+            ..Default::default()
+        });
 
-    //     let parent_a = CSTNode::NonTerminal(NonTerminal {
-    //         id: uuid::Uuid::new_v4(),
-    //         kind: "kind",
-    //         are_children_unordered: false,
-    //         start_position: Point { row: 0, column: 0 },
-    //         end_position: Point { row: 0, column: 7 },
-    //         children: vec![CSTNode::NonTerminal(NonTerminal {
-    //             id: uuid::Uuid::new_v4(),
-    //             kind: "another_subtree",
-    //             are_children_unordered: false,
-    //             start_position: Point { row: 0, column: 0 },
-    //             end_position: Point { row: 0, column: 7 },
-    //             children: vec![CSTNode::Terminal(Terminal {
-    //                 id: uuid::Uuid::new_v4(),
-    //                 kind: "kind_b",
-    //                 start_position: Point { row: 0, column: 0 },
-    //                 end_position: Point { row: 0, column: 7 },
-    //                 value: "value_b",
-    //                 is_block_end_delimiter: false,
-    //             })],
-    //             ..Default::default()
-    //         })],
-    //         ..Default::default()
-    //     });
+        let parent_a = CSTNode::NonTerminal(NonTerminal {
+            id: uuid::Uuid::new_v4(),
+            kind: "kind",
+            are_children_unordered: false,
+            start_position: Point { row: 0, column: 0 },
+            end_position: Point { row: 0, column: 7 },
+            children: vec![CSTNode::NonTerminal(NonTerminal {
+                id: uuid::Uuid::new_v4(),
+                kind: "another_subtree",
+                are_children_unordered: false,
+                start_position: Point { row: 0, column: 0 },
+                end_position: Point { row: 0, column: 7 },
+                children: vec![CSTNode::Terminal(Terminal {
+                    id: uuid::Uuid::new_v4(),
+                    kind: "kind_b",
+                    start_position: Point { row: 0, column: 0 },
+                    end_position: Point { row: 0, column: 7 },
+                    value: "value_b",
+                    is_block_end_delimiter: false,
+                })],
+                ..Default::default()
+            })],
+            ..Default::default()
+        });
 
-    //     let parent_b = CSTNode::NonTerminal(NonTerminal {
-    //         id: uuid::Uuid::new_v4(),
-    //         kind: "kind",
-    //         are_children_unordered: false,
-    //         start_position: Point { row: 0, column: 0 },
-    //         end_position: Point { row: 0, column: 7 },
-    //         children: vec![CSTNode::NonTerminal(NonTerminal {
-    //             id: uuid::Uuid::new_v4(),
-    //             kind: "subtree",
-    //             are_children_unordered: false,
-    //             start_position: Point { row: 0, column: 0 },
-    //             end_position: Point { row: 0, column: 7 },
-    //             children: vec![CSTNode::Terminal(Terminal {
-    //                 id: uuid::Uuid::new_v4(),
-    //                 kind: "kind_c",
-    //                 start_position: Point { row: 0, column: 0 },
-    //                 end_position: Point { row: 0, column: 7 },
-    //                 value: "value_c",
-    //                 is_block_end_delimiter: false,
-    //             })],
-    //             ..Default::default()
-    //         })],
-    //         ..Default::default()
-    //     });
+        let parent_b = CSTNode::NonTerminal(NonTerminal {
+            id: uuid::Uuid::new_v4(),
+            kind: "kind",
+            are_children_unordered: false,
+            start_position: Point { row: 0, column: 0 },
+            end_position: Point { row: 0, column: 7 },
+            children: vec![CSTNode::NonTerminal(NonTerminal {
+                id: uuid::Uuid::new_v4(),
+                kind: "subtree",
+                are_children_unordered: false,
+                start_position: Point { row: 0, column: 0 },
+                end_position: Point { row: 0, column: 7 },
+                children: vec![CSTNode::Terminal(Terminal {
+                    id: uuid::Uuid::new_v4(),
+                    kind: "kind_c",
+                    start_position: Point { row: 0, column: 0 },
+                    end_position: Point { row: 0, column: 7 },
+                    value: "value_c",
+                    is_block_end_delimiter: false,
+                })],
+                ..Default::default()
+            })],
+            ..Default::default()
+        });
 
-    //     let matchings_base_parent_a = ordered::calculate_matchings(&base, &parent_a);
-    //     let matchings_base_parent_b = ordered::calculate_matchings(&base, &parent_b);
-    //     let matchings_parents = ordered::calculate_matchings(&parent_a, &parent_b);
+        let matchings_base_parent_a = ordered::calculate_matchings(&base, &parent_a);
+        let matchings_base_parent_b = ordered::calculate_matchings(&base, &parent_b);
+        let matchings_parents = ordered::calculate_matchings(&parent_a, &parent_b);
 
-    //     let merged_tree = ordered_merge(
-    //         (&parent_a).try_into().unwrap(),
-    //         (&parent_b).try_into().unwrap(),
-    //         &matchings_base_parent_a,
-    //         &matchings_base_parent_b,
-    //         &matchings_parents,
-    //     )?;
-    //     let merged_tree_swap = ordered_merge(
-    //         (&parent_b).try_into().unwrap(),
-    //         (&parent_a).try_into().unwrap(),
-    //         &matchings_base_parent_b,
-    //         &matchings_base_parent_a,
-    //         &matchings_parents,
-    //     )?;
+        let merged_tree = ordered_merge(
+            (&parent_a).try_into().unwrap(),
+            (&parent_b).try_into().unwrap(),
+            &matchings_base_parent_a,
+            &matchings_base_parent_b,
+            &matchings_parents,
+        )?;
+        let merged_tree_swap = ordered_merge(
+            (&parent_b).try_into().unwrap(),
+            (&parent_a).try_into().unwrap(),
+            &matchings_base_parent_b,
+            &matchings_base_parent_a,
+            &matchings_parents,
+        )?;
 
-    //     assert_eq!(
-    //         MergedCSTNode::NonTerminal {
-    //             kind: "kind",
-    //             children: vec![
-    //                 MergedCSTNode::NonTerminal {
-    //                     kind: "another_subtree",
-    //                     children: vec![MergedCSTNode::Terminal {
-    //                         kind: "kind_b",
-    //                         value: Cow::Borrowed("value_b"),
-    //                     }],
-    //                 },
-    //                 MergedCSTNode::Conflict {
-    //                     left: None,
-    //                     right: Some(Box::new(MergedCSTNode::NonTerminal {
-    //                         kind: "subtree",
-    //                         children: vec![MergedCSTNode::Terminal {
-    //                             kind: "kind_c",
-    //                             value: Cow::Borrowed("value_c"),
-    //                         }],
-    //                     })),
-    //                 },
-    //             ],
-    //         },
-    //         merged_tree
-    //     );
+        assert_eq!(
+            MergedCSTNode::NonTerminal {
+                kind: "kind",
+                children: vec![MergedCSTNode::Conflict {
+                    left: Some(Box::new(MergedCSTNode::NonTerminal {
+                        kind: "another_subtree",
+                        children: vec![MergedCSTNode::Terminal {
+                            kind: "kind_b",
+                            value: Cow::Borrowed("value_b"),
+                        }],
+                    })),
+                    right: Some(Box::new(MergedCSTNode::NonTerminal {
+                        kind: "subtree",
+                        children: vec![MergedCSTNode::Terminal {
+                            kind: "kind_c",
+                            value: Cow::Borrowed("value_c"),
+                        }],
+                    })),
+                },],
+            },
+            merged_tree
+        );
 
-    //     assert_eq!(
-    //         MergedCSTNode::NonTerminal {
-    //             kind: "kind",
-    //             children: vec![
-    //                 MergedCSTNode::NonTerminal {
-    //                     kind: "another_subtree",
-    //                     children: vec![MergedCSTNode::Terminal {
-    //                         kind: "kind_b",
-    //                         value: Cow::Borrowed("value_b"),
-    //                     }],
-    //                 },
-    //                 MergedCSTNode::Conflict {
-    //                     left: Some(Box::new(MergedCSTNode::NonTerminal {
-    //                         kind: "subtree",
-    //                         children: vec![MergedCSTNode::Terminal {
-    //                             kind: "kind_c",
-    //                             value: Cow::Borrowed("value_c"),
-    //                         }],
-    //                     })),
-    //                     right: None,
-    //                 },
-    //             ],
-    //         },
-    //         merged_tree_swap
-    //     );
+        assert_eq!(
+            MergedCSTNode::NonTerminal {
+                kind: "kind",
+                children: vec![MergedCSTNode::Conflict {
+                    left: Some(Box::new(MergedCSTNode::NonTerminal {
+                        kind: "subtree",
+                        children: vec![MergedCSTNode::Terminal {
+                            kind: "kind_c",
+                            value: Cow::Borrowed("value_c"),
+                        }],
+                    })),
+                    right: Some(Box::new(MergedCSTNode::NonTerminal {
+                        kind: "another_subtree",
+                        children: vec![MergedCSTNode::Terminal {
+                            kind: "kind_b",
+                            value: Cow::Borrowed("value_b"),
+                        }],
+                    })),
+                },],
+            },
+            merged_tree_swap
+        );
 
-    //     Ok(())
-    // }
+        Ok(())
+    }
 
     #[test]
     fn if_both_parents_add_different_nodes_then_we_have_a_conflict() -> Result<(), MergeError> {
