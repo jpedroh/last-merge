@@ -42,9 +42,9 @@ pub fn ordered_merge<'a>(
             right_matching_in_left,
             matching_base_right,
         ) {
-            (true, Some(_), Some(_), Some(_), Some(_)) => {
+            (true, Some(_), Some(matching_base_left), Some(_), Some(_)) => {
                 result_children.push(crate::merge(
-                    cur_left,
+                    matching_base_left.matching_node,
                     cur_left,
                     cur_right,
                     base_left_matchings,
@@ -58,6 +58,32 @@ pub fn ordered_merge<'a>(
             (true, Some(_), None, Some(_), None) => {
                 result_children.push(crate::merge(
                     cur_left,
+                    cur_left,
+                    cur_right,
+                    base_left_matchings,
+                    base_right_matchings,
+                    left_right_matchings,
+                )?);
+
+                cur_left_option = children_left_it.next();
+                cur_right_option = children_right_it.next();
+            }
+            (true, Some(_), Some(matching_base_left), Some(_), None) => {
+                result_children.push(crate::merge(
+                    matching_base_left.matching_node,
+                    cur_left,
+                    cur_right,
+                    base_left_matchings,
+                    base_right_matchings,
+                    left_right_matchings,
+                )?);
+
+                cur_left_option = children_left_it.next();
+                cur_right_option = children_right_it.next();
+            }
+            (true, Some(_), None, Some(_), Some(matching_base_right)) => {
+                result_children.push(crate::merge(
+                    matching_base_right.matching_node,
                     cur_left,
                     cur_right,
                     base_left_matchings,
@@ -182,13 +208,36 @@ pub fn ordered_merge<'a>(
                 cur_right_option = children_right_it.next();
             }
             (a, b, c, d, e) => {
-                return Err(MergeError::InvalidMatchingConfiguration(
+                log::warn!(
+                    "Reached an Invalid Matching Configuration. {} {} {} {} {}",
                     a,
                     b.is_some(),
                     c.is_some(),
                     d.is_some(),
-                    e.is_some(),
-                ));
+                    e.is_some()
+                );
+                log::debug!(
+                    "Involved nodes {} AND {}",
+                    cur_left.contents(),
+                    cur_right.contents()
+                );
+                log::debug!(
+                    "Involved nodes parents {} AND {}",
+                    left.contents(),
+                    right.contents()
+                );
+
+                if cur_left.contents() == cur_right.contents() {
+                    result_children.push(cur_left.into())
+                } else {
+                    result_children.push(MergedCSTNode::Conflict {
+                        left: Some(Box::new(cur_left.into())),
+                        right: Some(Box::new(cur_right.into())),
+                    })
+                }
+
+                cur_left_option = children_left_it.next();
+                cur_right_option = children_right_it.next();
             }
         }
     }

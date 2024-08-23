@@ -50,10 +50,12 @@ pub fn run_tool_on_merge_scenario(
     right: &str,
 ) -> Result<ExecutionResult, ExecutionError> {
     if base == left {
+        log::info!("Early returning because base equals left");
         return Ok(ExecutionResult::WithoutConflicts(right.to_string()));
     }
 
     if base == right {
+        log::info!("Early returning because base equals right");
         return Ok(ExecutionResult::WithoutConflicts(left.to_string()));
     }
 
