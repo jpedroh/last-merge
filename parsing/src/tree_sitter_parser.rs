@@ -82,6 +82,14 @@ impl From<Language> for ParserConfiguration {
                             tree_sitter_java::language(),
                         )),
                     );
+
+                    map.insert(
+                        "variable_declarator",
+                        Box::new(TreeSitterQuery::new(
+                            r#"(variable_declarator (identifier) @name)"#,
+                            tree_sitter_java::language(),
+                        )),
+                    );
                     map
                 },
             },
