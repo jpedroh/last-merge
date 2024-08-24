@@ -39,7 +39,7 @@ pub struct DiffCliArgs {
 pub struct MergeCliArgs {
     /// Path to file in base revision
     #[arg(short, long)]
-    pub(crate) base_path: Option<std::path::PathBuf>,
+    pub(crate) base_path: std::path::PathBuf,
 
     /// Path to file in left revision
     #[arg(short, long)]
@@ -51,7 +51,7 @@ pub struct MergeCliArgs {
 
     /// Path where the merged file should be written
     #[arg(short, long)]
-    pub(crate) merge_path: Option<std::path::PathBuf>,
+    pub(crate) merge_path: std::path::PathBuf,
 
     /// The language that the files being diffed are written in.
     /// If not provided the language will try to be inferred by the extension.

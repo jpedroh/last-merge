@@ -20,9 +20,7 @@ fn main() {
 }
 
 fn run_merge(args: MergeCliArgs) {
-    let base_path = args.base_path.unwrap();
-
-    let base = std::fs::read_to_string(&base_path).unwrap_or_else(|error| {
+    let base = std::fs::read_to_string(&args.base_path).unwrap_or_else(|error| {
         log::error!("Error while reading base file: {}", error);
         std::process::exit(cli_exit_codes::READING_FILE_ERROR)
     });
@@ -37,7 +35,7 @@ fn run_merge(args: MergeCliArgs) {
 
     let language = match args.language {
         Some(language) => language::get_language_from_name(&language),
-        None => language::get_language_by_file_path(&base_path),
+        None => language::get_language_by_file_path(&args.base_path),
     }
     .unwrap_or_else(|error| {
         log::error!("Error while retrieving language configuration: {}", error);
@@ -50,7 +48,7 @@ fn run_merge(args: MergeCliArgs) {
             std::process::exit(cli_exit_codes::INTERNAL_EXECUTION_ERROR)
         });
 
-    std::fs::write(args.merge_path.unwrap(), result.to_string()).unwrap_or_else(|error| {
+    std::fs::write(args.merge_path, result.to_string()).unwrap_or_else(|error| {
         log::error!("Error while writing output file: {}", error);
         std::process::exit(cli_exit_codes::WRITING_FILE_ERROR)
     });
