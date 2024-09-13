@@ -22,6 +22,7 @@ impl From<Language> for ParserConfiguration {
                 kinds_with_unordered_children: [
                     "interface_body",
                     "class_body",
+                    "modifiers",
                     "enum_body_declarations",
                 ]
                 .into(),
