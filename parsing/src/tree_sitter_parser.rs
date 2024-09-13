@@ -99,6 +99,22 @@ impl From<Language> for ParserConfiguration {
                             tree_sitter_java::language(),
                         )),
                     );
+
+                    map.insert(
+                        "marker_annotation",
+                        Box::new(TreeSitterQuery::new(
+                            r#"(marker_annotation name: _ @name)"#,
+                            tree_sitter_java::language(),
+                        )),
+                    );
+
+                    map.insert(
+                        "annotation",
+                        Box::new(TreeSitterQuery::new(
+                            r#"(annotation name: _ @name)"#,
+                            tree_sitter_java::language(),
+                        )),
+                    );
                     map
                 },
             },
