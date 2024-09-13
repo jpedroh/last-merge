@@ -90,6 +90,14 @@ impl From<Language> for ParserConfiguration {
                             tree_sitter_java::language(),
                         )),
                     );
+
+                    map.insert(
+                        "object_creation_expression",
+                        Box::new(TreeSitterQuery::new(
+                            r#"(object_creation_expression (type_identifier) @type_identifier)"#,
+                            tree_sitter_java::language(),
+                        )),
+                    );
                     map
                 },
             },
