@@ -16,5 +16,5 @@ log = { workspace = true }
 env_logger = "0.10.1"
 
 [[bin]]
-name = "generic-merge"
+name = "last-merge"
 path = "src/main.rs"

@@ -10,7 +10,7 @@ fn main() {
     let args = CliArgs::parse();
     env_logger::builder().filter_level(args.log_level).init();
 
-    log::info!("Starting Generic Merge tool execution");
+    log::info!("Starting last Merge tool execution");
     log::debug!("Parsed arguments: {:?}", args);
 
     match args.command {

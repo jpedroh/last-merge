@@ -4,7 +4,7 @@ use assert_cmd::prelude::*;
 
 #[test]
 fn if_there_is_a_conflict_it_returns_valid_exit_code() {
-    let mut cmd = Command::cargo_bin("generic-merge").unwrap();
+    let mut cmd = Command::cargo_bin("last-merge").unwrap();
     cmd.arg("merge")
         .arg("--base-path=tests/scenarios/smoke_java/base.java")
         .arg("--left-path=tests/scenarios/smoke_java/left.java")
@@ -17,7 +17,7 @@ fn if_there_is_a_conflict_it_returns_valid_exit_code() {
 
 #[test]
 fn if_there_is_no_conflict_it_returns_valid_exit_code() {
-    let mut cmd = Command::cargo_bin("generic-merge").unwrap();
+    let mut cmd = Command::cargo_bin("last-merge").unwrap();
     cmd.arg("merge")
         .arg("--base-path=tests/scenarios/no_conflicts/base.java")
         .arg("--left-path=tests/scenarios/no_conflicts/left.java")
@@ -30,7 +30,7 @@ fn if_there_is_no_conflict_it_returns_valid_exit_code() {
 
 #[test]
 fn if_i_am_running_on_diff_mode_and_files_fully_match_it_returns_zero() {
-    let mut cmd = Command::cargo_bin("generic-merge").unwrap();
+    let mut cmd = Command::cargo_bin("last-merge").unwrap();
     cmd.arg("diff")
         .arg("--left-path=tests/diff_scenarios/java_files_full_match/left.java")
         .arg("--right-path=tests/diff_scenarios/java_files_full_match/right.java")
@@ -41,7 +41,7 @@ fn if_i_am_running_on_diff_mode_and_files_fully_match_it_returns_zero() {
 
 #[test]
 fn if_i_am_running_on_diff_mode_and_files_do_not_fully_match_it_returns_one() {
-    let mut cmd = Command::cargo_bin("generic-merge").unwrap();
+    let mut cmd = Command::cargo_bin("last-merge").unwrap();
     cmd.arg("diff")
         .arg("--left-path=tests/diff_scenarios/java_files_not_fully_matching/left.java")
         .arg("--right-path=tests/diff_scenarios/java_files_not_fully_matching/right.java")
