@@ -43,6 +43,7 @@ pub fn unordered_merge<'a>(
     base_left_matchings: &'a Matchings<'a>,
     base_right_matchings: &'a Matchings<'a>,
     left_right_matchings: &'a Matchings<'a>,
+    print_chunks: bool,
 ) -> Result<MergedCSTNode<'a>, MergeError> {
     // Nodes of different kind, early return
     if left.kind != right.kind {
@@ -82,15 +83,19 @@ pub fn unordered_merge<'a>(
             // Added only by left
             (None, None) => {
 
-                left_additions.push(left_child);
+                if print_chunks { 
+                    left_additions.push(left_child); 
+                }
 
                 result_children.push(left_child.into());
                 processed_nodes.insert(left_child.id());
             }
             (None, Some(right_matching)) => {
 
-                merged_nodes_l.push(left_child);
-                merged_nodes_r.push(right_matching.matching_node);
+                if print_chunks {
+                    merged_nodes_l.push(left_child);
+                    merged_nodes_r.push(right_matching.matching_node);
+                }
 
                 result_children.push(merge(
                     left_child,
@@ -99,6 +104,7 @@ pub fn unordered_merge<'a>(
                     base_left_matchings,
                     base_right_matchings,
                     left_right_matchings,
+                    print_chunks,
                 )?);
                 processed_nodes.insert(left_child.id());
                 processed_nodes.insert(right_matching.matching_node.id());
@@ -108,7 +114,9 @@ pub fn unordered_merge<'a>(
                 // Changed in left, conflict!
                 if !matching_base_left.is_perfect_match {
 
-                    conflict_nodes_l.push(left_child);
+                    if print_chunks {
+                        conflict_nodes_l.push(left_child);
+                    }
 
                     result_children.push(MergedCSTNode::Conflict {
                         left: Some(Box::new(left_child.into())),
@@ -119,9 +127,11 @@ pub fn unordered_merge<'a>(
             }
             (Some(matching_base_left), Some(right_matching)) => {
 
-                merged_nodes_l.push(left_child);
-                merged_nodes_b.push(matching_base_left.matching_node);
-                merged_nodes_r.push(right_matching.matching_node);
+                if print_chunks {
+                    merged_nodes_l.push(left_child);
+                    merged_nodes_b.push(matching_base_left.matching_node);
+                    merged_nodes_r.push(right_matching.matching_node);
+                }
 
                 result_children.push(merge(
                     matching_base_left.matching_node,
@@ -130,6 +140,7 @@ pub fn unordered_merge<'a>(
                     base_left_matchings,
                     base_right_matchings,
                     left_right_matchings,
+                    print_chunks,
                 )?);
                 processed_nodes.insert(left_child.id());
                 processed_nodes.insert(right_matching.matching_node.id());
@@ -149,7 +160,9 @@ pub fn unordered_merge<'a>(
             // Added only by right
             (None, None) => {
 
-                right_additions.push(right_child);
+                if print_chunks {
+                    right_additions.push(right_child);
+                }
 
                 result_children.push(right_child.into());
             }
@@ -161,6 +174,7 @@ pub fn unordered_merge<'a>(
                     base_left_matchings,
                     base_right_matchings,
                     left_right_matchings,
+                    print_chunks,
                 )?);
             }
             // Removed in left
@@ -168,7 +182,9 @@ pub fn unordered_merge<'a>(
                 // Changed in right, conflict!
                 if !matching_base_right.is_perfect_match {
 
-                    conflict_nodes_r.push(right_child);
+                    if print_chunks {
+                        conflict_nodes_r.push(right_child);
+                    }
 
                     result_children.push(MergedCSTNode::Conflict {
                         left: None,
@@ -184,44 +200,47 @@ pub fn unordered_merge<'a>(
                     base_left_matchings,
                     base_right_matchings,
                     left_right_matchings,
+                    print_chunks,
                 )?);
             }
         }
     }
 
-    println!("\n--- UNORDERED CHUNK LOG for node '{}' ---", left.kind);
-    println!("=======================================================");
+    if print_chunks{
+        println!("\n--- UNORDERED CHUNK LOG for node '{}' ---", left.kind);
+        println!("=======================================================");
 
-    if !merged_nodes_l.is_empty() {
-        println!("-- Merged Recursively --");
-        println!("    Left (L):  {}", format_node_list_detailed(&merged_nodes_l, false));
-        println!("    Base (B):  {}", format_node_list_detailed(&merged_nodes_b, false));
-        println!("    Right (R): {}", format_node_list_detailed(&merged_nodes_r, false));
-        println!("-----------------------------------------------------------");
+        if !merged_nodes_l.is_empty() {
+            println!("-- Merged Recursively --");
+            println!("    Left (L):  {}", format_node_list_detailed(&merged_nodes_l, false));
+            println!("    Base (B):  {}", format_node_list_detailed(&merged_nodes_b, false));
+            println!("    Right (R): {}", format_node_list_detailed(&merged_nodes_r, false));
+            println!("-----------------------------------------------------------");
+        }
+        if !left_additions.is_empty() {
+            println!("-- Added in Left --");
+            println!("    Left (L):  {}", format_node_list_detailed(&left_additions, true));
+            println!("    Base (B):  -");
+            println!("    Right (R): -");
+            println!("-----------------------------------------------------------");
+        }
+        if !right_additions.is_empty() {
+            println!("-- Added in Right --");
+            println!("    Left (L):  -");
+            println!("    Base (B):  -");
+            println!("    Right (R): {}", format_node_list_detailed(&right_additions, true));
+            println!("-----------------------------------------------------------");
+        }
+        if !conflict_nodes_l.is_empty() || !conflict_nodes_r.is_empty() {
+            println!("-- Conflicts --");
+            println!("    Left (L):  {}", format_node_list_detailed(&conflict_nodes_l, true));
+            println!("    Base (B):  -");
+            println!("    Right (R): {}", format_node_list_detailed(&conflict_nodes_r, true));
+            println!("-----------------------------------------------------------");
+        }
+        
+        println!("--- END UNORDERED CHUNK LOG for node '{}' ---\n", left.kind);
     }
-    if !left_additions.is_empty() {
-        println!("-- Added in Left --");
-        println!("    Left (L):  {}", format_node_list_detailed(&left_additions, true));
-        println!("    Base (B):  -");
-        println!("    Right (R): -");
-        println!("-----------------------------------------------------------");
-    }
-    if !right_additions.is_empty() {
-        println!("-- Added in Right --");
-        println!("    Left (L):  -");
-        println!("    Base (B):  -");
-        println!("    Right (R): {}", format_node_list_detailed(&right_additions, true));
-        println!("-----------------------------------------------------------");
-    }
-    if !conflict_nodes_l.is_empty() || !conflict_nodes_r.is_empty() {
-        println!("-- Conflicts --");
-        println!("    Left (L):  {}", format_node_list_detailed(&conflict_nodes_l, true));
-        println!("    Base (B):  -");
-        println!("    Right (R): {}", format_node_list_detailed(&conflict_nodes_r, true));
-        println!("-----------------------------------------------------------");
-    }
-    
-    println!("--- END UNORDERED CHUNK LOG for node '{}' ---\n", left.kind);
 
     Ok(MergedCSTNode::NonTerminal {
         kind: left.kind,
@@ -257,6 +276,7 @@ mod tests {
             &matchings_base_parent_a,
             &matchings_base_parent_b,
             &matchings_parents,
+            false,
         )?;
         let merged_tree_swap = unordered_merge(
             parent_b.try_into().unwrap(),
@@ -264,6 +284,7 @@ mod tests {
             &matchings_base_parent_b,
             &matchings_base_parent_a,
             &matchings_parents,
+            false,
         )?;
 
         assert_eq!(expected_merge, &merged_tree);
@@ -288,6 +309,7 @@ mod tests {
             &matchings_base_parent_a,
             &matchings_base_parent_b,
             &matchings_parents,
+            false,
         )?;
 
         assert_eq!(expected_merge, &merged_tree);
@@ -990,7 +1012,7 @@ mod tests {
         };
 
         let matchings = Matchings::empty();
-        let result = unordered_merge(&kind_a, &kind_b, &matchings, &matchings, &matchings);
+        let result = unordered_merge(&kind_a, &kind_b, &matchings, &matchings, &matchings, false);
 
         assert!(result.is_err());
         assert_eq!(

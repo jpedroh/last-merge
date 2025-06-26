@@ -2,7 +2,6 @@ SCENARIOS=$(shell ls bin/tests/scenarios)
 LANGUAGE=java
 SUFFIX=.java
 LOG_LEVEL=debug
-DIR=bin/tests/scenarios/abstract
 
 run_merge_on_dir:
 	cargo run -- merge --left-path=$(DIR)/left$(SUFFIX) --base-path=$(DIR)/base$(SUFFIX) --right-path=$(DIR)/right$(SUFFIX) --merge-path=$(DIR)/merge.output$(SUFFIX) --log-level=$(LOG_LEVEL) --language=$(LANGUAGE)
