@@ -48,6 +48,7 @@ pub fn run_tool_on_merge_scenario(
     base: &str,
     left: &str,
     right: &str,
+    print_chunks: bool,
 ) -> Result<ExecutionResult, ExecutionError> {
     if base == left {
         log::info!("Early returning because base equals left");
@@ -112,6 +113,7 @@ pub fn run_tool_on_merge_scenario(
         &matchings_left_base,
         &matchings_right_base,
         &matchings_left_right,
+        print_chunks,
     )
     .map_err(ExecutionError::MergeError)?;
     log::info!("Finished merge of the trees in {:?}", start.elapsed());
