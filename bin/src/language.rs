@@ -1,7 +1,8 @@
 pub fn get_language_from_name(name: &str) -> Result<model::Language, String> {
     match name {
         "java" => Ok(model::Language::Java),
-        _ => Err(format!("Invalid language provided: {name}")),
+        "csharp" | "cs" => Ok(model::Language::CSharp),
+        _ => Err(format!("Invalid language provided: {name}"))
     }
 }
 
@@ -11,6 +12,7 @@ pub fn get_language_by_file_path(file_path: &std::path::Path) -> Result<model::L
         .and_then(std::ffi::OsStr::to_str)
         .and_then(|extension| match extension {
             "java" => Some(model::Language::Java),
+            "cs" => Some(model::Language::CSharp),
             _ => None,
         })
         .ok_or(format!(

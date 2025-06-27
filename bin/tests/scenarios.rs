@@ -22,9 +22,34 @@ fn all_java_samples_work_correctly() -> Result<(), Box<dyn std::error::Error>> {
     Ok(())
 }
 
+#[test]
+fn all_csharp_samples_work_correctly() -> Result<(), Box<dyn std::error::Error>> {
+    let sample_names = get_samples_names(model::Language::CSharp)?;
+
+    for sample_path in sample_names {
+        let base = std::fs::read_to_string(format!("{}/base.cs", sample_path.display()))?;
+        let left = std::fs::read_to_string(format!("{}/left.cs", sample_path.display()))?;
+        let right = std::fs::read_to_string(format!("{}/right.cs", sample_path.display()))?;
+
+        let expected = std::fs::read_to_string(format!("{}/merge.cs", sample_path.display()))?;
+        let result = bin::run_tool_on_merge_scenario(model::Language::CSharp, &base, &left, &right)
+            .map_err(|err| format!("Failed on {} with error: {}", sample_path.display(), err));
+
+        assert_eq!(
+            expected.trim(),
+            result?.to_string().trim(),
+            "Failed on {}",
+            sample_path.display()
+        );
+    }
+
+    Ok(())
+}
+
 fn get_samples_names(language: model::Language) -> Result<Vec<std::path::PathBuf>, std::io::Error> {
     let language_directory = match language {
         model::Language::Java => "java",
+        model::Language::CSharp => "csharp",
     };
 
     std::fs::read_dir(format!("tests/scenarios/{language_directory}"))?

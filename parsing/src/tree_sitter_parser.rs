@@ -118,6 +118,14 @@ impl From<Language> for ParserConfiguration {
                     map
                 },
             },
+            Language::CSharp => Self {
+                language: tree_sitter_c_sharp::language(),
+                stop_compilation_at: HashSet::new(),
+                kinds_with_unordered_children: HashSet::new(),
+                block_end_delimiters: HashSet::new(),
+                handlers: ParsingHandlers::new(vec![]),
+                identifier_extractors: HashMap::new(),
+            }
         }
     }
 }
