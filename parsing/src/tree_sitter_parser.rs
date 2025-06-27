@@ -121,10 +121,8 @@ impl From<Language> for ParserConfiguration {
             Language::CSharp => Self {
                 language: tree_sitter_c_sharp::language(),
                 stop_compilation_at: HashSet::new(),
-                kinds_with_unordered_children: [
-                    "declaration_list",
-                    "enum_member_declaration_list"
-                ].into(),
+                kinds_with_unordered_children: ["declaration_list", "enum_member_declaration_list"]
+                    .into(),
                 block_end_delimiters: ["}"].into(),
                 handlers: ParsingHandlers::new(vec![]),
                 identifier_extractors: {
@@ -180,7 +178,7 @@ impl From<Language> for ParserConfiguration {
 
                     map
                 },
-            }
+            },
         }
     }
 }
