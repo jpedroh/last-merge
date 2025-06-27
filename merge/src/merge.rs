@@ -14,6 +14,7 @@ pub fn merge<'a>(
     base_left_matchings: &'a Matchings<'a>,
     base_right_matchings: &'a Matchings<'a>,
     left_right_matchings: &'a Matchings<'a>,
+    print_chunks: bool,
 ) -> Result<MergedCSTNode<'a>, MergeError> {
     if left.kind() != right.kind() {
         log::debug!(
@@ -39,6 +40,7 @@ pub fn merge<'a>(
                     base_left_matchings,
                     base_right_matchings,
                     left_right_matchings,
+                    print_chunks,
                 )?)
             } else {
                 Ok(ordered_merge(
@@ -47,6 +49,7 @@ pub fn merge<'a>(
                     base_left_matchings,
                     base_right_matchings,
                     left_right_matchings,
+                    print_chunks,
                 )?)
             }
         }
@@ -103,6 +106,7 @@ mod tests {
             &Matchings::empty(),
             &Matchings::empty(),
             &Matchings::empty(),
+            false,
         )
         .unwrap_err();
 
