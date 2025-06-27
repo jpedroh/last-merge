@@ -84,27 +84,27 @@ pub struct NonTerminal<'a> {
     pub identifier: Option<Vec<&'a str>>,
 }
 
-impl<'a> PartialEq for NonTerminal<'a> {
+impl PartialEq for NonTerminal<'_> {
     fn eq(&self, other: &Self) -> bool {
         self.id == other.id
     }
 }
 
-impl<'a> Eq for NonTerminal<'a> {}
+impl Eq for NonTerminal<'_> {}
 
-impl<'a> PartialOrd for NonTerminal<'a> {
+impl PartialOrd for NonTerminal<'_> {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
         Some(self.cmp(other))
     }
 }
 
-impl<'a> Ord for NonTerminal<'a> {
+impl Ord for NonTerminal<'_> {
     fn cmp(&self, other: &Self) -> Ordering {
         self.id.cmp(&other.id)
     }
 }
 
-impl<'a> Hash for NonTerminal<'a> {
+impl Hash for NonTerminal<'_> {
     fn hash<H: Hasher>(&self, state: &mut H) {
         self.id.hash(state)
     }
@@ -147,27 +147,27 @@ pub struct Terminal<'a> {
     pub is_block_end_delimiter: bool,
 }
 
-impl<'a> PartialEq for Terminal<'a> {
+impl PartialEq for Terminal<'_> {
     fn eq(&self, other: &Self) -> bool {
         self.id == other.id
     }
 }
 
-impl<'a> Eq for Terminal<'a> {}
+impl Eq for Terminal<'_> {}
 
-impl<'a> PartialOrd for Terminal<'a> {
+impl PartialOrd for Terminal<'_> {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
         Some(self.cmp(other))
     }
 }
 
-impl<'a> Ord for Terminal<'a> {
+impl Ord for Terminal<'_> {
     fn cmp(&self, other: &Self) -> Ordering {
         self.id.cmp(&other.id)
     }
 }
 
-impl<'a> Hash for Terminal<'a> {
+impl Hash for Terminal<'_> {
     fn hash<H: Hasher>(&self, state: &mut H) {
         self.id.hash(state)
     }

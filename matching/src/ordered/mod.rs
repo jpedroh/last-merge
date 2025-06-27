@@ -11,7 +11,7 @@ enum Direction {
 #[derive(Clone)]
 struct Entry<'a>(pub Direction, pub Matchings<'a>);
 
-impl<'a> Default for Entry<'a> {
+impl Default for Entry<'_> {
     fn default() -> Self {
         Self(Direction::Top, Default::default())
     }
