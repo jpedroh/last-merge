@@ -157,10 +157,10 @@ pub fn run_tool_on_merge_scenario(
                 summary.push_str("...");
             }
             
-            format!("{} nós {} {}", nodes.len(), range, summary)
+            format!("{} nodes {} {}", nodes.len(), range, summary)
         };
 
-        println!("\n--- LASTMERGE CHUNK DEBUG LOG ---");
+        println!("\n--- CHUNK DEBUG LOG ---");
         println!("===========================================================");
         for (i, chunk) in final_log_state.log.iter().enumerate() {
             match chunk {
@@ -179,7 +179,7 @@ pub fn run_tool_on_merge_scenario(
             }
             println!("-----------------------------------------------------------"); 
         }
-        println!("--- END LASTMERGE CHUNK DEBUG LOG ---\n");
+        println!("--- END CHUNK DEBUG LOG ---\n");
     }
 
     match result.has_conflict() {
