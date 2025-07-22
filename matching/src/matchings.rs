@@ -55,7 +55,7 @@ impl<'a> Matchings<'a> {
         &'a self,
         left: &'a CSTNode<'a>,
         right: &'a CSTNode<'a>,
-    ) -> Option<&MatchingEntry> {
+    ) -> Option<&'a MatchingEntry> {
         self.matching_entries.get(&UnorderedPair(left, right))
     }
 

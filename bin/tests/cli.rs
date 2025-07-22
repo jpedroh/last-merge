@@ -6,10 +6,10 @@ use assert_cmd::prelude::*;
 fn if_there_is_a_conflict_it_returns_valid_exit_code() {
     let mut cmd = Command::cargo_bin("last-merge").unwrap();
     cmd.arg("merge")
-        .arg("--base-path=tests/scenarios/smoke_java/base.java")
-        .arg("--left-path=tests/scenarios/smoke_java/left.java")
-        .arg("--right-path=tests/scenarios/smoke_java/right.java")
-        .arg("--merge-path=tests/scenarios/smoke_java/merge.output.java")
+        .arg("--base-path=tests/scenarios/java/smoke_java/base.java")
+        .arg("--left-path=tests/scenarios/java/smoke_java/left.java")
+        .arg("--right-path=tests/scenarios/java/smoke_java/right.java")
+        .arg("--merge-path=tests/scenarios/java/smoke_java/merge.output.java")
         .arg("--language=java")
         .assert()
         .code(bin::SUCCESS_WITH_CONFLICTS);
@@ -19,10 +19,10 @@ fn if_there_is_a_conflict_it_returns_valid_exit_code() {
 fn if_there_is_no_conflict_it_returns_valid_exit_code() {
     let mut cmd = Command::cargo_bin("last-merge").unwrap();
     cmd.arg("merge")
-        .arg("--base-path=tests/scenarios/no_conflicts/base.java")
-        .arg("--left-path=tests/scenarios/no_conflicts/left.java")
-        .arg("--right-path=tests/scenarios/no_conflicts/right.java")
-        .arg("--merge-path=tests/scenarios/no_conflicts/merge.output.java")
+        .arg("--base-path=tests/scenarios/java/no_conflicts/base.java")
+        .arg("--left-path=tests/scenarios/java/no_conflicts/left.java")
+        .arg("--right-path=tests/scenarios/java/no_conflicts/right.java")
+        .arg("--merge-path=tests/scenarios/java/no_conflicts/merge.output.java")
         .arg("--language=java")
         .assert()
         .code(bin::SUCCESS_WITHOUT_CONFLICTS);

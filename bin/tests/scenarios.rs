@@ -1,6 +1,6 @@
 #[test]
 fn all_java_samples_work_correctly() -> Result<(), Box<dyn std::error::Error>> {
-    let sample_names = get_samples_names()?;
+    let sample_names = get_samples_names(model::Language::Java)?;
 
     for sample_path in sample_names {
         let base = std::fs::read_to_string(format!("{}/base.java", sample_path.display()))?;
@@ -22,8 +22,12 @@ fn all_java_samples_work_correctly() -> Result<(), Box<dyn std::error::Error>> {
     Ok(())
 }
 
-fn get_samples_names() -> Result<Vec<std::path::PathBuf>, std::io::Error> {
-    std::fs::read_dir("tests/scenarios")?
+fn get_samples_names(language: model::Language) -> Result<Vec<std::path::PathBuf>, std::io::Error> {
+    let language_directory = match language {
+        model::Language::Java => "java",
+    };
+
+    std::fs::read_dir(format!("tests/scenarios/{}", language_directory))?
         .filter(|sample| {
             sample
                 .as_ref()
