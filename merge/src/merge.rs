@@ -6,6 +6,7 @@ use matching::Matchings;
 use model::CSTNode;
 
 use crate::merged_cst_node::MergedCSTNode;
+use crate::log_structures::LogState;
 
 pub fn merge<'a>(
     base: &'a CSTNode<'a>,
@@ -14,7 +15,7 @@ pub fn merge<'a>(
     base_left_matchings: &'a Matchings<'a>,
     base_right_matchings: &'a Matchings<'a>,
     left_right_matchings: &'a Matchings<'a>,
-    print_chunks: bool,
+    log_state: &mut Option<LogState<'a>>,
 ) -> Result<MergedCSTNode<'a>, MergeError> {
     if left.kind() != right.kind() {
         log::debug!(
@@ -40,7 +41,7 @@ pub fn merge<'a>(
                     base_left_matchings,
                     base_right_matchings,
                     left_right_matchings,
-                    print_chunks,
+                    log_state,
                 )?)
             } else {
                 Ok(ordered_merge(
@@ -49,7 +50,7 @@ pub fn merge<'a>(
                     base_left_matchings,
                     base_right_matchings,
                     left_right_matchings,
-                    print_chunks,
+                    log_state,
                 )?)
             }
         }
@@ -77,6 +78,7 @@ mod tests {
 
     #[test]
     fn test_can_not_merge_terminal_with_non_terminal() -> Result<(), Box<dyn std::error::Error>> {
+        let mut log_state = None;
         let error = merge(
             &CSTNode::Terminal(Terminal {
                 id: uuid::Uuid::new_v4(),
@@ -106,7 +108,7 @@ mod tests {
             &Matchings::empty(),
             &Matchings::empty(),
             &Matchings::empty(),
-            false,
+            &mut log_state,
         )
         .unwrap_err();
 
