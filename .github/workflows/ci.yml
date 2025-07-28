@@ -51,15 +51,15 @@ jobs:
         with:
           command: test
           args: --all-features --no-fail-fast
-      - uses: actions-rs/grcov@v0.1
-        id: coverage
+      - name: Run cargo-tarpaulin
+        uses: actions-rs/tarpaulin@v0.1
         with:
-          config: grcov.yml
+          args: '--ignore-tests -o Lcov'
       - name: Coveralls upload
         uses: coverallsapp/github-action@master
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          path-to-lcov: ${{ steps.coverage.outputs.report }}
+          path-to-lcov: './lcov.info'
   docker:
     runs-on: ubuntu-latest
     permissions:
