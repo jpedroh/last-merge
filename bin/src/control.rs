@@ -16,8 +16,8 @@ pub enum ExecutionError {
 impl fmt::Display for ExecutionError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            ExecutionError::ParsingError(error) => write!(f, "Parsing error occurred: {}", error),
-            ExecutionError::MergeError(error) => write!(f, "Merge error occurred: {}", error),
+            ExecutionError::ParsingError(error) => write!(f, "Parsing error occurred: {error}"),
+            ExecutionError::MergeError(error) => write!(f, "Merge error occurred: {error}"),
         }
     }
 }
@@ -37,8 +37,8 @@ pub enum ExecutionResult {
 impl Display for ExecutionResult {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            ExecutionResult::WithConflicts(value) => write!(f, "{}", value),
-            ExecutionResult::WithoutConflicts(value) => write!(f, "{}", value),
+            ExecutionResult::WithConflicts(value) => write!(f, "{value}"),
+            ExecutionResult::WithoutConflicts(value) => write!(f, "{value}"),
         }
     }
 }

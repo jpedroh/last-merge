@@ -27,7 +27,7 @@ fn get_samples_names(language: model::Language) -> Result<Vec<std::path::PathBuf
         model::Language::Java => "java",
     };
 
-    std::fs::read_dir(format!("tests/scenarios/{}", language_directory))?
+    std::fs::read_dir(format!("tests/scenarios/{language_directory}"))?
         .filter(|sample| {
             sample
                 .as_ref()
