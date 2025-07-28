@@ -9,6 +9,8 @@ pub struct LogState<'a>{
 pub enum MergeChunk<'a> {
     Stable(ChunkData<'a>),
     Unstable(ChunkData<'a>),
+    UnorderedContextStart { node_kind: &'a str },
+    UnorderedContextEnd { node_kind: &'a str },
 }
 
 #[derive(Debug, Default)]

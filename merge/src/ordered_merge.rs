@@ -53,6 +53,12 @@ pub fn ordered_merge<'a>(
                     ls.current_stable.left_nodes.push(cur_left);
                     ls.current_stable.base_nodes.push(matching_base_left.matching_node);
                     ls.current_stable.right_nodes.push(cur_right); 
+
+                    if !cur_left.is_terminal() || !cur_right.is_terminal(){
+                        if !ls.current_stable.is_empty(){
+                            ls.log.push(MergeChunk::Stable(std::mem::take(&mut ls.current_stable)));
+                        }
+                    }
                 }
                 
                 result_children.push(crate::merge(
@@ -76,6 +82,12 @@ pub fn ordered_merge<'a>(
                     }
                     ls.current_stable.left_nodes.push(cur_left);
                     ls.current_stable.right_nodes.push(cur_right); 
+
+                    if !cur_left.is_terminal() || !cur_right.is_terminal() {
+                        if !ls.current_stable.is_empty() {
+                            ls.log.push(MergeChunk::Stable(std::mem::take(&mut ls.current_stable)));
+                        }
+                    }
                 }
 
                 result_children.push(crate::merge(
@@ -100,6 +112,12 @@ pub fn ordered_merge<'a>(
                     ls.current_stable.left_nodes.push(cur_left);
                     ls.current_stable.base_nodes.push(matching_base_left.matching_node);
                     ls.current_stable.right_nodes.push(cur_right); 
+
+                    if !cur_left.is_terminal() || !cur_right.is_terminal() {
+                        if !ls.current_stable.is_empty() {
+                            ls.log.push(MergeChunk::Stable(std::mem::take(&mut ls.current_stable)));
+                        }
+                    }
                 }
 
                 result_children.push(crate::merge(
@@ -124,6 +142,12 @@ pub fn ordered_merge<'a>(
                     ls.current_stable.left_nodes.push(cur_left);
                     ls.current_stable.base_nodes.push(matching_base_right.matching_node);
                     ls.current_stable.right_nodes.push(cur_right); 
+
+                    if !cur_left.is_terminal() || !cur_right.is_terminal() {
+                        if !ls.current_stable.is_empty() {
+                            ls.log.push(MergeChunk::Stable(std::mem::take(&mut ls.current_stable)));
+                        }
+                    }
                 }
 
                 result_children.push(crate::merge(
