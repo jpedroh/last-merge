@@ -47,7 +47,7 @@ impl<'a> From<&'a Terminal<'a>> for MergedCSTNode<'a> {
 impl Display for MergedCSTNode<'_> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            MergedCSTNode::Terminal { value, .. } => write!(f, "{}", value),
+            MergedCSTNode::Terminal { value, .. } => write!(f, "{value}"),
             MergedCSTNode::NonTerminal { children, .. } => {
                 let result = children.iter().fold(String::new(), |acc, current| {
                     let mut result = acc.to_owned();
@@ -56,21 +56,21 @@ impl Display for MergedCSTNode<'_> {
                     result
                 });
 
-                write!(f, "{}", result)
+                write!(f, "{result}")
             }
             MergedCSTNode::Conflict { left, right } => match (left, right) {
                 (Some(left), Some(right)) => {
                     writeln!(f)?;
                     writeln!(f, "<<<<<<<")?;
-                    writeln!(f, "{}", left)?;
+                    writeln!(f, "{left}")?;
                     writeln!(f, "=======")?;
-                    writeln!(f, "{}", right)?;
+                    writeln!(f, "{right}")?;
                     writeln!(f, ">>>>>>>")
                 }
                 (Some(left), None) => {
                     writeln!(f)?;
                     writeln!(f, "<<<<<<<")?;
-                    writeln!(f, "{}", left)?;
+                    writeln!(f, "{left}")?;
                     writeln!(f, "=======")?;
                     writeln!(f, ">>>>>>>")
                 }
@@ -78,7 +78,7 @@ impl Display for MergedCSTNode<'_> {
                     writeln!(f)?;
                     writeln!(f, "<<<<<<<")?;
                     writeln!(f, "=======")?;
-                    writeln!(f, "{}", right)?;
+                    writeln!(f, "{right}")?;
                     writeln!(f, ">>>>>>>")
                 }
                 (None, None) => unreachable!("Invalid conflict provided"),
