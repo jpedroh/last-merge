@@ -34,7 +34,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
       - name: Generate code coverage
-        run: cargo +nightly tarpaulin --verbose --all-features --workspace --timeout 120 --out xml
+        run: cargo +nightly tarpaulin --verbose --all-features --workspace --timeout 120 --out lcov
       - name: Coveralls upload
         uses: coverallsapp/github-action@master
         with:
