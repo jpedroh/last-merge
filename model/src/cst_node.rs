@@ -49,6 +49,10 @@ impl CSTNode<'_> {
         }
     }
 
+    pub fn is_terminal(&self) -> bool {
+        matches!(self, CSTNode::Terminal(_))
+    }
+
     fn get_subtree_size(&self) -> usize {
         match self {
             CSTNode::Terminal(_) => 0,
