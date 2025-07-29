@@ -2,7 +2,7 @@ pub fn get_language_from_name(name: &str) -> Result<model::Language, String> {
     match name {
         "java" => Ok(model::Language::Java),
         "csharp" | "cs" => Ok(model::Language::CSharp),
-        _ => Err(format!("Invalid language provided: {name}"))
+        _ => Err(format!("Invalid language provided: {name}")),
     }
 }
 
