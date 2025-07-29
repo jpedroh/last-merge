@@ -118,6 +118,67 @@ impl From<Language> for ParserConfiguration {
                     map
                 },
             },
+            Language::CSharp => Self {
+                language: tree_sitter_c_sharp::language(),
+                stop_compilation_at: HashSet::new(),
+                kinds_with_unordered_children: ["declaration_list", "enum_member_declaration_list"]
+                    .into(),
+                block_end_delimiters: ["}"].into(),
+                handlers: ParsingHandlers::new(vec![]),
+                identifier_extractors: {
+                    let mut map: HashMap<&'static str, Box<dyn IdentifierExtractor>> =
+                        HashMap::new();
+                    map.insert(
+                        "constructor_declaration",
+                        Box::new(TreeSitterQuery::new(
+                            r#"(constructor_declaration name: (identifier) @method_name parameters: (parameter_list ([ (parameter type: _@parameter_type) ] "," ?) *))"#,
+                            tree_sitter_c_sharp::language(),
+                        )),
+                    );
+
+                    map.insert(
+                        "method_declaration",
+                        Box::new(TreeSitterQuery::new(
+                            r#"(method_declaration name: (identifier) @method_name parameters: (parameter_list ([ (parameter type: _@parameter_type) ] "," ?) *))"#,
+                            tree_sitter_c_sharp::language(),
+                        )),
+                    );
+
+                    map.insert(
+                        "class_declaration",
+                        Box::new(TreeSitterQuery::new(
+                            r#"(class_declaration (identifier) @class_name)"#,
+                            tree_sitter_c_sharp::language(),
+                        )),
+                    );
+
+                    map.insert(
+                        "enum_declaration",
+                        Box::new(TreeSitterQuery::new(
+                            r#"(enum_declaration (identifier) @class_name)"#,
+                            tree_sitter_c_sharp::language(),
+                        )),
+                    );
+
+                    map.insert(
+                        "interface_declaration",
+                        Box::new(TreeSitterQuery::new(
+                            r#"(interface_declaration (identifier) @class_name)"#,
+                            tree_sitter_c_sharp::language(),
+                        )),
+                    );
+
+                    map.insert(
+                        "variable_declaration",
+                        Box::new(TreeSitterQuery::new(
+                            r#"(variable_declarator (identifier) @name)"#,
+                            tree_sitter_c_sharp::language(),
+                        )),
+                    );
+
+                    map
+                },
+            },
         }
     }
 }
