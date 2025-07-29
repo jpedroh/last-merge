@@ -6,56 +6,35 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-      - uses: actions-rs/cargo@v1
-        with:
-          command: build
-          args: --release --all-features
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - run: cargo build --release --all-features
   clippy:
     runs-on: ubuntu-latest
     env:
       RUSTFLAGS: "-Dwarnings"
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-      - uses: actions-rs/cargo@v1
-        with:
-          command: clippy
-          args: --all-features
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - run: cargo clippy --all-features
   rustfmt:
     runs-on: ubuntu-latest
     env:
       RUSTFLAGS: "-Dwarnings"
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-      - uses: actions-rs/cargo@v1
-        with:
-          command: fmt
-          args: --check
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - run: cargo fmt --check
   test:
     runs-on: ubuntu-latest
+    container:
+      image: xd009642/tarpaulin:develop-nightly
+      options: --security-opt seccomp=unconfined
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-      - uses: actions-rs/cargo@v1
-        with:
-          command: test
-          args: --all-features --no-fail-fast
-      - name: Run cargo-tarpaulin
-        uses: actions-rs/tarpaulin@v0.1
-        with:
-          version: '0.32.8'
-          args: '--ignore-tests -o Lcov'
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Generate code coverage
+        run: cargo +nightly tarpaulin --verbose --all-features --workspace --timeout 120 --out xml
       - name: Coveralls upload
         uses: coverallsapp/github-action@master
         with:
