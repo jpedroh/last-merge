@@ -14,16 +14,13 @@ impl fmt::Display for MergeError {
             MergeError::MergingTerminalWithNonTerminal => {
                 write!(f, "Merging terminal with non-terminal")
             }
-            MergeError::InvalidMatchingConfiguration(a, b, c, d, e) => write!(
-                f,
-                "Invalid matching configuration: {}, {}, {}, {}, {}",
-                a, b, c, d, e
-            ),
+            MergeError::InvalidMatchingConfiguration(a, b, c, d, e) => {
+                write!(f, "Invalid matching configuration: {a}, {b}, {c}, {d}, {e}")
+            }
             MergeError::NodesWithDifferentKinds(kind_a, kind_b) => {
                 write!(
                     f,
-                    "Tried to merge node of kind \"{}\" with node of kind \"{}\"",
-                    kind_a, kind_b
+                    "Tried to merge node of kind \"{kind_a}\" with node of kind \"{kind_b}\""
                 )
             }
         }

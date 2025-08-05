@@ -59,7 +59,7 @@ pub fn parse_string<'a>(
 ) -> Result<CSTNode<'a>, &'static str> {
     let mut parser = tree_sitter::Parser::new();
     parser
-        .set_language(config.language)
+        .set_language(&config.language)
         .map_err(|_| "There was an error while setting the parser language")?;
 
     let parsed = parser
