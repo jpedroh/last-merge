@@ -125,7 +125,7 @@ impl NonTerminal<'_> {
         self.identifier.as_deref()
     }
 
-    pub fn get_children(&self) -> &[CSTNode] {
+    pub fn get_children(&self) -> &[CSTNode<'_>] {
         self.children.as_slice()
     }
 }

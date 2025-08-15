@@ -137,9 +137,9 @@ pub fn run_tool_on_merge_scenario(
             let end_line = last_node.end_position().row + 1;
             
             let range = if start_line == end_line {
-                format!("(L{})", start_line)
+                format!("(L{start_line})")
             } else {
-                format!("(L{}-L{})", start_line, end_line)
+                format!("(L{start_line}-L{end_line})")
             };
             
             const MAX_NODES_TO_SHOW: usize = 3;
@@ -167,23 +167,23 @@ pub fn run_tool_on_merge_scenario(
             match chunk {
                 MergeChunk::Stable(data) => {
                     chunk_counter += 1;
-                    println!("-- stable chunk #{} --", chunk_counter);
+                    println!("-- stable chunk #{chunk_counter} --");
                     println!("    Left (L):  {}", format_node_list_detailed(&data.left_nodes));
                     println!("    Base (B):  {}", format_node_list_detailed(&data.base_nodes));
                     println!("    Right (R): {}", format_node_list_detailed(&data.right_nodes));
                 }
                 MergeChunk::Unstable(data) => {
                     chunk_counter += 1;
-                    println!("-- unstable chunk #{} --", chunk_counter);
+                    println!("-- unstable chunk #{chunk_counter} --");
                     println!("    Left (L):  {}", format_node_list_detailed(&data.left_nodes));
                     println!("    Base (B):  {}", format_node_list_detailed(&data.base_nodes));
                     println!("    Right (R): {}", format_node_list_detailed(&data.right_nodes));
                 }
                 MergeChunk::UnorderedContextStart { node_kind } => {
-                    println!("\n---> START: Unordered Merge Context for '{}'", node_kind);
+                    println!("\n---> START: Unordered Merge Context for '{node_kind}'");
                 }
                 MergeChunk::UnorderedContextEnd { node_kind } => {
-                    println!("\n---> END: Unordered Merge Context for '{}'", node_kind);
+                    println!("\n---> END: Unordered Merge Context for '{node_kind}'");
                 }
             }
             println!("-----------------------------------------------------------"); 
