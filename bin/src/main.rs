@@ -42,11 +42,12 @@ fn run_merge(args: MergeCliArgs) {
         std::process::exit(cli_exit_codes::INVALID_LANGUAGE_ERROR)
     });
 
-    let result = control::run_tool_on_merge_scenario(language, &base, &left, &right, args.print_chunks)
-        .unwrap_or_else(|error| {
-            log::error!("Error while running tool: {}", error);
-            std::process::exit(cli_exit_codes::INTERNAL_EXECUTION_ERROR)
-        });
+    let result =
+        control::run_tool_on_merge_scenario(language, &base, &left, &right, args.print_chunks)
+            .unwrap_or_else(|error| {
+                log::error!("Error while running tool: {}", error);
+                std::process::exit(cli_exit_codes::INTERNAL_EXECUTION_ERROR)
+            });
 
     std::fs::write(args.merge_path, result.to_string()).unwrap_or_else(|error| {
         log::error!("Error while writing output file: {}", error);

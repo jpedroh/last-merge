@@ -5,8 +5,8 @@ use crate::unordered_merge::unordered_merge;
 use matching::Matchings;
 use model::CSTNode;
 
-use crate::merged_cst_node::MergedCSTNode;
 use crate::log_structures::{LogState, MergeChunk};
+use crate::merged_cst_node::MergedCSTNode;
 
 pub fn merge<'a>(
     base: &'a CSTNode<'a>,
@@ -35,9 +35,10 @@ pub fn merge<'a>(
         }
         (CSTNode::NonTerminal(_), CSTNode::NonTerminal(a_left), CSTNode::NonTerminal(a_right)) => {
             if a_left.are_children_unordered && a_right.are_children_unordered {
-                
                 if let Some(ls) = log_state.as_mut() {
-                    ls.log.push(MergeChunk::UnorderedContextStart{node_kind: a_left.kind});
+                    ls.log.push(MergeChunk::UnorderedContextStart {
+                        node_kind: a_left.kind,
+                    });
                 }
 
                 let result = unordered_merge(
@@ -50,11 +51,12 @@ pub fn merge<'a>(
                 )?;
 
                 if let Some(ls) = log_state.as_mut() {
-                    ls.log.push(MergeChunk::UnorderedContextEnd{node_kind: a_left.kind});
+                    ls.log.push(MergeChunk::UnorderedContextEnd {
+                        node_kind: a_left.kind,
+                    });
                 }
 
                 Ok(result)
-
             } else {
                 Ok(ordered_merge(
                     a_left,

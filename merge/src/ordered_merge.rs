@@ -1,8 +1,8 @@
 use matching::Matchings;
 use model::cst_node::NonTerminal;
 
-use crate::{MergeError, MergedCSTNode};
 use crate::log_structures::{LogState, MergeChunk};
+use crate::{MergeError, MergedCSTNode};
 
 pub fn ordered_merge<'a>(
     left: &'a NonTerminal<'a>,
@@ -45,21 +45,26 @@ pub fn ordered_merge<'a>(
             matching_base_right,
         ) {
             (true, Some(_), Some(matching_base_left), Some(_), Some(_)) => {
-                
-                if let Some(ls) = log_state.as_mut(){
-                    if !ls.current_unstable.is_empty(){
-                        ls.log.push(MergeChunk::Unstable(std::mem::take(&mut ls.current_unstable)));
+                if let Some(ls) = log_state.as_mut() {
+                    if !ls.current_unstable.is_empty() {
+                        ls.log.push(MergeChunk::Unstable(std::mem::take(
+                            &mut ls.current_unstable,
+                        )));
                     }
                     ls.current_stable.left_nodes.push(cur_left);
-                    ls.current_stable.base_nodes.push(matching_base_left.matching_node);
-                    ls.current_stable.right_nodes.push(cur_right); 
+                    ls.current_stable
+                        .base_nodes
+                        .push(matching_base_left.matching_node);
+                    ls.current_stable.right_nodes.push(cur_right);
 
                     if (!cur_left.is_terminal() || !cur_right.is_terminal())
-                        && !ls.current_stable.is_empty(){
-                            ls.log.push(MergeChunk::Stable(std::mem::take(&mut ls.current_stable)));
-                        }
+                        && !ls.current_stable.is_empty()
+                    {
+                        ls.log
+                            .push(MergeChunk::Stable(std::mem::take(&mut ls.current_stable)));
+                    }
                 }
-                
+
                 result_children.push(crate::merge(
                     matching_base_left.matching_node,
                     cur_left,
@@ -74,18 +79,21 @@ pub fn ordered_merge<'a>(
                 cur_right_option = children_right_it.next();
             }
             (true, Some(_), None, Some(_), None) => {
-
-                if let Some(ls) = log_state.as_mut(){
-                    if !ls.current_unstable.is_empty(){
-                        ls.log.push(MergeChunk::Unstable(std::mem::take(&mut ls.current_unstable)));
+                if let Some(ls) = log_state.as_mut() {
+                    if !ls.current_unstable.is_empty() {
+                        ls.log.push(MergeChunk::Unstable(std::mem::take(
+                            &mut ls.current_unstable,
+                        )));
                     }
                     ls.current_stable.left_nodes.push(cur_left);
-                    ls.current_stable.right_nodes.push(cur_right); 
+                    ls.current_stable.right_nodes.push(cur_right);
 
                     if (!cur_left.is_terminal() || !cur_right.is_terminal())
-                        && !ls.current_stable.is_empty() {
-                            ls.log.push(MergeChunk::Stable(std::mem::take(&mut ls.current_stable)));
-                        }
+                        && !ls.current_stable.is_empty()
+                    {
+                        ls.log
+                            .push(MergeChunk::Stable(std::mem::take(&mut ls.current_stable)));
+                    }
                 }
 
                 result_children.push(crate::merge(
@@ -102,19 +110,24 @@ pub fn ordered_merge<'a>(
                 cur_right_option = children_right_it.next();
             }
             (true, Some(_), Some(matching_base_left), Some(_), None) => {
-
-                if let Some(ls) = log_state.as_mut(){
-                    if !ls.current_unstable.is_empty(){
-                        ls.log.push(MergeChunk::Unstable(std::mem::take(&mut ls.current_unstable)));
+                if let Some(ls) = log_state.as_mut() {
+                    if !ls.current_unstable.is_empty() {
+                        ls.log.push(MergeChunk::Unstable(std::mem::take(
+                            &mut ls.current_unstable,
+                        )));
                     }
                     ls.current_stable.left_nodes.push(cur_left);
-                    ls.current_stable.base_nodes.push(matching_base_left.matching_node);
-                    ls.current_stable.right_nodes.push(cur_right); 
+                    ls.current_stable
+                        .base_nodes
+                        .push(matching_base_left.matching_node);
+                    ls.current_stable.right_nodes.push(cur_right);
 
                     if (!cur_left.is_terminal() || !cur_right.is_terminal())
-                        && !ls.current_stable.is_empty() {
-                            ls.log.push(MergeChunk::Stable(std::mem::take(&mut ls.current_stable)));
-                        }
+                        && !ls.current_stable.is_empty()
+                    {
+                        ls.log
+                            .push(MergeChunk::Stable(std::mem::take(&mut ls.current_stable)));
+                    }
                 }
 
                 result_children.push(crate::merge(
@@ -131,19 +144,24 @@ pub fn ordered_merge<'a>(
                 cur_right_option = children_right_it.next();
             }
             (true, Some(_), None, Some(_), Some(matching_base_right)) => {
-
-                if let Some(ls) = log_state.as_mut(){
-                    if !ls.current_unstable.is_empty(){
-                        ls.log.push(MergeChunk::Unstable(std::mem::take(&mut ls.current_unstable)));
+                if let Some(ls) = log_state.as_mut() {
+                    if !ls.current_unstable.is_empty() {
+                        ls.log.push(MergeChunk::Unstable(std::mem::take(
+                            &mut ls.current_unstable,
+                        )));
                     }
                     ls.current_stable.left_nodes.push(cur_left);
-                    ls.current_stable.base_nodes.push(matching_base_right.matching_node);
-                    ls.current_stable.right_nodes.push(cur_right); 
+                    ls.current_stable
+                        .base_nodes
+                        .push(matching_base_right.matching_node);
+                    ls.current_stable.right_nodes.push(cur_right);
 
                     if (!cur_left.is_terminal() || !cur_right.is_terminal())
-                        && !ls.current_stable.is_empty() {
-                            ls.log.push(MergeChunk::Stable(std::mem::take(&mut ls.current_stable)));
-                        }
+                        && !ls.current_stable.is_empty()
+                    {
+                        ls.log
+                            .push(MergeChunk::Stable(std::mem::take(&mut ls.current_stable)));
+                    }
                 }
 
                 result_children.push(crate::merge(
@@ -160,12 +178,12 @@ pub fn ordered_merge<'a>(
                 cur_right_option = children_right_it.next();
             }
             (false, Some(_), Some(_), None, Some(matching_base_right)) => {
-
-                if let Some(ls) = log_state.as_mut(){
-                    if !ls.current_stable.is_empty(){
-                        ls.log.push(MergeChunk::Stable(std::mem::take(&mut ls.current_stable)));
+                if let Some(ls) = log_state.as_mut() {
+                    if !ls.current_stable.is_empty() {
+                        ls.log
+                            .push(MergeChunk::Stable(std::mem::take(&mut ls.current_stable)));
                     }
-                    ls.current_unstable.right_nodes.push(cur_right); 
+                    ls.current_unstable.right_nodes.push(cur_right);
                 }
 
                 if !matching_base_right.is_perfect_match {
@@ -178,12 +196,12 @@ pub fn ordered_merge<'a>(
                 cur_right_option = children_right_it.next();
             }
             (false, Some(_), Some(_), None, None) => {
-
-                if let Some(ls) = log_state.as_mut(){
-                    if !ls.current_stable.is_empty(){
-                        ls.log.push(MergeChunk::Stable(std::mem::take(&mut ls.current_stable)));
+                if let Some(ls) = log_state.as_mut() {
+                    if !ls.current_stable.is_empty() {
+                        ls.log
+                            .push(MergeChunk::Stable(std::mem::take(&mut ls.current_stable)));
                     }
-                    ls.current_unstable.right_nodes.push(cur_right); 
+                    ls.current_unstable.right_nodes.push(cur_right);
                 }
 
                 result_children.push(cur_right.into());
@@ -191,12 +209,12 @@ pub fn ordered_merge<'a>(
                 cur_right_option = children_right_it.next();
             }
             (false, Some(_), None, None, Some(matching_base_right)) => {
-
-                if let Some(ls) = log_state.as_mut(){
-                    if !ls.current_stable.is_empty(){
-                        ls.log.push(MergeChunk::Stable(std::mem::take(&mut ls.current_stable)));
+                if let Some(ls) = log_state.as_mut() {
+                    if !ls.current_stable.is_empty() {
+                        ls.log
+                            .push(MergeChunk::Stable(std::mem::take(&mut ls.current_stable)));
                     }
-                    ls.current_unstable.right_nodes.push(cur_right); 
+                    ls.current_unstable.right_nodes.push(cur_right);
                 }
 
                 if !matching_base_right.is_perfect_match {
@@ -208,24 +226,24 @@ pub fn ordered_merge<'a>(
                 cur_right_option = children_right_it.next();
             }
             (false, Some(_), None, None, None) => {
-
-                if let Some(ls) = log_state.as_mut(){
-                    if !ls.current_stable.is_empty(){
-                        ls.log.push(MergeChunk::Stable(std::mem::take(&mut ls.current_stable)));
+                if let Some(ls) = log_state.as_mut() {
+                    if !ls.current_stable.is_empty() {
+                        ls.log
+                            .push(MergeChunk::Stable(std::mem::take(&mut ls.current_stable)));
                     }
-                    ls.current_unstable.right_nodes.push(cur_right); 
+                    ls.current_unstable.right_nodes.push(cur_right);
                 }
 
                 result_children.push(cur_right.into());
                 cur_right_option = children_right_it.next();
             }
             (false, None, Some(matching_base_left), Some(_), Some(_)) => {
-
-                if let Some(ls) = log_state.as_mut(){
-                    if !ls.current_stable.is_empty(){
-                        ls.log.push(MergeChunk::Stable(std::mem::take(&mut ls.current_stable)));
+                if let Some(ls) = log_state.as_mut() {
+                    if !ls.current_stable.is_empty() {
+                        ls.log
+                            .push(MergeChunk::Stable(std::mem::take(&mut ls.current_stable)));
                     }
-                    ls.current_unstable.left_nodes.push(cur_left); 
+                    ls.current_unstable.left_nodes.push(cur_left);
                 }
 
                 if !matching_base_left.is_perfect_match {
@@ -238,12 +256,12 @@ pub fn ordered_merge<'a>(
                 cur_left_option = children_left_it.next();
             }
             (false, None, Some(matching_base_left), Some(_), None) => {
-
-                if let Some(ls) = log_state.as_mut(){
-                    if !ls.current_stable.is_empty(){
-                        ls.log.push(MergeChunk::Stable(std::mem::take(&mut ls.current_stable)));
+                if let Some(ls) = log_state.as_mut() {
+                    if !ls.current_stable.is_empty() {
+                        ls.log
+                            .push(MergeChunk::Stable(std::mem::take(&mut ls.current_stable)));
                     }
-                    ls.current_unstable.left_nodes.push(cur_left); 
+                    ls.current_unstable.left_nodes.push(cur_left);
                 }
 
                 if !matching_base_left.is_perfect_match {
@@ -255,16 +273,18 @@ pub fn ordered_merge<'a>(
                 cur_left_option = children_left_it.next();
             }
             (false, None, Some(matching_base_left), None, Some(matching_base_right)) => {
-                
-                if let Some(ls) = log_state.as_mut(){
-                    if !ls.current_stable.is_empty(){
-                        ls.log.push(MergeChunk::Stable(std::mem::take(&mut ls.current_stable)));
+                if let Some(ls) = log_state.as_mut() {
+                    if !ls.current_stable.is_empty() {
+                        ls.log
+                            .push(MergeChunk::Stable(std::mem::take(&mut ls.current_stable)));
                     }
                     ls.current_unstable.left_nodes.push(cur_left);
                     ls.current_unstable.right_nodes.push(cur_right);
-                    ls.current_unstable.base_nodes.push(matching_base_left.matching_node)
+                    ls.current_unstable
+                        .base_nodes
+                        .push(matching_base_left.matching_node)
                 }
-                
+
                 match (
                     matching_base_left.is_perfect_match,
                     matching_base_right.is_perfect_match,
@@ -294,12 +314,12 @@ pub fn ordered_merge<'a>(
                 cur_right_option = children_right_it.next();
             }
             (false, None, Some(matching_base_left), None, None) => {
-
-                if let Some(ls) = log_state.as_mut(){
-                    if !ls.current_stable.is_empty(){
-                        ls.log.push(MergeChunk::Stable(std::mem::take(&mut ls.current_stable)));
+                if let Some(ls) = log_state.as_mut() {
+                    if !ls.current_stable.is_empty() {
+                        ls.log
+                            .push(MergeChunk::Stable(std::mem::take(&mut ls.current_stable)));
                     }
-                    ls.current_unstable.left_nodes.push(cur_left); 
+                    ls.current_unstable.left_nodes.push(cur_left);
                 }
 
                 if !matching_base_left.is_perfect_match {
@@ -315,34 +335,34 @@ pub fn ordered_merge<'a>(
                 cur_right_option = children_right_it.next();
             }
             (false, None, None, Some(_), Some(_)) => {
-
-                if let Some(ls) = log_state.as_mut(){
-                    if !ls.current_stable.is_empty(){
-                        ls.log.push(MergeChunk::Stable(std::mem::take(&mut ls.current_stable)));
+                if let Some(ls) = log_state.as_mut() {
+                    if !ls.current_stable.is_empty() {
+                        ls.log
+                            .push(MergeChunk::Stable(std::mem::take(&mut ls.current_stable)));
                     }
-                    ls.current_unstable.left_nodes.push(cur_left); 
+                    ls.current_unstable.left_nodes.push(cur_left);
                 }
 
                 result_children.push(cur_left.into());
                 cur_left_option = children_left_it.next();
             }
             (false, None, None, Some(_), None) => {
-
-                if let Some(ls) = log_state.as_mut(){
-                    if !ls.current_stable.is_empty(){
-                        ls.log.push(MergeChunk::Stable(std::mem::take(&mut ls.current_stable)));
+                if let Some(ls) = log_state.as_mut() {
+                    if !ls.current_stable.is_empty() {
+                        ls.log
+                            .push(MergeChunk::Stable(std::mem::take(&mut ls.current_stable)));
                     }
-                    ls.current_unstable.left_nodes.push(cur_left); 
+                    ls.current_unstable.left_nodes.push(cur_left);
                 }
 
                 result_children.push(cur_left.into());
                 cur_left_option = children_left_it.next();
             }
             (false, None, None, None, Some(matching_base_right)) => {
-
-                if let Some(ls) = log_state.as_mut(){
-                    if !ls.current_stable.is_empty(){
-                        ls.log.push(MergeChunk::Stable(std::mem::take(&mut ls.current_stable)));
+                if let Some(ls) = log_state.as_mut() {
+                    if !ls.current_stable.is_empty() {
+                        ls.log
+                            .push(MergeChunk::Stable(std::mem::take(&mut ls.current_stable)));
                     }
                     ls.current_unstable.left_nodes.push(cur_left);
                     ls.current_unstable.right_nodes.push(cur_right);
@@ -361,12 +381,12 @@ pub fn ordered_merge<'a>(
                 cur_right_option = children_right_it.next();
             }
             (false, None, None, None, None) => {
-
-                if let Some(ls) = log_state.as_mut(){
-                    if !ls.current_stable.is_empty(){
-                        ls.log.push(MergeChunk::Stable(std::mem::take(&mut ls.current_stable)));
+                if let Some(ls) = log_state.as_mut() {
+                    if !ls.current_stable.is_empty() {
+                        ls.log
+                            .push(MergeChunk::Stable(std::mem::take(&mut ls.current_stable)));
                     }
-                    ls.current_unstable.left_nodes.push(cur_left); 
+                    ls.current_unstable.left_nodes.push(cur_left);
                     ls.current_unstable.right_nodes.push(cur_right);
                 }
 
@@ -413,14 +433,14 @@ pub fn ordered_merge<'a>(
         }
     }
 
-    if let Some(ls) = log_state.as_mut(){
-        if !ls.current_stable.is_empty(){
-            ls.log.push(MergeChunk::Stable(std::mem::take(&mut ls.current_stable)));
+    if let Some(ls) = log_state.as_mut() {
+        if !ls.current_stable.is_empty() {
+            ls.log
+                .push(MergeChunk::Stable(std::mem::take(&mut ls.current_stable)));
         }
     }
 
     while let Some(cur_left) = cur_left_option {
-
         if let Some(ls) = log_state.as_mut() {
             ls.current_unstable.left_nodes.push(cur_left);
         }
@@ -430,7 +450,6 @@ pub fn ordered_merge<'a>(
     }
 
     while let Some(cur_right) = cur_right_option {
-
         if let Some(ls) = log_state.as_mut() {
             ls.current_unstable.right_nodes.push(cur_right);
         }
@@ -439,9 +458,11 @@ pub fn ordered_merge<'a>(
         cur_right_option = children_right_it.next();
     }
 
-    if let Some(ls) = log_state.as_mut(){
-        if !ls.current_unstable.is_empty(){
-            ls.log.push(MergeChunk::Unstable(std::mem::take(&mut ls.current_unstable)));
+    if let Some(ls) = log_state.as_mut() {
+        if !ls.current_unstable.is_empty() {
+            ls.log.push(MergeChunk::Unstable(std::mem::take(
+                &mut ls.current_unstable,
+            )));
         }
     }
 
@@ -1905,7 +1926,14 @@ mod tests {
         };
 
         let matchings = Matchings::empty();
-        let result = ordered_merge(&kind_a, &kind_b, &matchings, &matchings, &matchings, &mut log_state);
+        let result = ordered_merge(
+            &kind_a,
+            &kind_b,
+            &matchings,
+            &matchings,
+            &matchings,
+            &mut log_state,
+        );
 
         assert!(result.is_err());
         assert_eq!(
