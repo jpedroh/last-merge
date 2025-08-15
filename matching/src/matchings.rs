@@ -39,7 +39,7 @@ impl<'a> Matchings<'a> {
         }
     }
 
-    pub fn find_matching_for(&self, a_node: &'a CSTNode) -> Option<Matching> {
+    pub fn find_matching_for(&'a self, a_node: &'a CSTNode) -> Option<Matching<'a>> {
         let matching_node = self.individual_matchings.get(a_node)?;
         let matching_entry = self
             .matching_entries
