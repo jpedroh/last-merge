@@ -1,5 +1,5 @@
 #[derive(Debug, Default)]
-pub struct LogState<'a>{
+pub struct LogState<'a> {
     pub log: Vec<MergeChunk<'a>>,
     pub current_stable: ChunkData<'a>,
     pub current_unstable: ChunkData<'a>,
