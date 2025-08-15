@@ -6,6 +6,7 @@ use matching::Matchings;
 use model::CSTNode;
 
 use crate::merged_cst_node::MergedCSTNode;
+use crate::log_structures::{LogState, MergeChunk};
 
 pub fn merge<'a>(
     base: &'a CSTNode<'a>,
@@ -14,6 +15,7 @@ pub fn merge<'a>(
     base_left_matchings: &'a Matchings<'a>,
     base_right_matchings: &'a Matchings<'a>,
     left_right_matchings: &'a Matchings<'a>,
+    log_state: &mut Option<LogState<'a>>,
 ) -> Result<MergedCSTNode<'a>, MergeError> {
     if left.kind() != right.kind() {
         log::debug!(
@@ -33,13 +35,26 @@ pub fn merge<'a>(
         }
         (CSTNode::NonTerminal(_), CSTNode::NonTerminal(a_left), CSTNode::NonTerminal(a_right)) => {
             if a_left.are_children_unordered && a_right.are_children_unordered {
-                Ok(unordered_merge(
+                
+                if let Some(ls) = log_state.as_mut() {
+                    ls.log.push(MergeChunk::UnorderedContextStart{node_kind: a_left.kind});
+                }
+
+                let result = unordered_merge(
                     a_left,
                     a_right,
                     base_left_matchings,
                     base_right_matchings,
                     left_right_matchings,
-                )?)
+                    log_state,
+                )?;
+
+                if let Some(ls) = log_state.as_mut() {
+                    ls.log.push(MergeChunk::UnorderedContextEnd{node_kind: a_left.kind});
+                }
+
+                Ok(result)
+
             } else {
                 Ok(ordered_merge(
                     a_left,
@@ -47,6 +62,7 @@ pub fn merge<'a>(
                     base_left_matchings,
                     base_right_matchings,
                     left_right_matchings,
+                    log_state,
                 )?)
             }
         }
@@ -74,6 +90,7 @@ mod tests {
 
     #[test]
     fn test_can_not_merge_terminal_with_non_terminal() -> Result<(), Box<dyn std::error::Error>> {
+        let mut log_state = None;
         let error = merge(
             &CSTNode::Terminal(Terminal {
                 id: uuid::Uuid::new_v4(),
@@ -103,6 +120,7 @@ mod tests {
             &Matchings::empty(),
             &Matchings::empty(),
             &Matchings::empty(),
+            &mut log_state,
         )
         .unwrap_err();
 

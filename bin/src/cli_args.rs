@@ -57,4 +57,8 @@ pub struct MergeCliArgs {
     /// If not provided the language will try to be inferred by the extension.
     #[arg(long)]
     pub(crate) language: Option<String>,
+
+    /// Prints a detailed log of the merge process in the CST nodes
+    #[arg(long)]
+    pub print_chunks: bool,
 }
