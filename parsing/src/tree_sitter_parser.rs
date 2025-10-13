@@ -115,6 +115,15 @@ impl From<Language> for ParserConfiguration {
                             tree_sitter_java::LANGUAGE.into(),
                         )),
                     );
+
+                    map.insert(
+                        "method_invocation",
+                        Box::new(TreeSitterQuery::new(
+                            r#"(method_invocation object: (identifier) @object name: (identifier) @method)"#,
+                            tree_sitter_java::LANGUAGE.into(),
+                        )),
+                    );
+
                     map
                 },
             },
