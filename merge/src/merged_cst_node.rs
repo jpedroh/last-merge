@@ -5,15 +5,17 @@ use model::{
     CSTNode,
 };
 
-#[derive(Debug, PartialEq, Clone, Eq, Hash, PartialOrd, Ord)]
+#[derive(Debug, PartialEq, Clone, Eq, Hash)]
 pub enum MergedCSTNode<'a> {
     Terminal {
         kind: &'a str,
         value: std::borrow::Cow<'a, str>,
+        leading_white_space: Option<&'a str>,
     },
     NonTerminal {
         kind: &'a str,
         children: Vec<MergedCSTNode<'a>>,
+        leading_white_space: Option<&'a str>,
     },
     Conflict {
         left: Option<Box<MergedCSTNode<'a>>>,
@@ -25,12 +27,16 @@ impl<'a> From<&'a CSTNode<'a>> for MergedCSTNode<'a> {
     fn from(val: &'a CSTNode<'a>) -> Self {
         match val {
             CSTNode::Terminal(terminal) => terminal.into(),
-            CSTNode::NonTerminal(NonTerminal { kind, children, .. }) => {
-                MergedCSTNode::NonTerminal {
-                    kind,
-                    children: children.iter().map(|node| node.into()).collect(),
-                }
-            }
+            CSTNode::NonTerminal(NonTerminal {
+                kind,
+                children,
+                leading_white_space,
+                ..
+            }) => MergedCSTNode::NonTerminal {
+                kind,
+                children: children.iter().map(|node| node.into()).collect(),
+                leading_white_space: leading_white_space.clone(),
+            },
         }
     }
 }
@@ -40,6 +46,7 @@ impl<'a> From<&'a Terminal<'a>> for MergedCSTNode<'a> {
         MergedCSTNode::Terminal {
             kind: val.kind,
             value: std::borrow::Cow::Borrowed(val.value),
+            leading_white_space: val.leading_white_space.clone(),
         }
     }
 }
@@ -51,7 +58,9 @@ impl Display for MergedCSTNode<'_> {
             MergedCSTNode::NonTerminal { children, .. } => {
                 let result = children.iter().fold(String::new(), |acc, current| {
                     let mut result = acc.to_owned();
-                    result.push(' ');
+                    if let Some(leading) = current.leading_white_space() {
+                        result.push_str(leading);
+                    }
                     result.push_str(&current.clone().to_string());
                     result
                 });
@@ -95,6 +104,31 @@ impl MergedCSTNode<'_> {
             }
             MergedCSTNode::Terminal { .. } => false,
             MergedCSTNode::Conflict { .. } => true,
+        }
+    }
+
+    pub fn leading_white_space(&self) -> Option<&str> {
+        match self {
+            MergedCSTNode::Terminal {
+                leading_white_space,
+                ..
+            } => *leading_white_space,
+            MergedCSTNode::NonTerminal {
+                leading_white_space,
+                ..
+            } => *leading_white_space,
+            MergedCSTNode::Conflict { .. } => None,
+        }
+    }
+
+    pub fn raw_source_code(&self) -> Option<&str> {
+        match self {
+            MergedCSTNode::Terminal { value, .. } => Some(value),
+            MergedCSTNode::NonTerminal {
+                leading_white_space,
+                ..
+            } => *leading_white_space,
+            MergedCSTNode::Conflict { .. } => None,
         }
     }
 }

@@ -16,6 +16,7 @@ pub fn remove_block_comments(root: CSTNode<'_>) -> CSTNode<'_> {
                 .collect(),
             are_children_unordered: non_terminal.are_children_unordered,
             identifier: non_terminal.identifier,
+            leading_white_space: non_terminal.leading_white_space,
         }),
     }
 }

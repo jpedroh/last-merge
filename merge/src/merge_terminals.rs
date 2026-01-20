@@ -31,10 +31,12 @@ pub fn merge_terminals<'a>(
             Ok(value) => Ok(MergedCSTNode::Terminal {
                 kind: base.kind,
                 value: std::borrow::Cow::Owned(value),
+                leading_white_space: base.leading_white_space,
             }),
             Err(value) => Ok(MergedCSTNode::Terminal {
                 kind: base.kind,
                 value: std::borrow::Cow::Owned(value),
+                leading_white_space: base.leading_white_space,
             }),
         }
     // Only left changed
@@ -78,6 +80,7 @@ mod tests {
             end_position: Point { row: 0, column: 7 },
             value: "value",
             is_block_end_delimiter: false,
+            ..Default::default()
         };
 
         assert_merge_is_correct_and_idempotent_with_respect_to_parent_side(
@@ -98,6 +101,7 @@ mod tests {
             end_position: Point { row: 0, column: 7 },
             value: "\nvalue\n",
             is_block_end_delimiter: false,
+            ..Default::default()
         };
         let left = Terminal {
             id: uuid::Uuid::new_v4(),
@@ -106,6 +110,7 @@ mod tests {
             end_position: Point { row: 0, column: 7 },
             value: "left\nvalue\n",
             is_block_end_delimiter: false,
+            ..Default::default()
         };
         let right = Terminal {
             id: uuid::Uuid::new_v4(),
@@ -114,6 +119,7 @@ mod tests {
             end_position: Point { row: 0, column: 7 },
             value: "\nvalue\nright",
             is_block_end_delimiter: false,
+            ..Default::default()
         };
 
         assert_merge_is_correct_and_idempotent_with_respect_to_parent_side(
@@ -123,6 +129,7 @@ mod tests {
             &MergedCSTNode::Terminal {
                 kind: "kind",
                 value: std::borrow::Cow::Borrowed("left\nvalue\nright"),
+                leading_white_space: None,
             },
         )
     }
@@ -137,6 +144,7 @@ mod tests {
             end_position: Point { row: 0, column: 7 },
             value: "value",
             is_block_end_delimiter: false,
+            ..Default::default()
         };
         let left = Terminal {
             id: uuid::Uuid::new_v4(),
@@ -145,6 +153,7 @@ mod tests {
             end_position: Point { row: 0, column: 7 },
             value: "left_value",
             is_block_end_delimiter: false,
+            ..Default::default()
         };
         let right = Terminal {
             id: uuid::Uuid::new_v4(),
@@ -153,13 +162,15 @@ mod tests {
             end_position: Point { row: 0, column: 7 },
             value: "right_value",
             is_block_end_delimiter: false,
+            ..Default::default()
         };
 
         assert_eq!(
             merge_terminals(&base, &left, &right)?,
            MergedCSTNode::Terminal {
                 kind: "kind",
-                value: std::borrow::Cow::Borrowed("<<<<<<< ours\nleft_value||||||| original\nvalue=======\nright_value>>>>>>> theirs\n")
+                value: std::borrow::Cow::Borrowed("<<<<<<< ours\nleft_value||||||| original\nvalue=======\nright_value>>>>>>> theirs\n"),
+                leading_white_space: None
             }
         );
 
@@ -176,6 +187,7 @@ mod tests {
             end_position: Point { row: 0, column: 7 },
             value: "value",
             is_block_end_delimiter: false,
+            ..Default::default()
         };
         let changed_parent = Terminal {
             id: uuid::Uuid::new_v4(),
@@ -184,6 +196,7 @@ mod tests {
             end_position: Point { row: 0, column: 7 },
             value: "value_right",
             is_block_end_delimiter: false,
+            ..Default::default()
         };
 
         assert_merge_is_correct_and_idempotent_with_respect_to_parent_side(
@@ -203,6 +216,7 @@ mod tests {
             end_position: Point { row: 0, column: 7 },
             value: "value",
             is_block_end_delimiter: false,
+            ..Default::default()
         };
         let kind_b = Terminal {
             id: uuid::Uuid::new_v4(),
@@ -211,6 +225,7 @@ mod tests {
             end_position: Point { row: 0, column: 7 },
             value: "value_right",
             is_block_end_delimiter: false,
+            ..Default::default()
         };
 
         let result = merge_terminals(&kind_a, &kind_a, &kind_b);

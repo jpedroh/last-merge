@@ -88,7 +88,7 @@ mod tests {
         cst_node::{NonTerminal, Terminal},
         CSTNode, Point,
     };
-    use std::vec;
+    use std::{ops::Range, vec};
 
     #[test]
     fn test_can_not_merge_terminal_with_non_terminal() -> Result<(), Box<dyn std::error::Error>> {
@@ -101,6 +101,7 @@ mod tests {
                 end_position: Point { row: 0, column: 7 },
                 value: "value",
                 is_block_end_delimiter: false,
+                ..Default::default()
             }),
             &CSTNode::Terminal(Terminal {
                 id: uuid::Uuid::new_v4(),
@@ -109,6 +110,7 @@ mod tests {
                 end_position: Point { row: 0, column: 7 },
                 value: "value",
                 is_block_end_delimiter: false,
+                ..Default::default()
             }),
             &CSTNode::NonTerminal(NonTerminal {
                 id: uuid::Uuid::new_v4(),

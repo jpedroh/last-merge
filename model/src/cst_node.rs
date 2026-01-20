@@ -75,6 +75,13 @@ impl CSTNode<'_> {
             CSTNode::NonTerminal(node) => node.get_identifier().is_some(),
         }
     }
+
+    pub fn leading_white_space(&self) -> Option<&str> {
+        match self {
+            CSTNode::Terminal(node) => node.leading_white_space,
+            CSTNode::NonTerminal(node) => node.leading_white_space,
+        }
+    }
 }
 
 #[derive(Debug, Default, Clone)]
@@ -86,6 +93,7 @@ pub struct NonTerminal<'a> {
     pub end_position: Point,
     pub are_children_unordered: bool,
     pub identifier: Option<Vec<&'a str>>,
+    pub leading_white_space: Option<&'a str>,
 }
 
 impl PartialEq for NonTerminal<'_> {
@@ -149,6 +157,7 @@ pub struct Terminal<'a> {
     pub start_position: Point,
     pub end_position: Point,
     pub is_block_end_delimiter: bool,
+    pub leading_white_space: Option<&'a str>,
 }
 
 impl PartialEq for Terminal<'_> {

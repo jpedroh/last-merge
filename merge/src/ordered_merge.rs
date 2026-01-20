@@ -469,6 +469,7 @@ pub fn ordered_merge<'a>(
     Ok(MergedCSTNode::NonTerminal {
         kind: left.kind,
         children: result_children,
+        leading_white_space: left.leading_white_space.clone(),
     })
 }
 
@@ -554,6 +555,7 @@ mod tests {
                 CSTNode::Terminal(Terminal {
                     id: uuid::Uuid::new_v4(),
                     kind: "kind_a",
+                    leading_white_space: None,
                     start_position: Point { row: 0, column: 0 },
                     end_position: Point { row: 0, column: 7 },
                     value: "value_a",
@@ -562,6 +564,7 @@ mod tests {
                 CSTNode::Terminal(Terminal {
                     id: uuid::Uuid::new_v4(),
                     kind: "kind_b",
+                    leading_white_space: None,
                     start_position: Point { row: 0, column: 0 },
                     end_position: Point { row: 0, column: 7 },
                     value: "value_b",
@@ -603,6 +606,7 @@ mod tests {
                 CSTNode::Terminal(Terminal {
                     id: uuid::Uuid::new_v4(),
                     kind: "kind_a",
+                    leading_white_space: None,
                     start_position: Point { row: 0, column: 0 },
                     end_position: Point { row: 0, column: 7 },
                     value: "value_a",
@@ -611,6 +615,7 @@ mod tests {
                 CSTNode::Terminal(Terminal {
                     id: uuid::Uuid::new_v4(),
                     kind: "kind_b",
+                    leading_white_space: None,
                     start_position: Point { row: 0, column: 0 },
                     end_position: Point { row: 0, column: 7 },
                     value: "value_b",
@@ -665,14 +670,17 @@ mod tests {
                 end_position: Point { row: 0, column: 7 },
                 value: "value_a",
                 is_block_end_delimiter: false,
+                leading_white_space: None,
             })],
             ..Default::default()
         });
 
         let expected_merge = MergedCSTNode::NonTerminal {
             kind: "kind",
+            leading_white_space: None,
             children: vec![MergedCSTNode::Terminal {
                 kind: "kind_a",
+                leading_white_space: None,
                 value: Cow::Borrowed("value_a"),
             }],
         };
@@ -697,6 +705,7 @@ mod tests {
             children: vec![CSTNode::Terminal(Terminal {
                 id: uuid::Uuid::new_v4(),
                 kind: "kind_a",
+                leading_white_space: None,
                 start_position: Point { row: 0, column: 0 },
                 end_position: Point { row: 0, column: 7 },
                 value: "value_a",
@@ -714,6 +723,7 @@ mod tests {
             children: vec![CSTNode::Terminal(Terminal {
                 id: uuid::Uuid::new_v4(),
                 kind: "kind_a",
+                leading_white_space: None,
                 start_position: Point { row: 0, column: 0 },
                 end_position: Point { row: 0, column: 7 },
                 value: "value_a",
@@ -732,6 +742,7 @@ mod tests {
                 CSTNode::Terminal(Terminal {
                     id: uuid::Uuid::new_v4(),
                     kind: "kind_a",
+                    leading_white_space: None,
                     start_position: Point { row: 0, column: 0 },
                     end_position: Point { row: 0, column: 7 },
                     value: "value_a",
@@ -740,6 +751,7 @@ mod tests {
                 CSTNode::Terminal(Terminal {
                     id: uuid::Uuid::new_v4(),
                     kind: "kind_b",
+                    leading_white_space: None,
                     start_position: Point { row: 0, column: 0 },
                     end_position: Point { row: 0, column: 7 },
                     value: "value_b",
@@ -751,14 +763,17 @@ mod tests {
 
         let merge = MergedCSTNode::NonTerminal {
             kind: "kind",
+            leading_white_space: None,
 
             children: vec![
                 MergedCSTNode::Terminal {
                     kind: "kind_a",
+                    leading_white_space: None,
                     value: Cow::Borrowed("value_a"),
                 },
                 MergedCSTNode::Terminal {
                     kind: "kind_b",
+                    leading_white_space: None,
                     value: Cow::Borrowed("value_b"),
                 },
             ],
@@ -784,6 +799,7 @@ mod tests {
             children: vec![CSTNode::Terminal(Terminal {
                 id: uuid::Uuid::new_v4(),
                 kind: "kind_a",
+                leading_white_space: None,
                 start_position: Point { row: 0, column: 0 },
                 end_position: Point { row: 0, column: 7 },
                 value: "value_a",
@@ -801,6 +817,7 @@ mod tests {
             children: vec![CSTNode::Terminal(Terminal {
                 id: uuid::Uuid::new_v4(),
                 kind: "kind_b",
+                leading_white_space: None,
                 start_position: Point { row: 0, column: 0 },
                 end_position: Point { row: 0, column: 7 },
                 value: "value_b",
@@ -818,6 +835,7 @@ mod tests {
             children: vec![CSTNode::Terminal(Terminal {
                 id: uuid::Uuid::new_v4(),
                 kind: "kind_a",
+                leading_white_space: None,
                 start_position: Point { row: 0, column: 0 },
                 end_position: Point { row: 0, column: 7 },
                 value: "value_a",
@@ -828,9 +846,10 @@ mod tests {
 
         let expected_merge = MergedCSTNode::NonTerminal {
             kind: "kind",
-
+            leading_white_space: None,
             children: vec![MergedCSTNode::Terminal {
                 kind: "kind_b",
+                leading_white_space: None,
                 value: Cow::Borrowed("value_b"),
             }],
         };
@@ -862,6 +881,7 @@ mod tests {
                 children: vec![CSTNode::Terminal(Terminal {
                     id: uuid::Uuid::new_v4(),
                     kind: "kind_a",
+                    leading_white_space: None,
                     start_position: Point { row: 0, column: 0 },
                     end_position: Point { row: 0, column: 7 },
                     value: "value_a",
@@ -887,6 +907,7 @@ mod tests {
                 children: vec![CSTNode::Terminal(Terminal {
                     id: uuid::Uuid::new_v4(),
                     kind: "kind_b",
+                    leading_white_space: None,
                     start_position: Point { row: 0, column: 0 },
                     end_position: Point { row: 0, column: 7 },
                     value: "value_b",
@@ -912,6 +933,7 @@ mod tests {
                 children: vec![CSTNode::Terminal(Terminal {
                     id: uuid::Uuid::new_v4(),
                     kind: "kind_c",
+                    leading_white_space: None,
                     start_position: Point { row: 0, column: 0 },
                     end_position: Point { row: 0, column: 7 },
                     value: "value_c",
@@ -946,18 +968,23 @@ mod tests {
         assert_eq!(
             MergedCSTNode::NonTerminal {
                 kind: "kind",
+                leading_white_space: None,
                 children: vec![MergedCSTNode::Conflict {
                     left: Some(Box::new(MergedCSTNode::NonTerminal {
                         kind: "another_subtree",
+                        leading_white_space: None,
                         children: vec![MergedCSTNode::Terminal {
                             kind: "kind_b",
+                            leading_white_space: None,
                             value: Cow::Borrowed("value_b"),
                         }],
                     })),
                     right: Some(Box::new(MergedCSTNode::NonTerminal {
                         kind: "subtree",
+                        leading_white_space: None,
                         children: vec![MergedCSTNode::Terminal {
                             kind: "kind_c",
+                            leading_white_space: None,
                             value: Cow::Borrowed("value_c"),
                         }],
                     })),
@@ -969,18 +996,23 @@ mod tests {
         assert_eq!(
             MergedCSTNode::NonTerminal {
                 kind: "kind",
+                leading_white_space: None,
                 children: vec![MergedCSTNode::Conflict {
                     left: Some(Box::new(MergedCSTNode::NonTerminal {
                         kind: "subtree",
+                        leading_white_space: None,
                         children: vec![MergedCSTNode::Terminal {
                             kind: "kind_c",
+                            leading_white_space: None,
                             value: Cow::Borrowed("value_c"),
                         }],
                     })),
                     right: Some(Box::new(MergedCSTNode::NonTerminal {
                         kind: "another_subtree",
+                        leading_white_space: None,
                         children: vec![MergedCSTNode::Terminal {
                             kind: "kind_b",
+                            leading_white_space: None,
                             value: Cow::Borrowed("value_b"),
                         }],
                     })),
@@ -1013,6 +1045,7 @@ mod tests {
             children: vec![CSTNode::Terminal(Terminal {
                 id: uuid::Uuid::new_v4(),
                 kind: "kind_a",
+                leading_white_space: None,
                 start_position: Point { row: 0, column: 0 },
                 end_position: Point { row: 0, column: 7 },
                 value: "value_a",
@@ -1030,6 +1063,7 @@ mod tests {
             children: vec![CSTNode::Terminal(Terminal {
                 id: uuid::Uuid::new_v4(),
                 kind: "kind_b",
+                leading_white_space: None,
                 start_position: Point { row: 0, column: 0 },
                 end_position: Point { row: 0, column: 7 },
                 value: "value_b",
@@ -1044,13 +1078,16 @@ mod tests {
             &right,
             &MergedCSTNode::NonTerminal {
                 kind: "kind",
+                leading_white_space: None,
                 children: vec![MergedCSTNode::Conflict {
                     left: Some(Box::new(MergedCSTNode::Terminal {
                         kind: "kind_a",
+                        leading_white_space: None,
                         value: Cow::Borrowed("value_a"),
                     })),
                     right: Some(Box::new(MergedCSTNode::Terminal {
                         kind: "kind_b",
+                        leading_white_space: None,
                         value: Cow::Borrowed("value_b"),
                     })),
                 }],
@@ -1071,6 +1108,7 @@ mod tests {
                 CSTNode::Terminal(Terminal {
                     id: uuid::Uuid::new_v4(),
                     kind: "kind_a",
+                    leading_white_space: None,
                     start_position: Point { row: 0, column: 0 },
                     end_position: Point { row: 0, column: 7 },
                     value: "value_a",
@@ -1079,6 +1117,7 @@ mod tests {
                 CSTNode::Terminal(Terminal {
                     id: uuid::Uuid::new_v4(),
                     kind: "kind_b",
+                    leading_white_space: None,
                     start_position: Point { row: 0, column: 0 },
                     end_position: Point { row: 0, column: 7 },
                     value: "value_b",
@@ -1098,6 +1137,7 @@ mod tests {
                 CSTNode::Terminal(Terminal {
                     id: uuid::Uuid::new_v4(),
                     kind: "kind_a",
+                    leading_white_space: None,
                     start_position: Point { row: 0, column: 0 },
                     end_position: Point { row: 0, column: 7 },
                     value: "value_a",
@@ -1106,6 +1146,7 @@ mod tests {
                 CSTNode::Terminal(Terminal {
                     id: uuid::Uuid::new_v4(),
                     kind: "kind_b",
+                    leading_white_space: None,
                     start_position: Point { row: 0, column: 0 },
                     end_position: Point { row: 0, column: 7 },
                     value: "value_b",
@@ -1124,6 +1165,7 @@ mod tests {
             children: vec![CSTNode::Terminal(Terminal {
                 id: uuid::Uuid::new_v4(),
                 kind: "kind_b",
+                leading_white_space: None,
                 start_position: Point { row: 0, column: 0 },
                 end_position: Point { row: 0, column: 7 },
                 value: "value_b",
@@ -1134,9 +1176,10 @@ mod tests {
 
         let expected_merge = MergedCSTNode::NonTerminal {
             kind: "kind",
-
+            leading_white_space: None,
             children: vec![MergedCSTNode::Terminal {
                 kind: "kind_b",
+                leading_white_space: None,
                 value: Cow::Borrowed("value_b"),
             }],
         };
@@ -1163,6 +1206,7 @@ mod tests {
                     children: vec![CSTNode::Terminal(Terminal {
                         id: uuid::Uuid::new_v4(),
                         kind: "kind_b",
+                        leading_white_space: None,
                         start_position: Point { row: 0, column: 0 },
                         end_position: Point { row: 0, column: 7 },
                         value: "value_b",
@@ -1173,6 +1217,7 @@ mod tests {
                 CSTNode::Terminal(Terminal {
                     id: uuid::Uuid::new_v4(),
                     kind: "kind_a",
+                    leading_white_space: None,
                     start_position: Point { row: 0, column: 0 },
                     end_position: Point { row: 0, column: 7 },
                     value: "value_a",
@@ -1198,6 +1243,7 @@ mod tests {
                     children: vec![CSTNode::Terminal(Terminal {
                         id: uuid::Uuid::new_v4(),
                         kind: "kind_c",
+                        leading_white_space: None,
                         start_position: Point { row: 0, column: 0 },
                         end_position: Point { row: 0, column: 7 },
                         value: "value_c",
@@ -1208,6 +1254,7 @@ mod tests {
                 CSTNode::Terminal(Terminal {
                     id: uuid::Uuid::new_v4(),
                     kind: "kind_a",
+                    leading_white_space: None,
                     start_position: Point { row: 0, column: 0 },
                     end_position: Point { row: 0, column: 7 },
                     value: "value_a",
@@ -1226,6 +1273,7 @@ mod tests {
             children: vec![CSTNode::Terminal(Terminal {
                 id: uuid::Uuid::new_v4(),
                 kind: "kind_a",
+                leading_white_space: None,
                 start_position: Point { row: 0, column: 0 },
                 end_position: Point { row: 0, column: 7 },
                 value: "value_a",
@@ -1240,12 +1288,15 @@ mod tests {
             &right,
             &MergedCSTNode::NonTerminal {
                 kind: "kind",
+                leading_white_space: None,
                 children: vec![
                     MergedCSTNode::Conflict {
                         left: Some(Box::new(MergedCSTNode::NonTerminal {
                             kind: "subtree",
+                            leading_white_space: None,
                             children: vec![MergedCSTNode::Terminal {
                                 kind: "kind_c",
+                                leading_white_space: None,
                                 value: Cow::Borrowed("value_c"),
                             }],
                         })),
@@ -1253,6 +1304,7 @@ mod tests {
                     },
                     MergedCSTNode::Terminal {
                         kind: "kind_a",
+                        leading_white_space: None,
                         value: Cow::Borrowed("value_a"),
                     },
                 ],
@@ -1265,19 +1317,23 @@ mod tests {
             &left,
             &MergedCSTNode::NonTerminal {
                 kind: "kind",
+                leading_white_space: None,
                 children: vec![
                     MergedCSTNode::Conflict {
                         left: None,
                         right: Some(Box::new(MergedCSTNode::NonTerminal {
                             kind: "subtree",
+                            leading_white_space: None,
                             children: vec![MergedCSTNode::Terminal {
                                 kind: "kind_c",
+                                leading_white_space: None,
                                 value: Cow::Borrowed("value_c"),
                             }],
                         })),
                     },
                     MergedCSTNode::Terminal {
                         kind: "kind_a",
+                        leading_white_space: None,
                         value: Cow::Borrowed("value_a"),
                     },
                 ],
@@ -1297,6 +1353,7 @@ mod tests {
                 CSTNode::Terminal(Terminal {
                     id: uuid::Uuid::new_v4(),
                     kind: "kind_a",
+                    leading_white_space: None,
                     start_position: Point { row: 0, column: 0 },
                     end_position: Point { row: 0, column: 7 },
                     value: "value_a",
@@ -1305,6 +1362,7 @@ mod tests {
                 CSTNode::Terminal(Terminal {
                     id: uuid::Uuid::new_v4(),
                     kind: "kind_c",
+                    leading_white_space: None,
                     start_position: Point { row: 0, column: 0 },
                     end_position: Point { row: 0, column: 7 },
                     value: "value_c",
@@ -1324,6 +1382,7 @@ mod tests {
                 CSTNode::Terminal(Terminal {
                     id: uuid::Uuid::new_v4(),
                     kind: "kind_a",
+                    leading_white_space: None,
                     start_position: Point { row: 0, column: 0 },
                     end_position: Point { row: 0, column: 7 },
                     value: "value_a",
@@ -1332,6 +1391,7 @@ mod tests {
                 CSTNode::Terminal(Terminal {
                     id: uuid::Uuid::new_v4(),
                     kind: "kind_c",
+                    leading_white_space: None,
                     start_position: Point { row: 0, column: 0 },
                     end_position: Point { row: 0, column: 7 },
                     value: "value_c",
@@ -1351,6 +1411,7 @@ mod tests {
                 CSTNode::Terminal(Terminal {
                     id: uuid::Uuid::new_v4(),
                     kind: "kind_a",
+                    leading_white_space: None,
                     start_position: Point { row: 0, column: 0 },
                     end_position: Point { row: 0, column: 7 },
                     value: "value_a",
@@ -1359,6 +1420,7 @@ mod tests {
                 CSTNode::Terminal(Terminal {
                     id: uuid::Uuid::new_v4(),
                     kind: "kind_b",
+                    leading_white_space: None,
                     start_position: Point { row: 0, column: 0 },
                     end_position: Point { row: 0, column: 7 },
                     value: "value_b",
@@ -1367,6 +1429,7 @@ mod tests {
                 CSTNode::Terminal(Terminal {
                     id: uuid::Uuid::new_v4(),
                     kind: "kind_c",
+                    leading_white_space: None,
                     start_position: Point { row: 0, column: 0 },
                     end_position: Point { row: 0, column: 7 },
                     value: "value_c",
@@ -1378,18 +1441,21 @@ mod tests {
 
         let expected_merge = MergedCSTNode::NonTerminal {
             kind: "kind",
-
+            leading_white_space: None,
             children: vec![
                 MergedCSTNode::Terminal {
                     kind: "kind_a",
+                    leading_white_space: None,
                     value: Cow::Borrowed("value_a"),
                 },
                 MergedCSTNode::Terminal {
                     kind: "kind_b",
+                    leading_white_space: None,
                     value: Cow::Borrowed("value_b"),
                 },
                 MergedCSTNode::Terminal {
                     kind: "kind_c",
+                    leading_white_space: None,
                     value: Cow::Borrowed("value_c"),
                 },
             ],
@@ -1414,6 +1480,7 @@ mod tests {
             children: vec![CSTNode::Terminal(Terminal {
                 id: uuid::Uuid::new_v4(),
                 kind: "kind_b",
+                leading_white_space: None,
                 start_position: Point { row: 0, column: 0 },
                 end_position: Point { row: 0, column: 7 },
                 value: "value_b",
@@ -1431,6 +1498,7 @@ mod tests {
             children: vec![CSTNode::Terminal(Terminal {
                 id: uuid::Uuid::new_v4(),
                 kind: "kind_a",
+                leading_white_space: None,
                 start_position: Point { row: 0, column: 0 },
                 end_position: Point { row: 0, column: 7 },
                 value: "value_a",
@@ -1449,6 +1517,7 @@ mod tests {
                 CSTNode::Terminal(Terminal {
                     id: uuid::Uuid::new_v4(),
                     kind: "kind_b",
+                    leading_white_space: None,
                     start_position: Point { row: 0, column: 0 },
                     end_position: Point { row: 0, column: 7 },
                     value: "value_b",
@@ -1457,6 +1526,7 @@ mod tests {
                 CSTNode::Terminal(Terminal {
                     id: uuid::Uuid::new_v4(),
                     kind: "kind_a",
+                    leading_white_space: None,
                     start_position: Point { row: 0, column: 0 },
                     end_position: Point { row: 0, column: 7 },
                     value: "value_a",
@@ -1469,8 +1539,10 @@ mod tests {
         let expected_merge = MergedCSTNode::NonTerminal {
             kind: "kind",
 
+            leading_white_space: None,
             children: vec![MergedCSTNode::Terminal {
                 kind: "kind_a",
+                leading_white_space: None,
                 value: Cow::Borrowed("value_a"),
             }],
         };
@@ -1500,6 +1572,7 @@ mod tests {
                 children: vec![CSTNode::Terminal(Terminal {
                     id: uuid::Uuid::new_v4(),
                     kind: "kind_b",
+                    leading_white_space: None,
                     start_position: Point { row: 0, column: 0 },
                     end_position: Point { row: 0, column: 7 },
                     value: "value_b",
@@ -1519,6 +1592,7 @@ mod tests {
             children: vec![CSTNode::Terminal(Terminal {
                 id: uuid::Uuid::new_v4(),
                 kind: "kind_a",
+                leading_white_space: None,
                 start_position: Point { row: 0, column: 0 },
                 end_position: Point { row: 0, column: 7 },
                 value: "value_a",
@@ -1543,6 +1617,7 @@ mod tests {
                     children: vec![CSTNode::Terminal(Terminal {
                         id: uuid::Uuid::new_v4(),
                         kind: "kind_b",
+                        leading_white_space: None,
                         start_position: Point { row: 0, column: 0 },
                         end_position: Point { row: 0, column: 7 },
                         value: "value_c",
@@ -1553,6 +1628,7 @@ mod tests {
                 CSTNode::Terminal(Terminal {
                     id: uuid::Uuid::new_v4(),
                     kind: "kind_a",
+                    leading_white_space: None,
                     start_position: Point { row: 0, column: 0 },
                     end_position: Point { row: 0, column: 7 },
                     value: "value_a",
@@ -1568,19 +1644,23 @@ mod tests {
             &parent_b,
             &MergedCSTNode::NonTerminal {
                 kind: "kind",
+                leading_white_space: None,
                 children: vec![
                     MergedCSTNode::Conflict {
                         left: None,
                         right: Some(Box::new(MergedCSTNode::NonTerminal {
                             kind: "subtree",
+                            leading_white_space: None,
                             children: vec![MergedCSTNode::Terminal {
                                 kind: "kind_b",
+                                leading_white_space: None,
                                 value: Cow::Borrowed("value_c"),
                             }],
                         })),
                     },
                     MergedCSTNode::Terminal {
                         kind: "kind_a",
+                        leading_white_space: None,
                         value: Cow::Borrowed("value_a"),
                     },
                 ],
@@ -1592,13 +1672,16 @@ mod tests {
             &parent_a,
             &MergedCSTNode::NonTerminal {
                 kind: "kind",
+                leading_white_space: None,
                 children: vec![
                     MergedCSTNode::Conflict {
                         left: Some(Box::new(MergedCSTNode::NonTerminal {
                             kind: "subtree",
+                            leading_white_space: None,
                             children: vec![MergedCSTNode::Terminal {
                                 kind: "kind_b",
                                 value: Cow::Borrowed("value_c"),
+                                leading_white_space: None,
                             }],
                         })),
                         right: None,
@@ -1606,6 +1689,7 @@ mod tests {
                     MergedCSTNode::Terminal {
                         kind: "kind_a",
                         value: Cow::Borrowed("value_a"),
+                        leading_white_space: None,
                     },
                 ],
             },
@@ -1637,6 +1721,7 @@ mod tests {
                 end_position: Point { row: 0, column: 7 },
                 value: "value_a",
                 is_block_end_delimiter: false,
+                ..Default::default()
             })],
             ..Default::default()
         });
@@ -1655,6 +1740,7 @@ mod tests {
                     end_position: Point { row: 0, column: 7 },
                     value: "value_c",
                     is_block_end_delimiter: false,
+                    ..Default::default()
                 }),
                 CSTNode::Terminal(Terminal {
                     id: uuid::Uuid::new_v4(),
@@ -1663,6 +1749,7 @@ mod tests {
                     end_position: Point { row: 0, column: 7 },
                     value: "value_a",
                     is_block_end_delimiter: false,
+                    ..Default::default()
                 }),
             ],
             ..Default::default()
@@ -1670,15 +1757,17 @@ mod tests {
 
         let expected_merge = MergedCSTNode::NonTerminal {
             kind: "kind",
-
+            leading_white_space: None,
             children: vec![
                 MergedCSTNode::Terminal {
                     kind: "kind_c",
                     value: Cow::Borrowed("value_c"),
+                    leading_white_space: None,
                 },
                 MergedCSTNode::Terminal {
                     kind: "kind_a",
                     value: Cow::Borrowed("value_a"),
+                    leading_white_space: None,
                 },
             ],
         };
@@ -1708,6 +1797,7 @@ mod tests {
                     end_position: Point { row: 0, column: 7 },
                     value: "value_b",
                     is_block_end_delimiter: false,
+                    ..Default::default()
                 }),
                 CSTNode::Terminal(Terminal {
                     id: uuid::Uuid::new_v4(),
@@ -1716,6 +1806,7 @@ mod tests {
                     end_position: Point { row: 0, column: 7 },
                     value: "value_c",
                     is_block_end_delimiter: false,
+                    ..Default::default()
                 }),
             ],
             ..Default::default()
@@ -1734,6 +1825,7 @@ mod tests {
                 end_position: Point { row: 0, column: 7 },
                 value: "value_b",
                 is_block_end_delimiter: false,
+                ..Default::default()
             })],
             ..Default::default()
         });
@@ -1751,14 +1843,15 @@ mod tests {
                 end_position: Point { row: 0, column: 7 },
                 value: "value_c",
                 is_block_end_delimiter: false,
+                ..Default::default()
             })],
             ..Default::default()
         });
 
         let expected_merge = MergedCSTNode::NonTerminal {
             kind: "kind",
-
             children: vec![],
+            leading_white_space: None,
         };
 
         assert_merge_is_correct_and_idempotent_with_respect_to_parent_side(
@@ -1792,6 +1885,7 @@ mod tests {
                         end_position: Point { row: 0, column: 7 },
                         value: "value_b",
                         is_block_end_delimiter: false,
+                        ..Default::default()
                     })],
                     ..Default::default()
                 }),
@@ -1808,6 +1902,7 @@ mod tests {
                         end_position: Point { row: 0, column: 7 },
                         value: "value_c",
                         is_block_end_delimiter: false,
+                        ..Default::default()
                     })],
                     ..Default::default()
                 }),
@@ -1834,6 +1929,7 @@ mod tests {
                     end_position: Point { row: 0, column: 7 },
                     value: "value_c",
                     is_block_end_delimiter: false,
+                    leading_white_space: None,
                 })],
                 ..Default::default()
             })],
@@ -1859,6 +1955,7 @@ mod tests {
                     end_position: Point { row: 0, column: 7 },
                     value: "value_c",
                     is_block_end_delimiter: false,
+                    leading_white_space: None,
                 })],
                 ..Default::default()
             })],
@@ -1871,12 +1968,15 @@ mod tests {
             &parent_b,
             &MergedCSTNode::NonTerminal {
                 kind: "kind",
+                leading_white_space: None,
                 children: vec![MergedCSTNode::Conflict {
                     left: Some(Box::new(MergedCSTNode::NonTerminal {
                         kind: "subtree_b",
+                        leading_white_space: None,
                         children: vec![MergedCSTNode::Terminal {
                             kind: "kind_c",
                             value: Cow::Borrowed("value_c"),
+                            leading_white_space: None,
                         }],
                     })),
                     right: None,
@@ -1889,6 +1989,7 @@ mod tests {
             &parent_a,
             &MergedCSTNode::NonTerminal {
                 kind: "kind",
+                leading_white_space: None,
                 children: vec![MergedCSTNode::Conflict {
                     left: None,
                     right: Some(Box::new(MergedCSTNode::NonTerminal {
@@ -1896,7 +1997,9 @@ mod tests {
                         children: vec![MergedCSTNode::Terminal {
                             kind: "kind_c",
                             value: Cow::Borrowed("value_c"),
+                            leading_white_space: None,
                         }],
+                        leading_white_space: None,
                     })),
                 }],
             },
