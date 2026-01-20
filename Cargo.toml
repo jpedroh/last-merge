@@ -6,7 +6,7 @@ members = [
     "merge",
     "parsing",
     "model"
-, "pretty-printing"]
+]
 
 [workspace.dependencies]
 log = "0.4.20"
