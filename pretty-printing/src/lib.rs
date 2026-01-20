@@ -21,7 +21,7 @@ impl PrettyPrintableNode for Node<'_> {
     }
 
     fn raw_source_code<'a>(&'a self, src: &'a str) -> &'a str {
-        &src[self.byte_range()]
+        &self.utf8_text(src.as_bytes()).expect("Only UTF8 valid code is accepted")
     }
 
     fn write_pretty(&self, src: &str, out: &mut String) {
@@ -55,4 +55,40 @@ pub fn pretty_print_tree<T: PrettyPrintableNode>(tree: &[MergedCstNode<T>], src:
     }
 
     out
+}
+
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn pretty_print_real_tree_sitter_nodes() {
+        use tree_sitter::{Parser, Tree};
+
+        let mut parser = Parser::new();
+        parser
+            .set_language(&tree_sitter_java::LANGUAGE.into())
+            .expect("Error loading grammar");
+
+        let src = r#"public class Main {
+            public static void main() {
+
+            }
+        }"#;
+        let tree: Tree = parser.parse(src, None).unwrap();
+        let root = tree.root_node();
+
+        let mut nodes = Vec::new();
+        let mut cursor = root.walk();
+
+        let children: Vec<_> = root.children(&mut cursor).collect();
+
+        for child in children.iter() {
+            nodes.push(super::MergedCstNode::Clean(child));
+        }
+
+        let result = super::pretty_print_tree(&nodes, src);
+
+        println!("{}", result);
+
+        assert_eq!(result, src);
+    }
 }

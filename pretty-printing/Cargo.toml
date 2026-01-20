@@ -9,3 +9,6 @@ path = "src/lib.rs"
 
 [dependencies]
 tree-sitter = "0.25.8"
+
+[dev-dependencies]
+tree-sitter-java = "0.23.5"

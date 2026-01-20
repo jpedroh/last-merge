@@ -477,6 +477,7 @@ name = "pretty-printing"
 version = "0.1.0"
 dependencies = [
  "tree-sitter",
+ "tree-sitter-java",
 ]
 
 [[package]]
