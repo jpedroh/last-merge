@@ -8,3 +8,4 @@ name = "pretty_printing"
 path = "src/lib.rs"
 
 [dependencies]
+tree-sitter = "0.25.8"

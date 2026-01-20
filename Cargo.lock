@@ -475,6 +475,9 @@ dependencies = [
 [[package]]
 name = "pretty-printing"
 version = "0.1.0"
+dependencies = [
+ "tree-sitter",
+]
 
 [[package]]
 name = "proc-macro2"
