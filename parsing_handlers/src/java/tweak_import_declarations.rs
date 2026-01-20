@@ -19,10 +19,9 @@ pub fn tweak_import_declarations(root: CSTNode<'_>) -> CSTNode<'_> {
                 return CSTNode::NonTerminal(program);
             }
 
-            let import_declarations_start = import_declaration_children
-                .first()
-                .unwrap()
-                .start_position();
+            let first_import_declaration = import_declaration_children.first().unwrap().clone();
+
+            let import_declarations_start = first_import_declaration.start_position();
 
             let import_declarations_end =
                 import_declaration_children.last().unwrap().end_position();
@@ -35,6 +34,7 @@ pub fn tweak_import_declarations(root: CSTNode<'_>) -> CSTNode<'_> {
                 end_position: import_declarations_end,
                 are_children_unordered: true,
                 identifier: None,
+                leading_white_space: Some("\n"),
             });
 
             let first_import_declaration_index = program
@@ -65,6 +65,7 @@ pub fn tweak_import_declarations(root: CSTNode<'_>) -> CSTNode<'_> {
                 children: new_program_children,
                 are_children_unordered: program.are_children_unordered,
                 identifier: program.identifier,
+                leading_white_space: None,
             })
         }
     }

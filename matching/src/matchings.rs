@@ -103,6 +103,7 @@ mod tests {
             start_position: Point { row: 0, column: 0 },
             end_position: Point { row: 0, column: 5 },
             is_block_end_delimiter: false,
+            leading_white_space: None,
         });
 
         assert_eq!(None, Matchings::empty().find_matching_for(&a_node))
@@ -117,6 +118,7 @@ mod tests {
             start_position: Point { row: 0, column: 0 },
             end_position: Point { row: 0, column: 5 },
             is_block_end_delimiter: false,
+            leading_white_space: None,
         });
 
         let mut matchings = HashMap::new();

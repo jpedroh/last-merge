@@ -217,6 +217,7 @@ pub fn unordered_merge<'a>(
     Ok(MergedCSTNode::NonTerminal {
         kind: left.kind,
         children: result_children,
+        leading_white_space: left.leading_white_space,
     })
 }
 
@@ -307,6 +308,7 @@ mod tests {
                     start_position: model::Point { row: 0, column: 1 },
                     end_position: model::Point { row: 0, column: 1 },
                     is_block_end_delimiter: false,
+                    ..Default::default()
                 }),
                 CSTNode::Terminal(Terminal {
                     id: uuid::Uuid::new_v4(),
@@ -315,6 +317,7 @@ mod tests {
                     start_position: model::Point { row: 1, column: 1 },
                     end_position: model::Point { row: 1, column: 1 },
                     is_block_end_delimiter: true,
+                    ..Default::default()
                 }),
             ],
             ..Default::default()
@@ -334,6 +337,7 @@ mod tests {
                     start_position: model::Point { row: 0, column: 1 },
                     end_position: model::Point { row: 0, column: 1 },
                     is_block_end_delimiter: false,
+                    ..Default::default()
                 }),
                 CSTNode::Terminal(Terminal {
                     id: uuid::Uuid::new_v4(),
@@ -342,6 +346,7 @@ mod tests {
                     start_position: model::Point { row: 1, column: 0 },
                     end_position: model::Point { row: 1, column: 4 },
                     is_block_end_delimiter: false,
+                    ..Default::default()
                 }),
                 CSTNode::Terminal(Terminal {
                     id: uuid::Uuid::new_v4(),
@@ -350,6 +355,7 @@ mod tests {
                     start_position: model::Point { row: 2, column: 1 },
                     end_position: model::Point { row: 2, column: 1 },
                     is_block_end_delimiter: true,
+                    ..Default::default()
                 }),
             ],
             ..Default::default()
@@ -369,6 +375,7 @@ mod tests {
                     start_position: model::Point { row: 0, column: 1 },
                     end_position: model::Point { row: 0, column: 1 },
                     is_block_end_delimiter: false,
+                    ..Default::default()
                 }),
                 CSTNode::Terminal(Terminal {
                     id: uuid::Uuid::new_v4(),
@@ -377,6 +384,7 @@ mod tests {
                     start_position: model::Point { row: 1, column: 1 },
                     end_position: model::Point { row: 1, column: 1 },
                     is_block_end_delimiter: true,
+                    ..Default::default()
                 }),
             ],
             ..Default::default()
@@ -388,16 +396,20 @@ mod tests {
                 MergedCSTNode::Terminal {
                     kind: "{",
                     value: std::borrow::Cow::Borrowed("{"),
+                    leading_white_space: None,
                 },
                 MergedCSTNode::Terminal {
                     kind: "method_declaration",
                     value: std::borrow::Cow::Borrowed("main"),
+                    leading_white_space: None,
                 },
                 MergedCSTNode::Terminal {
                     kind: "}",
                     value: std::borrow::Cow::Borrowed("}"),
+                    leading_white_space: None,
                 },
             ],
+            leading_white_space: None,
         };
 
         assert_merge_is_correct_and_idempotent_with_respect_to_parent_side(
@@ -421,6 +433,7 @@ mod tests {
                     start_position: model::Point { row: 0, column: 1 },
                     end_position: model::Point { row: 0, column: 1 },
                     is_block_end_delimiter: false,
+                    ..Default::default()
                 }),
                 CSTNode::Terminal(Terminal {
                     id: uuid::Uuid::new_v4(),
@@ -429,6 +442,7 @@ mod tests {
                     start_position: model::Point { row: 1, column: 1 },
                     end_position: model::Point { row: 1, column: 1 },
                     is_block_end_delimiter: true,
+                    ..Default::default()
                 }),
             ],
             ..Default::default()
@@ -448,6 +462,7 @@ mod tests {
                     start_position: model::Point { row: 0, column: 1 },
                     end_position: model::Point { row: 0, column: 1 },
                     is_block_end_delimiter: false,
+                    ..Default::default()
                 }),
                 CSTNode::NonTerminal(NonTerminal {
                     id: uuid::Uuid::new_v4(),
@@ -462,6 +477,7 @@ mod tests {
                         start_position: model::Point { row: 0, column: 1 },
                         end_position: model::Point { row: 0, column: 1 },
                         is_block_end_delimiter: false,
+                        ..Default::default()
                     })],
                     ..Default::default()
                 }),
@@ -472,6 +488,7 @@ mod tests {
                     start_position: model::Point { row: 2, column: 1 },
                     end_position: model::Point { row: 2, column: 1 },
                     is_block_end_delimiter: true,
+                    ..Default::default()
                 }),
             ],
             ..Default::default()
@@ -491,6 +508,7 @@ mod tests {
                     start_position: model::Point { row: 0, column: 1 },
                     end_position: model::Point { row: 0, column: 1 },
                     is_block_end_delimiter: false,
+                    ..Default::default()
                 }),
                 CSTNode::NonTerminal(NonTerminal {
                     id: uuid::Uuid::new_v4(),
@@ -505,6 +523,7 @@ mod tests {
                         start_position: model::Point { row: 0, column: 1 },
                         end_position: model::Point { row: 0, column: 1 },
                         is_block_end_delimiter: false,
+                        ..Default::default()
                     })],
                     ..Default::default()
                 }),
@@ -515,6 +534,7 @@ mod tests {
                     start_position: model::Point { row: 2, column: 1 },
                     end_position: model::Point { row: 2, column: 1 },
                     is_block_end_delimiter: true,
+                    ..Default::default()
                 }),
             ],
             ..Default::default()
@@ -526,19 +546,24 @@ mod tests {
                 MergedCSTNode::Terminal {
                     kind: "{",
                     value: std::borrow::Cow::Borrowed("{"),
+                    leading_white_space: None,
                 },
                 MergedCSTNode::NonTerminal {
                     kind: "a_method_declaration",
                     children: vec![MergedCSTNode::Terminal {
                         kind: "identifier",
                         value: std::borrow::Cow::Borrowed("main"),
+                        leading_white_space: None,
                     }],
+                    leading_white_space: None,
                 },
                 MergedCSTNode::Terminal {
                     kind: "}",
                     value: std::borrow::Cow::Borrowed("}"),
+                    leading_white_space: None,
                 },
             ],
+            leading_white_space: None,
         };
 
         assert_merge_is_correct_and_idempotent_with_respect_to_parent_side(
@@ -566,6 +591,7 @@ mod tests {
                     start_position: model::Point { row: 0, column: 1 },
                     end_position: model::Point { row: 0, column: 1 },
                     is_block_end_delimiter: false,
+                    ..Default::default()
                 }),
                 CSTNode::NonTerminal(NonTerminal {
                     id: uuid::Uuid::new_v4(),
@@ -581,6 +607,7 @@ mod tests {
                             start_position: model::Point { row: 0, column: 1 },
                             end_position: model::Point { row: 0, column: 1 },
                             is_block_end_delimiter: false,
+                            ..Default::default()
                         }),
                         CSTNode::Terminal(Terminal {
                             id: uuid::Uuid::new_v4(),
@@ -589,6 +616,7 @@ mod tests {
                             start_position: model::Point { row: 0, column: 1 },
                             end_position: model::Point { row: 0, column: 1 },
                             is_block_end_delimiter: false,
+                            ..Default::default()
                         }),
                     ],
                     identifier: Some(vec!["main"]),
@@ -601,6 +629,7 @@ mod tests {
                     start_position: model::Point { row: 1, column: 1 },
                     end_position: model::Point { row: 1, column: 1 },
                     is_block_end_delimiter: true,
+                    ..Default::default()
                 }),
             ],
             ..Default::default()
@@ -620,6 +649,7 @@ mod tests {
                     start_position: model::Point { row: 0, column: 1 },
                     end_position: model::Point { row: 0, column: 1 },
                     is_block_end_delimiter: false,
+                    ..Default::default()
                 }),
                 CSTNode::NonTerminal(NonTerminal {
                     id: uuid::Uuid::new_v4(),
@@ -635,6 +665,7 @@ mod tests {
                             start_position: model::Point { row: 0, column: 1 },
                             end_position: model::Point { row: 0, column: 1 },
                             is_block_end_delimiter: false,
+                            ..Default::default()
                         }),
                         CSTNode::Terminal(Terminal {
                             id: uuid::Uuid::new_v4(),
@@ -643,6 +674,7 @@ mod tests {
                             start_position: model::Point { row: 0, column: 1 },
                             end_position: model::Point { row: 0, column: 1 },
                             is_block_end_delimiter: false,
+                            ..Default::default()
                         }),
                     ],
                     identifier: Some(vec!["main"]),
@@ -655,6 +687,7 @@ mod tests {
                     start_position: model::Point { row: 2, column: 1 },
                     end_position: model::Point { row: 2, column: 1 },
                     is_block_end_delimiter: true,
+                    ..Default::default()
                 }),
             ],
             ..Default::default()
@@ -674,6 +707,7 @@ mod tests {
                     start_position: model::Point { row: 0, column: 1 },
                     end_position: model::Point { row: 0, column: 1 },
                     is_block_end_delimiter: false,
+                    ..Default::default()
                 }),
                 CSTNode::Terminal(Terminal {
                     id: uuid::Uuid::new_v4(),
@@ -682,6 +716,7 @@ mod tests {
                     start_position: model::Point { row: 2, column: 1 },
                     end_position: model::Point { row: 2, column: 1 },
                     is_block_end_delimiter: true,
+                    ..Default::default()
                 }),
             ],
             ..Default::default()
@@ -693,12 +728,15 @@ mod tests {
                 MergedCSTNode::Terminal {
                     kind: "{",
                     value: std::borrow::Cow::Borrowed("{"),
+                    leading_white_space: None,
                 },
                 MergedCSTNode::Terminal {
                     kind: "}",
                     value: std::borrow::Cow::Borrowed("}"),
+                    leading_white_space: None,
                 },
             ],
+            leading_white_space: None,
         };
 
         assert_merge_is_correct_and_idempotent_with_respect_to_parent_side(
@@ -725,6 +763,7 @@ mod tests {
                     start_position: model::Point { row: 0, column: 1 },
                     end_position: model::Point { row: 0, column: 1 },
                     is_block_end_delimiter: false,
+                    leading_white_space: None,
                 }),
                 CSTNode::NonTerminal(NonTerminal {
                     id: uuid::Uuid::new_v4(),
@@ -740,6 +779,7 @@ mod tests {
                             start_position: model::Point { row: 0, column: 1 },
                             end_position: model::Point { row: 0, column: 1 },
                             is_block_end_delimiter: false,
+                            leading_white_space: None,
                         }),
                         CSTNode::Terminal(Terminal {
                             id: uuid::Uuid::new_v4(),
@@ -748,6 +788,7 @@ mod tests {
                             start_position: model::Point { row: 0, column: 1 },
                             end_position: model::Point { row: 0, column: 1 },
                             is_block_end_delimiter: false,
+                            leading_white_space: None,
                         }),
                         CSTNode::Terminal(Terminal {
                             id: uuid::Uuid::new_v4(),
@@ -756,6 +797,7 @@ mod tests {
                             start_position: model::Point { row: 0, column: 1 },
                             end_position: model::Point { row: 0, column: 1 },
                             is_block_end_delimiter: false,
+                            leading_white_space: None,
                         }),
                         CSTNode::Terminal(Terminal {
                             id: uuid::Uuid::new_v4(),
@@ -764,6 +806,7 @@ mod tests {
                             start_position: model::Point { row: 0, column: 1 },
                             end_position: model::Point { row: 0, column: 1 },
                             is_block_end_delimiter: false,
+                            leading_white_space: None,
                         }),
                     ],
                     identifier: Some(vec!["method"]),
@@ -776,6 +819,7 @@ mod tests {
                     start_position: model::Point { row: 1, column: 1 },
                     end_position: model::Point { row: 1, column: 1 },
                     is_block_end_delimiter: true,
+                    leading_white_space: None,
                 }),
             ],
             ..Default::default()
@@ -795,6 +839,7 @@ mod tests {
                     start_position: model::Point { row: 0, column: 1 },
                     end_position: model::Point { row: 0, column: 1 },
                     is_block_end_delimiter: false,
+                    leading_white_space: None,
                 }),
                 CSTNode::NonTerminal(NonTerminal {
                     id: uuid::Uuid::new_v4(),
@@ -810,6 +855,7 @@ mod tests {
                             start_position: model::Point { row: 0, column: 1 },
                             end_position: model::Point { row: 0, column: 1 },
                             is_block_end_delimiter: false,
+                            leading_white_space: None,
                         }),
                         CSTNode::Terminal(Terminal {
                             id: uuid::Uuid::new_v4(),
@@ -818,6 +864,7 @@ mod tests {
                             start_position: model::Point { row: 0, column: 1 },
                             end_position: model::Point { row: 0, column: 1 },
                             is_block_end_delimiter: false,
+                            leading_white_space: None,
                         }),
                         CSTNode::Terminal(Terminal {
                             id: uuid::Uuid::new_v4(),
@@ -826,6 +873,7 @@ mod tests {
                             start_position: model::Point { row: 0, column: 1 },
                             end_position: model::Point { row: 0, column: 1 },
                             is_block_end_delimiter: false,
+                            leading_white_space: None,
                         }),
                         CSTNode::Terminal(Terminal {
                             id: uuid::Uuid::new_v4(),
@@ -834,6 +882,7 @@ mod tests {
                             start_position: model::Point { row: 0, column: 1 },
                             end_position: model::Point { row: 0, column: 1 },
                             is_block_end_delimiter: false,
+                            leading_white_space: None,
                         }),
                     ],
                     identifier: Some(vec!["method"]),
@@ -846,6 +895,7 @@ mod tests {
                     start_position: model::Point { row: 2, column: 1 },
                     end_position: model::Point { row: 2, column: 1 },
                     is_block_end_delimiter: true,
+                    leading_white_space: None,
                 }),
             ],
             ..Default::default()
@@ -865,6 +915,7 @@ mod tests {
                     start_position: model::Point { row: 0, column: 1 },
                     end_position: model::Point { row: 0, column: 1 },
                     is_block_end_delimiter: false,
+                    leading_white_space: None,
                 }),
                 CSTNode::Terminal(Terminal {
                     id: uuid::Uuid::new_v4(),
@@ -873,6 +924,7 @@ mod tests {
                     start_position: model::Point { row: 2, column: 1 },
                     end_position: model::Point { row: 2, column: 1 },
                     is_block_end_delimiter: true,
+                    leading_white_space: None,
                 }),
             ],
             ..Default::default()
@@ -888,26 +940,32 @@ mod tests {
                     MergedCSTNode::Terminal {
                         kind: "{",
                         value: std::borrow::Cow::Borrowed("{"),
+                        leading_white_space: None,
                     },
                     MergedCSTNode::Conflict {
                         left: Some(Box::new(MergedCSTNode::NonTerminal {
                             kind: "method_declaration",
+                            leading_white_space: None,
                             children: vec![
                                 MergedCSTNode::Terminal {
                                     kind: "formal_parameters",
                                     value: std::borrow::Cow::Borrowed("formal_parameters"),
+                                    leading_white_space: None,
                                 },
                                 MergedCSTNode::Terminal {
                                     kind: "identifier",
                                     value: std::borrow::Cow::Borrowed("method"),
+                                    leading_white_space: None,
                                 },
                                 MergedCSTNode::Terminal {
                                     kind: "kind_a",
                                     value: std::borrow::Cow::Borrowed("value_a"),
+                                    leading_white_space: None,
                                 },
                                 MergedCSTNode::Terminal {
                                     kind: "kind_b",
                                     value: std::borrow::Cow::Borrowed("new_value_b"),
+                                    leading_white_space: None,
                                 },
                             ],
                         })),
@@ -916,8 +974,10 @@ mod tests {
                     MergedCSTNode::Terminal {
                         kind: "}",
                         value: std::borrow::Cow::Borrowed("}"),
+                        leading_white_space: None,
                     },
                 ],
+                leading_white_space: None,
             },
         )?;
         assert_merge_output_is(
@@ -926,31 +986,38 @@ mod tests {
             &parent_a,
             &MergedCSTNode::NonTerminal {
                 kind: "interface_body",
+                leading_white_space: None,
                 children: vec![
                     MergedCSTNode::Terminal {
                         kind: "{",
                         value: std::borrow::Cow::Borrowed("{"),
+                        leading_white_space: None,
                     },
                     MergedCSTNode::Conflict {
                         left: None,
                         right: Some(Box::new(MergedCSTNode::NonTerminal {
                             kind: "method_declaration",
+                            leading_white_space: None,
                             children: vec![
                                 MergedCSTNode::Terminal {
                                     kind: "formal_parameters",
                                     value: std::borrow::Cow::Borrowed("formal_parameters"),
+                                    leading_white_space: None,
                                 },
                                 MergedCSTNode::Terminal {
                                     kind: "identifier",
                                     value: std::borrow::Cow::Borrowed("method"),
+                                    leading_white_space: None,
                                 },
                                 MergedCSTNode::Terminal {
                                     kind: "kind_a",
                                     value: std::borrow::Cow::Borrowed("value_a"),
+                                    leading_white_space: None,
                                 },
                                 MergedCSTNode::Terminal {
                                     kind: "kind_b",
                                     value: std::borrow::Cow::Borrowed("new_value_b"),
+                                    leading_white_space: None,
                                 },
                             ],
                         })),
@@ -958,6 +1025,7 @@ mod tests {
                     MergedCSTNode::Terminal {
                         kind: "}",
                         value: std::borrow::Cow::Borrowed("}"),
+                        leading_white_space: None,
                     },
                 ],
             },

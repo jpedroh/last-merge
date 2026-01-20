@@ -1,1 +1,17 @@
-class Test  {   public void method  ( )  {    jobPlacement . status =  Status . Complete ;   boardLocation . setPlaced  (   jobPlacement . placement . getId  ( ) , true ) ;    plannedPlacement . stepComplete = true ;   HashMap  < String , Object >  params =  new  HashMap  < >  ( ) ;   params . put  ( "job" , job ) ;   params . put  ( "jobProcessor" , this ) ;   params . put  ( "part" , part ) ;   params . put  ( "nozzle" , nozzle ) ;   params . put  ( "placement" , placement ) ;   params . put  ( "boardLocation" , boardLocation ) ;   params . put  ( "placementLocation" , placementLocation ) ;     Configuration . get  ( ) . getScripting  ( ) . on  ( "Job.Placement.Complete" , params ) ;   Logger . debug  ( "Place {} with {}" , part ,  nozzle . getName  ( ) ) ; } }
+class Test {
+    public void method() {
+	jobPlacement.status = Status.Complete;
+	boardLocation.setPlaced(jobPlacement.placement.getId(), true);
+	plannedPlacement.stepComplete = true;
+	HashMap<String, Object> params = new HashMap<>();
+	params.put("job", job);
+	params.put("jobProcessor", this);
+	params.put("part", part);
+	params.put("nozzle", nozzle);
+	params.put("placement", placement);
+	params.put("boardLocation", boardLocation);
+	params.put("placementLocation", placementLocation);
+	Configuration.get().getScripting().on("Job.Placement.Complete", params);
+	Logger.debug("Place {} with {}", part, nozzle.getName());
+    }
+}

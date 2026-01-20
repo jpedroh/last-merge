@@ -20,6 +20,9 @@ fn explore_node<'a>(node: Node, src: &'a str, config: &'a ParserConfiguration) -
             },
             value: &src[node.byte_range()],
             is_block_end_delimiter: config.block_end_delimiters.contains(node.kind()),
+            leading_white_space: node
+                .prev_sibling()
+                .map(|previous| &src[previous.end_byte()..node.start_byte()]),
         })
     } else {
         let mut cursor = node.walk();
@@ -49,6 +52,9 @@ fn explore_node<'a>(node: Node, src: &'a str, config: &'a ParserConfiguration) -
                 .collect(),
             are_children_unordered: config.kinds_with_unordered_children.contains(node.kind()),
             identifier,
+            leading_white_space: node
+                .prev_sibling()
+                .map(|previous| &src[previous.end_byte()..node.start_byte()]),
         })
     }
 }

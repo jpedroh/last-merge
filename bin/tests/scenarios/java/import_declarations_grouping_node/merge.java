@@ -1,1 +1,13 @@
-  package    br . fosd . jdime . stats ;   import   java . text . DecimalFormat ;  import   java . util . HashMap ;  import   java . util . TreeSet ;  import     de . fosd . jdime . common . LangElem ;  import    java . util . logging . Level ;  import    java . util . logging . Logger ;   public class ASTStats  { }
+package br.fosd.jdime.stats;
+
+
+import java.text.DecimalFormat;
+import java.util.HashMap;
+import java.util.TreeSet;
+
+import de.fosd.jdime.common.LangElem;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+public class ASTStats {
+}

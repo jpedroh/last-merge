@@ -1,1 +1,18 @@
-   public class Test  {  class A  { }  class B  { }  interface I  { }  class C  { } }
+public class Test {
+
+    class A {
+    	
+    }
+    
+    class B {
+    	
+    }
+    
+    interface I {
+    	
+    }
+    
+    class C {
+    	
+    }
+}

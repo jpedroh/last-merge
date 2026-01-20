@@ -101,6 +101,7 @@ mod tests {
                 end_position: Point { row: 0, column: 7 },
                 value: "value",
                 is_block_end_delimiter: false,
+                ..Default::default()
             }),
             &CSTNode::Terminal(Terminal {
                 id: uuid::Uuid::new_v4(),
@@ -109,6 +110,7 @@ mod tests {
                 end_position: Point { row: 0, column: 7 },
                 value: "value",
                 is_block_end_delimiter: false,
+                ..Default::default()
             }),
             &CSTNode::NonTerminal(NonTerminal {
                 id: uuid::Uuid::new_v4(),

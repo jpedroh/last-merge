@@ -103,6 +103,7 @@ mod tests {
             start_position: Point { row: 1, column: 0 },
             end_position: Point { row: 1, column: 7 },
             is_block_end_delimiter: false,
+            leading_white_space: None,
         });
         let left = CSTNode::NonTerminal(NonTerminal {
             id: uuid::Uuid::new_v4(),
@@ -140,6 +141,7 @@ mod tests {
             start_position: Point { row: 0, column: 0 },
             end_position: Point { row: 0, column: 7 },
             is_block_end_delimiter: false,
+            leading_white_space: None,
         });
         let right_child = CSTNode::Terminal(Terminal {
             id: uuid::Uuid::new_v4(),
@@ -148,6 +150,7 @@ mod tests {
             start_position: Point { row: 1, column: 0 },
             end_position: Point { row: 1, column: 7 },
             is_block_end_delimiter: false,
+            leading_white_space: None,
         });
 
         let left = CSTNode::NonTerminal(NonTerminal {
@@ -184,6 +187,7 @@ mod tests {
             start_position: Point { row: 0, column: 0 },
             end_position: Point { row: 0, column: 7 },
             is_block_end_delimiter: false,
+            leading_white_space: None,
         });
         let unique_right_child = CSTNode::Terminal(Terminal {
             id: uuid::Uuid::new_v4(),
@@ -192,6 +196,7 @@ mod tests {
             start_position: Point { row: 0, column: 0 },
             end_position: Point { row: 0, column: 7 },
             is_block_end_delimiter: false,
+            leading_white_space: None,
         });
 
         let left = CSTNode::NonTerminal(NonTerminal {
@@ -229,6 +234,7 @@ mod tests {
             end_position: Point { row: 0, column: 7 },
             value: "value_b",
             is_block_end_delimiter: false,
+            leading_white_space: None,
         });
 
         let left = CSTNode::NonTerminal(NonTerminal {
