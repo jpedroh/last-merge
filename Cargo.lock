@@ -412,7 +412,7 @@ version = "0.1.0"
 dependencies = [
  "log",
  "model",
- "parsing_handlers",
+ "parsing-handlers",
  "regex",
  "tree-sitter",
  "tree-sitter-c-sharp",
@@ -421,7 +421,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "parsing_handlers"
+name = "parsing-handlers"
 version = "0.1.0"
 dependencies = [
  "log",

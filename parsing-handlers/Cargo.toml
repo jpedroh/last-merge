@@ -1,5 +1,5 @@
 [package]
-name = "parsing_handlers"
+name = "parsing-handlers"
 version = "0.1.0"
 edition = "2021"
 

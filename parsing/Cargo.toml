@@ -11,6 +11,6 @@ tree-sitter-java = "0.23.5"
 tree-sitter-c-sharp = "0.23.1"
 regex = "1.10.5"
 model = { path = "../model" }
-parsing_handlers = { path = "../parsing_handlers" }
+parsing-handlers = { path = "../parsing-handlers" }
 log = { workspace = true }
 uuid = { workspace = true }

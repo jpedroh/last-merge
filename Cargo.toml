@@ -5,6 +5,7 @@ members = [
     "matching",
     "merge",
     "parsing",
+    "parsing-handlers",
     "model"
 ]
 
