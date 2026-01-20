@@ -56,16 +56,13 @@ impl Display for MergedCSTNode<'_> {
         match self {
             MergedCSTNode::Terminal { value, .. } => write!(f, "{value}"),
             MergedCSTNode::NonTerminal { children, .. } => {
-                let result = children.iter().fold(String::new(), |acc, current| {
-                    let mut result = acc.to_owned();
+                for current in children {
                     if let Some(leading) = current.leading_white_space() {
-                        result.push_str(leading);
+                        write!(f, "{leading}")?
                     }
-                    result.push_str(&current.clone().to_string());
-                    result
-                });
-
-                write!(f, "{result}")
+                    write!(f, "{current}")?;
+                }
+                write!(f, "")
             }
             MergedCSTNode::Conflict { left, right } => match (left, right) {
                 (Some(left), Some(right)) => {

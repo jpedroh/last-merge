@@ -213,9 +213,17 @@ pub fn run_tool_on_merge_scenario(
         println!("--- END CHUNK DEBUG LOG ---\n");
     }
 
+    let start = Instant::now();
+    log::info!("Started pretty-printing of final file");
+    let pretty_printed_tree = result.to_string();
+    log::info!(
+        "Finished pretty-printing of final file in {:?}",
+        start.elapsed()
+    );
+
     match result.has_conflict() {
-        true => Ok(ExecutionResult::WithConflicts(result.to_string())),
-        false => Ok(ExecutionResult::WithoutConflicts(result.to_string())),
+        true => Ok(ExecutionResult::WithConflicts(pretty_printed_tree)),
+        false => Ok(ExecutionResult::WithoutConflicts(pretty_printed_tree)),
     }
 }
 
