@@ -1,4 +1,4 @@
-use model::Language;
+use model::{cst_node::Delimiters, Language};
 use parsing_handlers::ParsingHandlers;
 use std::collections::{HashMap, HashSet};
 
@@ -8,7 +8,7 @@ pub struct ParserConfiguration {
     pub(crate) language: tree_sitter::Language,
     pub(crate) stop_compilation_at: HashSet<&'static str>,
     pub(crate) kinds_with_unordered_children: HashSet<&'static str>,
-    pub(crate) block_end_delimiters: HashSet<&'static str>,
+    pub(crate) delimiters: HashMap<&'static str, Delimiters<'static>>,
     pub(crate) handlers: ParsingHandlers,
     pub(crate) identifier_extractors: HashMap<&'static str, Box<dyn IdentifierExtractor>>,
 }
@@ -26,7 +26,10 @@ impl From<Language> for ParserConfiguration {
                     "enum_body_declarations",
                 ]
                 .into(),
-                block_end_delimiters: ["}"].into(),
+                delimiters: HashMap::from([
+                    ("interface_body", Delimiters::new("{", "}")),
+                    ("class_body", Delimiters::new("{", "}")),
+                ]),
                 handlers: ParsingHandlers::from(Language::Java),
                 identifier_extractors: {
                     let mut map: HashMap<&'static str, Box<dyn IdentifierExtractor>> =
@@ -132,7 +135,7 @@ impl From<Language> for ParserConfiguration {
                 stop_compilation_at: HashSet::new(),
                 kinds_with_unordered_children: ["declaration_list", "enum_member_declaration_list"]
                     .into(),
-                block_end_delimiters: ["}"].into(),
+                delimiters: HashMap::from([("declaration_list", Delimiters::new("{", "}"))]),
                 handlers: ParsingHandlers::new(vec![]),
                 identifier_extractors: {
                     let mut map: HashMap<&'static str, Box<dyn IdentifierExtractor>> =

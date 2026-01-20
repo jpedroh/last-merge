@@ -79,7 +79,6 @@ mod tests {
             start_position: Point { row: 0, column: 0 },
             end_position: Point { row: 0, column: 7 },
             value: "value",
-            is_block_end_delimiter: false,
             ..Default::default()
         };
 
@@ -100,7 +99,6 @@ mod tests {
             start_position: Point { row: 0, column: 0 },
             end_position: Point { row: 0, column: 7 },
             value: "\nvalue\n",
-            is_block_end_delimiter: false,
             ..Default::default()
         };
         let left = Terminal {
@@ -109,7 +107,6 @@ mod tests {
             start_position: Point { row: 0, column: 0 },
             end_position: Point { row: 0, column: 7 },
             value: "left\nvalue\n",
-            is_block_end_delimiter: false,
             ..Default::default()
         };
         let right = Terminal {
@@ -118,7 +115,6 @@ mod tests {
             start_position: Point { row: 0, column: 0 },
             end_position: Point { row: 0, column: 7 },
             value: "\nvalue\nright",
-            is_block_end_delimiter: false,
             ..Default::default()
         };
 
@@ -143,7 +139,6 @@ mod tests {
             start_position: Point { row: 0, column: 0 },
             end_position: Point { row: 0, column: 7 },
             value: "value",
-            is_block_end_delimiter: false,
             ..Default::default()
         };
         let left = Terminal {
@@ -152,7 +147,6 @@ mod tests {
             start_position: Point { row: 0, column: 0 },
             end_position: Point { row: 0, column: 7 },
             value: "left_value",
-            is_block_end_delimiter: false,
             ..Default::default()
         };
         let right = Terminal {
@@ -161,7 +155,6 @@ mod tests {
             start_position: Point { row: 0, column: 0 },
             end_position: Point { row: 0, column: 7 },
             value: "right_value",
-            is_block_end_delimiter: false,
             ..Default::default()
         };
 
@@ -186,7 +179,6 @@ mod tests {
             start_position: Point { row: 0, column: 0 },
             end_position: Point { row: 0, column: 7 },
             value: "value",
-            is_block_end_delimiter: false,
             ..Default::default()
         };
         let changed_parent = Terminal {
@@ -195,7 +187,6 @@ mod tests {
             start_position: Point { row: 0, column: 0 },
             end_position: Point { row: 0, column: 7 },
             value: "value_right",
-            is_block_end_delimiter: false,
             ..Default::default()
         };
 
@@ -215,7 +206,6 @@ mod tests {
             start_position: Point { row: 0, column: 0 },
             end_position: Point { row: 0, column: 7 },
             value: "value",
-            is_block_end_delimiter: false,
             ..Default::default()
         };
         let kind_b = Terminal {
@@ -224,7 +214,6 @@ mod tests {
             start_position: Point { row: 0, column: 0 },
             end_position: Point { row: 0, column: 7 },
             value: "value_right",
-            is_block_end_delimiter: false,
             ..Default::default()
         };
 

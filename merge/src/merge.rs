@@ -100,7 +100,6 @@ mod tests {
                 start_position: Point { row: 0, column: 0 },
                 end_position: Point { row: 0, column: 7 },
                 value: "value",
-                is_block_end_delimiter: false,
                 ..Default::default()
             }),
             &CSTNode::Terminal(Terminal {
@@ -109,7 +108,6 @@ mod tests {
                 start_position: Point { row: 0, column: 0 },
                 end_position: Point { row: 0, column: 7 },
                 value: "value",
-                is_block_end_delimiter: false,
                 ..Default::default()
             }),
             &CSTNode::NonTerminal(NonTerminal {

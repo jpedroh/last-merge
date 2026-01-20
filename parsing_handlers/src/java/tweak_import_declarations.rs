@@ -35,6 +35,7 @@ pub fn tweak_import_declarations(root: CSTNode<'_>) -> CSTNode<'_> {
                 are_children_unordered: true,
                 identifier: None,
                 leading_white_space: Some("\n"),
+                delimiters: None,
             });
 
             let first_import_declaration_index = program
@@ -66,6 +67,7 @@ pub fn tweak_import_declarations(root: CSTNode<'_>) -> CSTNode<'_> {
                 are_children_unordered: program.are_children_unordered,
                 identifier: program.identifier,
                 leading_white_space: None,
+                delimiters: program.delimiters,
             })
         }
     }
