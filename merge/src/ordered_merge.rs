@@ -469,7 +469,7 @@ pub fn ordered_merge<'a>(
     Ok(MergedCSTNode::NonTerminal {
         kind: left.kind,
         children: result_children,
-        leading_white_space: left.leading_white_space.clone(),
+        leading_white_space: left.leading_white_space,
     })
 }
 

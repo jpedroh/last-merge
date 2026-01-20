@@ -35,7 +35,7 @@ impl<'a> From<&'a CSTNode<'a>> for MergedCSTNode<'a> {
             }) => MergedCSTNode::NonTerminal {
                 kind,
                 children: children.iter().map(|node| node.into()).collect(),
-                leading_white_space: leading_white_space.clone(),
+                leading_white_space: *leading_white_space,
             },
         }
     }
@@ -46,7 +46,7 @@ impl<'a> From<&'a Terminal<'a>> for MergedCSTNode<'a> {
         MergedCSTNode::Terminal {
             kind: val.kind,
             value: std::borrow::Cow::Borrowed(val.value),
-            leading_white_space: val.leading_white_space.clone(),
+            leading_white_space: val.leading_white_space,
         }
     }
 }
