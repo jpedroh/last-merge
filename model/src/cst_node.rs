@@ -95,11 +95,11 @@ impl Delimiters<'_> {
         Delimiters { start, end }
     }
 
-    pub fn start<'a>(&'a self) -> &'a str {
+    pub fn start(&self) -> &str {
         self.start
     }
 
-    pub fn end<'a>(&'a self) -> &'a str {
+    pub fn end(&self) -> &str {
         self.end
     }
 }
