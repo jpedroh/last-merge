@@ -559,7 +559,6 @@ mod tests {
                     start_position: Point { row: 0, column: 0 },
                     end_position: Point { row: 0, column: 7 },
                     value: "value_a",
-                    is_block_end_delimiter: false,
                 }),
                 CSTNode::Terminal(Terminal {
                     id: uuid::Uuid::new_v4(),
@@ -568,7 +567,6 @@ mod tests {
                     start_position: Point { row: 0, column: 0 },
                     end_position: Point { row: 0, column: 7 },
                     value: "value_b",
-                    is_block_end_delimiter: false,
                 }),
             ],
             ..Default::default()
@@ -610,7 +608,6 @@ mod tests {
                     start_position: Point { row: 0, column: 0 },
                     end_position: Point { row: 0, column: 7 },
                     value: "value_a",
-                    is_block_end_delimiter: false,
                 }),
                 CSTNode::Terminal(Terminal {
                     id: uuid::Uuid::new_v4(),
@@ -619,7 +616,6 @@ mod tests {
                     start_position: Point { row: 0, column: 0 },
                     end_position: Point { row: 0, column: 7 },
                     value: "value_b",
-                    is_block_end_delimiter: false,
                 }),
             ],
             ..Default::default()
@@ -669,7 +665,7 @@ mod tests {
                 start_position: Point { row: 0, column: 0 },
                 end_position: Point { row: 0, column: 7 },
                 value: "value_a",
-                is_block_end_delimiter: false,
+
                 leading_white_space: None,
             })],
             ..Default::default()
@@ -709,7 +705,6 @@ mod tests {
                 start_position: Point { row: 0, column: 0 },
                 end_position: Point { row: 0, column: 7 },
                 value: "value_a",
-                is_block_end_delimiter: false,
             })],
             ..Default::default()
         });
@@ -727,7 +722,6 @@ mod tests {
                 start_position: Point { row: 0, column: 0 },
                 end_position: Point { row: 0, column: 7 },
                 value: "value_a",
-                is_block_end_delimiter: false,
             })],
             ..Default::default()
         });
@@ -746,7 +740,6 @@ mod tests {
                     start_position: Point { row: 0, column: 0 },
                     end_position: Point { row: 0, column: 7 },
                     value: "value_a",
-                    is_block_end_delimiter: false,
                 }),
                 CSTNode::Terminal(Terminal {
                     id: uuid::Uuid::new_v4(),
@@ -755,7 +748,6 @@ mod tests {
                     start_position: Point { row: 0, column: 0 },
                     end_position: Point { row: 0, column: 7 },
                     value: "value_b",
-                    is_block_end_delimiter: false,
                 }),
             ],
             ..Default::default()
@@ -803,7 +795,6 @@ mod tests {
                 start_position: Point { row: 0, column: 0 },
                 end_position: Point { row: 0, column: 7 },
                 value: "value_a",
-                is_block_end_delimiter: false,
             })],
             ..Default::default()
         });
@@ -821,7 +812,6 @@ mod tests {
                 start_position: Point { row: 0, column: 0 },
                 end_position: Point { row: 0, column: 7 },
                 value: "value_b",
-                is_block_end_delimiter: false,
             })],
             ..Default::default()
         });
@@ -839,7 +829,6 @@ mod tests {
                 start_position: Point { row: 0, column: 0 },
                 end_position: Point { row: 0, column: 7 },
                 value: "value_a",
-                is_block_end_delimiter: false,
             })],
             ..Default::default()
         });
@@ -885,7 +874,6 @@ mod tests {
                     start_position: Point { row: 0, column: 0 },
                     end_position: Point { row: 0, column: 7 },
                     value: "value_a",
-                    is_block_end_delimiter: false,
                 })],
                 ..Default::default()
             })],
@@ -911,7 +899,6 @@ mod tests {
                     start_position: Point { row: 0, column: 0 },
                     end_position: Point { row: 0, column: 7 },
                     value: "value_b",
-                    is_block_end_delimiter: false,
                 })],
                 ..Default::default()
             })],
@@ -937,7 +924,6 @@ mod tests {
                     start_position: Point { row: 0, column: 0 },
                     end_position: Point { row: 0, column: 7 },
                     value: "value_c",
-                    is_block_end_delimiter: false,
                 })],
                 ..Default::default()
             })],
@@ -1049,7 +1035,6 @@ mod tests {
                 start_position: Point { row: 0, column: 0 },
                 end_position: Point { row: 0, column: 7 },
                 value: "value_a",
-                is_block_end_delimiter: false,
             })],
             ..Default::default()
         });
@@ -1067,7 +1052,6 @@ mod tests {
                 start_position: Point { row: 0, column: 0 },
                 end_position: Point { row: 0, column: 7 },
                 value: "value_b",
-                is_block_end_delimiter: false,
             })],
             ..Default::default()
         });
@@ -1112,7 +1096,6 @@ mod tests {
                     start_position: Point { row: 0, column: 0 },
                     end_position: Point { row: 0, column: 7 },
                     value: "value_a",
-                    is_block_end_delimiter: false,
                 }),
                 CSTNode::Terminal(Terminal {
                     id: uuid::Uuid::new_v4(),
@@ -1121,7 +1104,6 @@ mod tests {
                     start_position: Point { row: 0, column: 0 },
                     end_position: Point { row: 0, column: 7 },
                     value: "value_b",
-                    is_block_end_delimiter: false,
                 }),
             ],
             ..Default::default()
@@ -1141,7 +1123,6 @@ mod tests {
                     start_position: Point { row: 0, column: 0 },
                     end_position: Point { row: 0, column: 7 },
                     value: "value_a",
-                    is_block_end_delimiter: false,
                 }),
                 CSTNode::Terminal(Terminal {
                     id: uuid::Uuid::new_v4(),
@@ -1150,7 +1131,6 @@ mod tests {
                     start_position: Point { row: 0, column: 0 },
                     end_position: Point { row: 0, column: 7 },
                     value: "value_b",
-                    is_block_end_delimiter: false,
                 }),
             ],
             ..Default::default()
@@ -1169,7 +1149,6 @@ mod tests {
                 start_position: Point { row: 0, column: 0 },
                 end_position: Point { row: 0, column: 7 },
                 value: "value_b",
-                is_block_end_delimiter: false,
             })],
             ..Default::default()
         });
@@ -1210,7 +1189,6 @@ mod tests {
                         start_position: Point { row: 0, column: 0 },
                         end_position: Point { row: 0, column: 7 },
                         value: "value_b",
-                        is_block_end_delimiter: false,
                     })],
                     ..Default::default()
                 }),
@@ -1221,7 +1199,6 @@ mod tests {
                     start_position: Point { row: 0, column: 0 },
                     end_position: Point { row: 0, column: 7 },
                     value: "value_a",
-                    is_block_end_delimiter: false,
                 }),
             ],
             ..Default::default()
@@ -1247,7 +1224,6 @@ mod tests {
                         start_position: Point { row: 0, column: 0 },
                         end_position: Point { row: 0, column: 7 },
                         value: "value_c",
-                        is_block_end_delimiter: false,
                     })],
                     ..Default::default()
                 }),
@@ -1258,7 +1234,6 @@ mod tests {
                     start_position: Point { row: 0, column: 0 },
                     end_position: Point { row: 0, column: 7 },
                     value: "value_a",
-                    is_block_end_delimiter: false,
                 }),
             ],
             ..Default::default()
@@ -1277,7 +1252,6 @@ mod tests {
                 start_position: Point { row: 0, column: 0 },
                 end_position: Point { row: 0, column: 7 },
                 value: "value_a",
-                is_block_end_delimiter: false,
             })],
             ..Default::default()
         });
@@ -1357,7 +1331,6 @@ mod tests {
                     start_position: Point { row: 0, column: 0 },
                     end_position: Point { row: 0, column: 7 },
                     value: "value_a",
-                    is_block_end_delimiter: false,
                 }),
                 CSTNode::Terminal(Terminal {
                     id: uuid::Uuid::new_v4(),
@@ -1366,7 +1339,6 @@ mod tests {
                     start_position: Point { row: 0, column: 0 },
                     end_position: Point { row: 0, column: 7 },
                     value: "value_c",
-                    is_block_end_delimiter: false,
                 }),
             ],
             ..Default::default()
@@ -1386,7 +1358,6 @@ mod tests {
                     start_position: Point { row: 0, column: 0 },
                     end_position: Point { row: 0, column: 7 },
                     value: "value_a",
-                    is_block_end_delimiter: false,
                 }),
                 CSTNode::Terminal(Terminal {
                     id: uuid::Uuid::new_v4(),
@@ -1395,7 +1366,6 @@ mod tests {
                     start_position: Point { row: 0, column: 0 },
                     end_position: Point { row: 0, column: 7 },
                     value: "value_c",
-                    is_block_end_delimiter: false,
                 }),
             ],
             ..Default::default()
@@ -1415,7 +1385,6 @@ mod tests {
                     start_position: Point { row: 0, column: 0 },
                     end_position: Point { row: 0, column: 7 },
                     value: "value_a",
-                    is_block_end_delimiter: false,
                 }),
                 CSTNode::Terminal(Terminal {
                     id: uuid::Uuid::new_v4(),
@@ -1424,7 +1393,6 @@ mod tests {
                     start_position: Point { row: 0, column: 0 },
                     end_position: Point { row: 0, column: 7 },
                     value: "value_b",
-                    is_block_end_delimiter: false,
                 }),
                 CSTNode::Terminal(Terminal {
                     id: uuid::Uuid::new_v4(),
@@ -1433,7 +1401,6 @@ mod tests {
                     start_position: Point { row: 0, column: 0 },
                     end_position: Point { row: 0, column: 7 },
                     value: "value_c",
-                    is_block_end_delimiter: false,
                 }),
             ],
             ..Default::default()
@@ -1484,7 +1451,6 @@ mod tests {
                 start_position: Point { row: 0, column: 0 },
                 end_position: Point { row: 0, column: 7 },
                 value: "value_b",
-                is_block_end_delimiter: false,
             })],
             ..Default::default()
         });
@@ -1502,7 +1468,6 @@ mod tests {
                 start_position: Point { row: 0, column: 0 },
                 end_position: Point { row: 0, column: 7 },
                 value: "value_a",
-                is_block_end_delimiter: false,
             })],
             ..Default::default()
         });
@@ -1521,7 +1486,6 @@ mod tests {
                     start_position: Point { row: 0, column: 0 },
                     end_position: Point { row: 0, column: 7 },
                     value: "value_b",
-                    is_block_end_delimiter: false,
                 }),
                 CSTNode::Terminal(Terminal {
                     id: uuid::Uuid::new_v4(),
@@ -1530,7 +1494,6 @@ mod tests {
                     start_position: Point { row: 0, column: 0 },
                     end_position: Point { row: 0, column: 7 },
                     value: "value_a",
-                    is_block_end_delimiter: false,
                 }),
             ],
             ..Default::default()
@@ -1576,7 +1539,6 @@ mod tests {
                     start_position: Point { row: 0, column: 0 },
                     end_position: Point { row: 0, column: 7 },
                     value: "value_b",
-                    is_block_end_delimiter: false,
                 })],
                 ..Default::default()
             })],
@@ -1596,7 +1558,6 @@ mod tests {
                 start_position: Point { row: 0, column: 0 },
                 end_position: Point { row: 0, column: 7 },
                 value: "value_a",
-                is_block_end_delimiter: false,
             })],
             ..Default::default()
         });
@@ -1621,7 +1582,6 @@ mod tests {
                         start_position: Point { row: 0, column: 0 },
                         end_position: Point { row: 0, column: 7 },
                         value: "value_c",
-                        is_block_end_delimiter: false,
                     })],
                     ..Default::default()
                 }),
@@ -1632,7 +1592,6 @@ mod tests {
                     start_position: Point { row: 0, column: 0 },
                     end_position: Point { row: 0, column: 7 },
                     value: "value_a",
-                    is_block_end_delimiter: false,
                 }),
             ],
             ..Default::default()
@@ -1720,7 +1679,7 @@ mod tests {
                 start_position: Point { row: 0, column: 0 },
                 end_position: Point { row: 0, column: 7 },
                 value: "value_a",
-                is_block_end_delimiter: false,
+
                 ..Default::default()
             })],
             ..Default::default()
@@ -1739,7 +1698,7 @@ mod tests {
                     start_position: Point { row: 0, column: 0 },
                     end_position: Point { row: 0, column: 7 },
                     value: "value_c",
-                    is_block_end_delimiter: false,
+
                     ..Default::default()
                 }),
                 CSTNode::Terminal(Terminal {
@@ -1748,7 +1707,7 @@ mod tests {
                     start_position: Point { row: 0, column: 0 },
                     end_position: Point { row: 0, column: 7 },
                     value: "value_a",
-                    is_block_end_delimiter: false,
+
                     ..Default::default()
                 }),
             ],
@@ -1796,7 +1755,7 @@ mod tests {
                     start_position: Point { row: 0, column: 0 },
                     end_position: Point { row: 0, column: 7 },
                     value: "value_b",
-                    is_block_end_delimiter: false,
+
                     ..Default::default()
                 }),
                 CSTNode::Terminal(Terminal {
@@ -1805,7 +1764,7 @@ mod tests {
                     start_position: Point { row: 0, column: 0 },
                     end_position: Point { row: 0, column: 7 },
                     value: "value_c",
-                    is_block_end_delimiter: false,
+
                     ..Default::default()
                 }),
             ],
@@ -1824,7 +1783,7 @@ mod tests {
                 start_position: Point { row: 0, column: 0 },
                 end_position: Point { row: 0, column: 7 },
                 value: "value_b",
-                is_block_end_delimiter: false,
+
                 ..Default::default()
             })],
             ..Default::default()
@@ -1842,7 +1801,7 @@ mod tests {
                 start_position: Point { row: 0, column: 0 },
                 end_position: Point { row: 0, column: 7 },
                 value: "value_c",
-                is_block_end_delimiter: false,
+
                 ..Default::default()
             })],
             ..Default::default()
@@ -1884,7 +1843,7 @@ mod tests {
                         start_position: Point { row: 0, column: 0 },
                         end_position: Point { row: 0, column: 7 },
                         value: "value_b",
-                        is_block_end_delimiter: false,
+
                         ..Default::default()
                     })],
                     ..Default::default()
@@ -1901,7 +1860,7 @@ mod tests {
                         start_position: Point { row: 0, column: 0 },
                         end_position: Point { row: 0, column: 7 },
                         value: "value_c",
-                        is_block_end_delimiter: false,
+
                         ..Default::default()
                     })],
                     ..Default::default()
@@ -1928,7 +1887,7 @@ mod tests {
                     start_position: Point { row: 0, column: 0 },
                     end_position: Point { row: 0, column: 7 },
                     value: "value_c",
-                    is_block_end_delimiter: false,
+
                     leading_white_space: None,
                 })],
                 ..Default::default()
@@ -1954,7 +1913,7 @@ mod tests {
                     start_position: Point { row: 0, column: 0 },
                     end_position: Point { row: 0, column: 7 },
                     value: "value_c",
-                    is_block_end_delimiter: false,
+
                     leading_white_space: None,
                 })],
                 ..Default::default()

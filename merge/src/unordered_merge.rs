@@ -30,13 +30,11 @@ pub fn unordered_merge<'a>(
     let mut processed_nodes = HashSet::with_capacity(max_capacity);
 
     for left_child in left.get_children().iter() {
-        if let CSTNode::Terminal(Terminal {
-            is_block_end_delimiter,
-            ..
-        }) = left_child
-        {
-            if *is_block_end_delimiter {
-                break;
+        if let Some(delimiter) = left.delimiters {
+            if let CSTNode::Terminal(Terminal { value, .. }) = left_child {
+                if *value == delimiter.end() {
+                    break;
+                }
             }
         }
 
@@ -225,7 +223,7 @@ pub fn unordered_merge<'a>(
 mod tests {
     use matching::{unordered::calculate_matchings, Matchings};
     use model::{
-        cst_node::{NonTerminal, Terminal},
+        cst_node::{Delimiters, NonTerminal, Terminal},
         CSTNode, Point,
     };
 
@@ -300,6 +298,9 @@ mod tests {
             are_children_unordered: true,
             start_position: model::Point { row: 0, column: 0 },
             end_position: model::Point { row: 0, column: 0 },
+            identifier: None,
+            leading_white_space: None,
+            delimiters: Some(&Delimiters::new("{", "}")),
             children: vec![
                 CSTNode::Terminal(Terminal {
                     id: uuid::Uuid::new_v4(),
@@ -307,7 +308,6 @@ mod tests {
                     value: "{",
                     start_position: model::Point { row: 0, column: 1 },
                     end_position: model::Point { row: 0, column: 1 },
-                    is_block_end_delimiter: false,
                     ..Default::default()
                 }),
                 CSTNode::Terminal(Terminal {
@@ -316,11 +316,10 @@ mod tests {
                     value: "}",
                     start_position: model::Point { row: 1, column: 1 },
                     end_position: model::Point { row: 1, column: 1 },
-                    is_block_end_delimiter: true,
+
                     ..Default::default()
                 }),
             ],
-            ..Default::default()
         });
 
         let parent_a = CSTNode::NonTerminal(NonTerminal {
@@ -329,6 +328,9 @@ mod tests {
             are_children_unordered: true,
             start_position: model::Point { row: 0, column: 0 },
             end_position: model::Point { row: 0, column: 0 },
+            identifier: None,
+            leading_white_space: None,
+            delimiters: Some(&Delimiters::new("{", "}")),
             children: vec![
                 CSTNode::Terminal(Terminal {
                     id: uuid::Uuid::new_v4(),
@@ -336,7 +338,6 @@ mod tests {
                     value: "{",
                     start_position: model::Point { row: 0, column: 1 },
                     end_position: model::Point { row: 0, column: 1 },
-                    is_block_end_delimiter: false,
                     ..Default::default()
                 }),
                 CSTNode::Terminal(Terminal {
@@ -345,7 +346,6 @@ mod tests {
                     value: "main",
                     start_position: model::Point { row: 1, column: 0 },
                     end_position: model::Point { row: 1, column: 4 },
-                    is_block_end_delimiter: false,
                     ..Default::default()
                 }),
                 CSTNode::Terminal(Terminal {
@@ -354,11 +354,10 @@ mod tests {
                     value: "}",
                     start_position: model::Point { row: 2, column: 1 },
                     end_position: model::Point { row: 2, column: 1 },
-                    is_block_end_delimiter: true,
+
                     ..Default::default()
                 }),
             ],
-            ..Default::default()
         });
 
         let parent_b = CSTNode::NonTerminal(NonTerminal {
@@ -367,6 +366,9 @@ mod tests {
             are_children_unordered: true,
             start_position: model::Point { row: 0, column: 0 },
             end_position: model::Point { row: 0, column: 0 },
+            delimiters: Some(&Delimiters::new("{", "}")),
+            identifier: None,
+            leading_white_space: None,
             children: vec![
                 CSTNode::Terminal(Terminal {
                     id: uuid::Uuid::new_v4(),
@@ -374,7 +376,6 @@ mod tests {
                     value: "{",
                     start_position: model::Point { row: 0, column: 1 },
                     end_position: model::Point { row: 0, column: 1 },
-                    is_block_end_delimiter: false,
                     ..Default::default()
                 }),
                 CSTNode::Terminal(Terminal {
@@ -383,11 +384,9 @@ mod tests {
                     value: "}",
                     start_position: model::Point { row: 1, column: 1 },
                     end_position: model::Point { row: 1, column: 1 },
-                    is_block_end_delimiter: true,
                     ..Default::default()
                 }),
             ],
-            ..Default::default()
         });
 
         let merge = MergedCSTNode::NonTerminal {
@@ -425,6 +424,9 @@ mod tests {
             are_children_unordered: true,
             start_position: model::Point { row: 0, column: 0 },
             end_position: model::Point { row: 0, column: 0 },
+            identifier: None,
+            leading_white_space: None,
+            delimiters: Some(&Delimiters::new("{", "}")),
             children: vec![
                 CSTNode::Terminal(Terminal {
                     id: uuid::Uuid::new_v4(),
@@ -432,7 +434,6 @@ mod tests {
                     value: "{",
                     start_position: model::Point { row: 0, column: 1 },
                     end_position: model::Point { row: 0, column: 1 },
-                    is_block_end_delimiter: false,
                     ..Default::default()
                 }),
                 CSTNode::Terminal(Terminal {
@@ -441,11 +442,10 @@ mod tests {
                     value: "}",
                     start_position: model::Point { row: 1, column: 1 },
                     end_position: model::Point { row: 1, column: 1 },
-                    is_block_end_delimiter: true,
+
                     ..Default::default()
                 }),
             ],
-            ..Default::default()
         });
 
         let parent_a = CSTNode::NonTerminal(NonTerminal {
@@ -454,6 +454,9 @@ mod tests {
             are_children_unordered: true,
             start_position: model::Point { row: 0, column: 0 },
             end_position: model::Point { row: 0, column: 0 },
+            identifier: None,
+            leading_white_space: None,
+            delimiters: Some(&Delimiters::new("{", "}")),
             children: vec![
                 CSTNode::Terminal(Terminal {
                     id: uuid::Uuid::new_v4(),
@@ -461,7 +464,6 @@ mod tests {
                     value: "{",
                     start_position: model::Point { row: 0, column: 1 },
                     end_position: model::Point { row: 0, column: 1 },
-                    is_block_end_delimiter: false,
                     ..Default::default()
                 }),
                 CSTNode::NonTerminal(NonTerminal {
@@ -476,7 +478,6 @@ mod tests {
                         value: "main",
                         start_position: model::Point { row: 0, column: 1 },
                         end_position: model::Point { row: 0, column: 1 },
-                        is_block_end_delimiter: false,
                         ..Default::default()
                     })],
                     ..Default::default()
@@ -487,11 +488,10 @@ mod tests {
                     value: "}",
                     start_position: model::Point { row: 2, column: 1 },
                     end_position: model::Point { row: 2, column: 1 },
-                    is_block_end_delimiter: true,
+
                     ..Default::default()
                 }),
             ],
-            ..Default::default()
         });
 
         let parent_b = CSTNode::NonTerminal(NonTerminal {
@@ -500,6 +500,9 @@ mod tests {
             are_children_unordered: true,
             start_position: model::Point { row: 0, column: 0 },
             end_position: model::Point { row: 0, column: 0 },
+            identifier: None,
+            leading_white_space: None,
+            delimiters: Some(&Delimiters::new("{", "}")),
             children: vec![
                 CSTNode::Terminal(Terminal {
                     id: uuid::Uuid::new_v4(),
@@ -507,7 +510,6 @@ mod tests {
                     value: "{",
                     start_position: model::Point { row: 0, column: 1 },
                     end_position: model::Point { row: 0, column: 1 },
-                    is_block_end_delimiter: false,
                     ..Default::default()
                 }),
                 CSTNode::NonTerminal(NonTerminal {
@@ -522,7 +524,6 @@ mod tests {
                         value: "main",
                         start_position: model::Point { row: 0, column: 1 },
                         end_position: model::Point { row: 0, column: 1 },
-                        is_block_end_delimiter: false,
                         ..Default::default()
                     })],
                     ..Default::default()
@@ -533,11 +534,10 @@ mod tests {
                     value: "}",
                     start_position: model::Point { row: 2, column: 1 },
                     end_position: model::Point { row: 2, column: 1 },
-                    is_block_end_delimiter: true,
+
                     ..Default::default()
                 }),
             ],
-            ..Default::default()
         });
 
         let expected_merge = MergedCSTNode::NonTerminal {
@@ -583,6 +583,7 @@ mod tests {
             are_children_unordered: true,
             start_position: model::Point { row: 0, column: 0 },
             end_position: model::Point { row: 0, column: 0 },
+            delimiters: Some(&Delimiters::new("{", "}")),
             children: vec![
                 CSTNode::Terminal(Terminal {
                     id: uuid::Uuid::new_v4(),
@@ -590,7 +591,6 @@ mod tests {
                     value: "{",
                     start_position: model::Point { row: 0, column: 1 },
                     end_position: model::Point { row: 0, column: 1 },
-                    is_block_end_delimiter: false,
                     ..Default::default()
                 }),
                 CSTNode::NonTerminal(NonTerminal {
@@ -606,7 +606,6 @@ mod tests {
                             value: "formal_parameters",
                             start_position: model::Point { row: 0, column: 1 },
                             end_position: model::Point { row: 0, column: 1 },
-                            is_block_end_delimiter: false,
                             ..Default::default()
                         }),
                         CSTNode::Terminal(Terminal {
@@ -615,7 +614,6 @@ mod tests {
                             value: "main",
                             start_position: model::Point { row: 0, column: 1 },
                             end_position: model::Point { row: 0, column: 1 },
-                            is_block_end_delimiter: false,
                             ..Default::default()
                         }),
                     ],
@@ -628,7 +626,7 @@ mod tests {
                     value: "}",
                     start_position: model::Point { row: 1, column: 1 },
                     end_position: model::Point { row: 1, column: 1 },
-                    is_block_end_delimiter: true,
+
                     ..Default::default()
                 }),
             ],
@@ -648,7 +646,6 @@ mod tests {
                     value: "{",
                     start_position: model::Point { row: 0, column: 1 },
                     end_position: model::Point { row: 0, column: 1 },
-                    is_block_end_delimiter: false,
                     ..Default::default()
                 }),
                 CSTNode::NonTerminal(NonTerminal {
@@ -664,7 +661,6 @@ mod tests {
                             value: "formal_parameters",
                             start_position: model::Point { row: 0, column: 1 },
                             end_position: model::Point { row: 0, column: 1 },
-                            is_block_end_delimiter: false,
                             ..Default::default()
                         }),
                         CSTNode::Terminal(Terminal {
@@ -673,7 +669,6 @@ mod tests {
                             value: "main",
                             start_position: model::Point { row: 0, column: 1 },
                             end_position: model::Point { row: 0, column: 1 },
-                            is_block_end_delimiter: false,
                             ..Default::default()
                         }),
                     ],
@@ -686,7 +681,7 @@ mod tests {
                     value: "}",
                     start_position: model::Point { row: 2, column: 1 },
                     end_position: model::Point { row: 2, column: 1 },
-                    is_block_end_delimiter: true,
+
                     ..Default::default()
                 }),
             ],
@@ -706,7 +701,6 @@ mod tests {
                     value: "{",
                     start_position: model::Point { row: 0, column: 1 },
                     end_position: model::Point { row: 0, column: 1 },
-                    is_block_end_delimiter: false,
                     ..Default::default()
                 }),
                 CSTNode::Terminal(Terminal {
@@ -715,7 +709,7 @@ mod tests {
                     value: "}",
                     start_position: model::Point { row: 2, column: 1 },
                     end_position: model::Point { row: 2, column: 1 },
-                    is_block_end_delimiter: true,
+
                     ..Default::default()
                 }),
             ],
@@ -755,6 +749,9 @@ mod tests {
             are_children_unordered: true,
             start_position: model::Point { row: 0, column: 0 },
             end_position: model::Point { row: 0, column: 0 },
+            identifier: None,
+            leading_white_space: None,
+            delimiters: Some(&Delimiters::new("{", "}")),
             children: vec![
                 CSTNode::Terminal(Terminal {
                     id: uuid::Uuid::new_v4(),
@@ -762,7 +759,6 @@ mod tests {
                     value: "{",
                     start_position: model::Point { row: 0, column: 1 },
                     end_position: model::Point { row: 0, column: 1 },
-                    is_block_end_delimiter: false,
                     leading_white_space: None,
                 }),
                 CSTNode::NonTerminal(NonTerminal {
@@ -778,7 +774,6 @@ mod tests {
                             value: "formal_parameters",
                             start_position: model::Point { row: 0, column: 1 },
                             end_position: model::Point { row: 0, column: 1 },
-                            is_block_end_delimiter: false,
                             leading_white_space: None,
                         }),
                         CSTNode::Terminal(Terminal {
@@ -787,7 +782,6 @@ mod tests {
                             value: "method",
                             start_position: model::Point { row: 0, column: 1 },
                             end_position: model::Point { row: 0, column: 1 },
-                            is_block_end_delimiter: false,
                             leading_white_space: None,
                         }),
                         CSTNode::Terminal(Terminal {
@@ -796,7 +790,6 @@ mod tests {
                             value: "value_a",
                             start_position: model::Point { row: 0, column: 1 },
                             end_position: model::Point { row: 0, column: 1 },
-                            is_block_end_delimiter: false,
                             leading_white_space: None,
                         }),
                         CSTNode::Terminal(Terminal {
@@ -805,7 +798,6 @@ mod tests {
                             value: "value_b",
                             start_position: model::Point { row: 0, column: 1 },
                             end_position: model::Point { row: 0, column: 1 },
-                            is_block_end_delimiter: false,
                             leading_white_space: None,
                         }),
                     ],
@@ -818,11 +810,10 @@ mod tests {
                     value: "}",
                     start_position: model::Point { row: 1, column: 1 },
                     end_position: model::Point { row: 1, column: 1 },
-                    is_block_end_delimiter: true,
+
                     leading_white_space: None,
                 }),
             ],
-            ..Default::default()
         });
 
         let parent_a = CSTNode::NonTerminal(NonTerminal {
@@ -831,6 +822,9 @@ mod tests {
             are_children_unordered: true,
             start_position: model::Point { row: 0, column: 0 },
             end_position: model::Point { row: 0, column: 0 },
+            identifier: None,
+            leading_white_space: None,
+            delimiters: Some(&Delimiters::new("{", "}")),
             children: vec![
                 CSTNode::Terminal(Terminal {
                     id: uuid::Uuid::new_v4(),
@@ -838,7 +832,6 @@ mod tests {
                     value: "{",
                     start_position: model::Point { row: 0, column: 1 },
                     end_position: model::Point { row: 0, column: 1 },
-                    is_block_end_delimiter: false,
                     leading_white_space: None,
                 }),
                 CSTNode::NonTerminal(NonTerminal {
@@ -854,7 +847,6 @@ mod tests {
                             value: "formal_parameters",
                             start_position: model::Point { row: 0, column: 1 },
                             end_position: model::Point { row: 0, column: 1 },
-                            is_block_end_delimiter: false,
                             leading_white_space: None,
                         }),
                         CSTNode::Terminal(Terminal {
@@ -863,7 +855,6 @@ mod tests {
                             value: "method",
                             start_position: model::Point { row: 0, column: 1 },
                             end_position: model::Point { row: 0, column: 1 },
-                            is_block_end_delimiter: false,
                             leading_white_space: None,
                         }),
                         CSTNode::Terminal(Terminal {
@@ -872,7 +863,6 @@ mod tests {
                             value: "value_a",
                             start_position: model::Point { row: 0, column: 1 },
                             end_position: model::Point { row: 0, column: 1 },
-                            is_block_end_delimiter: false,
                             leading_white_space: None,
                         }),
                         CSTNode::Terminal(Terminal {
@@ -881,7 +871,6 @@ mod tests {
                             value: "new_value_b",
                             start_position: model::Point { row: 0, column: 1 },
                             end_position: model::Point { row: 0, column: 1 },
-                            is_block_end_delimiter: false,
                             leading_white_space: None,
                         }),
                     ],
@@ -894,11 +883,9 @@ mod tests {
                     value: "}",
                     start_position: model::Point { row: 2, column: 1 },
                     end_position: model::Point { row: 2, column: 1 },
-                    is_block_end_delimiter: true,
                     leading_white_space: None,
                 }),
             ],
-            ..Default::default()
         });
 
         let parent_b = CSTNode::NonTerminal(NonTerminal {
@@ -907,6 +894,9 @@ mod tests {
             are_children_unordered: true,
             start_position: model::Point { row: 0, column: 0 },
             end_position: model::Point { row: 0, column: 0 },
+            identifier: None,
+            leading_white_space: None,
+            delimiters: Some(&Delimiters::new("{", "}")),
             children: vec![
                 CSTNode::Terminal(Terminal {
                     id: uuid::Uuid::new_v4(),
@@ -914,7 +904,6 @@ mod tests {
                     value: "{",
                     start_position: model::Point { row: 0, column: 1 },
                     end_position: model::Point { row: 0, column: 1 },
-                    is_block_end_delimiter: false,
                     leading_white_space: None,
                 }),
                 CSTNode::Terminal(Terminal {
@@ -923,11 +912,10 @@ mod tests {
                     value: "}",
                     start_position: model::Point { row: 2, column: 1 },
                     end_position: model::Point { row: 2, column: 1 },
-                    is_block_end_delimiter: true,
+
                     leading_white_space: None,
                 }),
             ],
-            ..Default::default()
         });
 
         assert_merge_output_is(

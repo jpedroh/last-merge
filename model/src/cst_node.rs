@@ -85,6 +85,26 @@ impl CSTNode<'_> {
 }
 
 #[derive(Debug, Default, Clone)]
+pub struct Delimiters<'a> {
+    start: &'a str,
+    end: &'a str,
+}
+
+impl Delimiters<'_> {
+    pub fn new<'a>(start: &'a str, end: &'a str) -> Delimiters<'a> {
+        Delimiters { start, end }
+    }
+
+    pub fn start<'a>(&'a self) -> &'a str {
+        self.start
+    }
+
+    pub fn end<'a>(&'a self) -> &'a str {
+        self.end
+    }
+}
+
+#[derive(Debug, Default, Clone)]
 pub struct NonTerminal<'a> {
     pub id: uuid::Uuid,
     pub kind: &'a str,
@@ -94,6 +114,7 @@ pub struct NonTerminal<'a> {
     pub are_children_unordered: bool,
     pub identifier: Option<Vec<&'a str>>,
     pub leading_white_space: Option<&'a str>,
+    pub delimiters: Option<&'a Delimiters<'a>>,
 }
 
 impl PartialEq for NonTerminal<'_> {
@@ -156,7 +177,6 @@ pub struct Terminal<'a> {
     pub value: &'a str,
     pub start_position: Point,
     pub end_position: Point,
-    pub is_block_end_delimiter: bool,
     pub leading_white_space: Option<&'a str>,
 }
 

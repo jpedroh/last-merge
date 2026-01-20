@@ -102,7 +102,6 @@ mod tests {
             value: "value",
             start_position: Point { row: 0, column: 0 },
             end_position: Point { row: 0, column: 5 },
-            is_block_end_delimiter: false,
             leading_white_space: None,
         });
 
@@ -117,7 +116,6 @@ mod tests {
             value: "value",
             start_position: Point { row: 0, column: 0 },
             end_position: Point { row: 0, column: 5 },
-            is_block_end_delimiter: false,
             leading_white_space: None,
         });
 
