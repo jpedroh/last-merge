@@ -62,7 +62,7 @@ impl Display for MergedCSTNode<'_> {
                     }
                     write!(f, "{current}")?;
                 }
-                write!(f, "")
+                Ok(())
             }
             MergedCSTNode::Conflict { left, right } => match (left, right) {
                 (Some(left), Some(right)) => {
