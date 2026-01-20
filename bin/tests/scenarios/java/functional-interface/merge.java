@@ -1,1 +1,15 @@
-   public class CostModelMatcher  <  T  extends  Artifact  < T > >  implements   MatcherInterface  < T >  {   private static final Logger  LOG =  Logger . getLogger  (   CostModelMatcher . class . getCanonicalName  ( ) ) ;    @ FunctionalInterface public interface SimpleWeightFunction  <  T  extends  Artifact  < T > >  {   float weigh  (   CMMatching  < T > matching ) ;   float weight  (   CMMatching  < T > matching ) ; }    @ FunctionalInterface public interface WeightFunction  <  T  extends  Artifact  < T > >  {   float weigh  (   CMMatching  < T > matching ,   float quantity ) ;   float weight  (   CMMatching  < T > matching ,   float quantity ) ; } }
+public class CostModelMatcher<T extends Artifact<T>> implements MatcherInterface<T> {
+    private static final Logger LOG = Logger.getLogger(CostModelMatcher.class.getCanonicalName());
+    @FunctionalInterface
+    public interface SimpleWeightFunction<T extends Artifact<T>> {
+
+        float weigh(CMMatching<T> matching);
+        float weight(CMMatching<T> matching);
+    }
+    @FunctionalInterface
+    public interface WeightFunction<T extends Artifact<T>> {
+
+        float weigh(CMMatching<T> matching, float quantity);
+        float weight(CMMatching<T> matching, float quantity);
+    }
+}
