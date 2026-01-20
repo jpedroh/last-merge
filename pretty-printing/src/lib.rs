@@ -1,7 +1,24 @@
 use tree_sitter::Node;
 
+#[derive(Copy, Clone, Debug, Eq, PartialEq)]
+pub enum Source {
+    Base,
+    Left,
+    Right,
+}
+
+impl Source {
+    fn select<'a>(&self, sources: &'a SourceCodes<'a>) -> &'a str {
+        match self {
+            Source::Base => sources.base,
+            Source::Left => sources.left,
+            Source::Right => sources.right,
+        }
+    }
+}
+
 pub enum MergedCstNode<'a, T: PrettyPrintableNode> {
-    Clean(&'a T),
+    Clean(Source, &'a T),
     Conflict(Option<&'a T>, Option<&'a T>),
 }
 
@@ -21,7 +38,9 @@ impl PrettyPrintableNode for Node<'_> {
     }
 
     fn raw_source_code<'a>(&'a self, src: &'a str) -> &'a str {
-        &self.utf8_text(src.as_bytes()).expect("Only UTF8 valid code is accepted")
+        &self
+            .utf8_text(src.as_bytes())
+            .expect("Only UTF8 valid code is accepted")
     }
 
     fn write_pretty(&self, src: &str, out: &mut String) {
@@ -32,22 +51,37 @@ impl PrettyPrintableNode for Node<'_> {
     }
 }
 
-pub fn pretty_print_tree<T: PrettyPrintableNode>(tree: &[MergedCstNode<T>], src: &str) -> String {
-    let mut out = String::new();
+pub struct SourceCodes<'a> {
+    base: &'a str,
+    left: &'a str,
+    right: &'a str,
+}
+
+impl SourceCodes<'_> {
+    pub fn total_len(&self) -> usize {
+        self.base.len() + self.left.len() + self.right.len()
+    }
+}
+
+pub fn pretty_print_tree<T: PrettyPrintableNode>(
+    tree: &[MergedCstNode<T>],
+    source_codes: &SourceCodes,
+) -> String {
+    let mut out = String::with_capacity(source_codes.total_len());
 
     for node in tree {
         match node {
-            MergedCstNode::Clean(current) => {
-                current.write_pretty(src, &mut out);
+            MergedCstNode::Clean(source, current) => {
+                current.write_pretty(source.select(source_codes), &mut out);
             }
             MergedCstNode::Conflict(left, right) => {
                 out.push_str("\n<<<<<<<\n");
                 if let Some(left) = left {
-                    left.write_pretty(src, &mut out);
+                    left.write_pretty(source_codes.left, &mut out);
                 }
                 out.push_str("\n=======\n");
                 if let Some(right) = right {
-                    right.write_pretty(src, &mut out);
+                    right.write_pretty(source_codes.right, &mut out);
                 }
                 out.push_str("\n>>>>>>>\n");
             }
@@ -59,6 +93,8 @@ pub fn pretty_print_tree<T: PrettyPrintableNode>(tree: &[MergedCstNode<T>], src:
 
 #[cfg(test)]
 mod tests {
+    use crate::SourceCodes;
+
     #[test]
     fn pretty_print_real_tree_sitter_nodes() {
         use tree_sitter::{Parser, Tree};
@@ -82,10 +118,15 @@ mod tests {
         let children: Vec<_> = root.children(&mut cursor).collect();
 
         for child in children.iter() {
-            nodes.push(super::MergedCstNode::Clean(child));
+            nodes.push(super::MergedCstNode::Clean(super::Source::Base, child));
         }
 
-        let result = super::pretty_print_tree(&nodes, src);
+        let source_codes = SourceCodes {
+            base: src,
+            left: src,
+            right: src,
+        };
+        let result = super::pretty_print_tree(&nodes, &source_codes);
 
         println!("{}", result);
 
