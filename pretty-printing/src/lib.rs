@@ -23,13 +23,13 @@ pub enum MergedCstNode<'a, T: PrettyPrintableNode> {
 }
 
 pub trait PrettyPrintableNode {
-    fn trailing_white_space<'a>(&'a self, src: &'a str) -> Option<&'a str>;
-    fn raw_source_code<'a>(&'a self, src: &'a str) -> &'a str;
+    fn trailing_white_space<'a>(&self, src: &'a str) -> Option<&'a str>;
+    fn raw_source_code<'a>(&self, src: &'a str) -> &'a str;
     fn write_pretty(&self, src: &str, out: &mut String);
 }
 
 impl PrettyPrintableNode for Node<'_> {
-    fn trailing_white_space<'a>(&'a self, src: &'a str) -> Option<&'a str> {
+    fn trailing_white_space<'a>(&self, src: &'a str) -> Option<&'a str> {
         self.prev_sibling().map(|previous| {
             let previous_end = previous.end_byte();
             let current_start = self.start_byte();
@@ -37,7 +37,7 @@ impl PrettyPrintableNode for Node<'_> {
         })
     }
 
-    fn raw_source_code<'a>(&'a self, src: &'a str) -> &'a str {
+    fn raw_source_code<'a>(&self, src: &'a str) -> &'a str {
         self
             .utf8_text(src.as_bytes())
             .expect("Only UTF8 valid code is accepted")
