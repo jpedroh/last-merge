@@ -38,8 +38,7 @@ impl PrettyPrintableNode for Node<'_> {
     }
 
     fn raw_source_code<'a>(&self, src: &'a str) -> &'a str {
-        self
-            .utf8_text(src.as_bytes())
+        self.utf8_text(src.as_bytes())
             .expect("Only UTF8 valid code is accepted")
     }
 
