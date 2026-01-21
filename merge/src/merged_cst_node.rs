@@ -117,15 +117,4 @@ impl MergedCSTNode<'_> {
             MergedCSTNode::Conflict { .. } => None,
         }
     }
-
-    pub fn raw_source_code(&self) -> Option<&str> {
-        match self {
-            MergedCSTNode::Terminal { value, .. } => Some(value),
-            MergedCSTNode::NonTerminal {
-                leading_white_space,
-                ..
-            } => *leading_white_space,
-            MergedCSTNode::Conflict { .. } => None,
-        }
-    }
 }

@@ -146,7 +146,7 @@ impl Hash for NonTerminal<'_> {
 impl NonTerminal<'_> {
     pub fn contents(&self) -> String {
         self.children.iter().fold(String::from(""), |acc, node| {
-            format!("{} {}", acc, node.contents())
+            format!("{}{}{}", acc, node.leading_white_space().unwrap_or(" "), node.contents())
         })
     }
 
