@@ -145,9 +145,12 @@ impl Hash for NonTerminal<'_> {
 
 impl NonTerminal<'_> {
     pub fn contents(&self) -> String {
-        self.children.iter().fold(String::from(""), |acc, node| {
-            format!("{}{}{}", acc, node.leading_white_space().unwrap_or(" "), node.contents())
-        })
+        let mut out = String::new();
+        for node in &self.children {
+            out.push_str(node.leading_white_space().unwrap_or(" "));
+            out.push_str(&node.contents());
+        }
+        out
     }
 
     pub fn get_identifier(&self) -> Option<&[&str]> {
