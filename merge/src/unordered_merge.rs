@@ -1,10 +1,7 @@
 use std::collections::HashSet;
 
 use matching::Matchings;
-use model::{
-    cst_node::{NonTerminal, Terminal},
-    CSTNode,
-};
+use model::cst_node::NonTerminal;
 
 use crate::log_structures::{LogState, MergeChunk};
 use crate::{merge, MergeError, MergedCSTNode};
@@ -29,15 +26,11 @@ pub fn unordered_merge<'a>(
     let mut result_children = Vec::with_capacity(max_capacity);
     let mut processed_nodes = HashSet::with_capacity(max_capacity);
 
-    for left_child in left.get_children().iter() {
-        if let Some(delimiter) = left.delimiters {
-            if let CSTNode::Terminal(Terminal { value, .. }) = left_child {
-                if *value == delimiter.end() {
-                    break;
-                }
-            }
-        }
-
+    for left_child in left.get_children().iter().filter(|child| {
+        left.delimiters
+            .map(|delimiter| !delimiter.is_delimiter(child))
+            .unwrap_or(true)
+    }) {
         let matching_base_left = base_left_matchings.find_matching_for(left_child);
         let matching_left_right = left_right_matchings.find_matching_for(left_child);
 
@@ -137,6 +130,12 @@ pub fn unordered_merge<'a>(
         .get_children()
         .iter()
         .filter(|node| !processed_nodes.contains(&node.id()))
+        .filter(|child| {
+            right
+                .delimiters
+                .map(|delimiter| !delimiter.is_delimiter(child))
+                .unwrap_or(true)
+        })
     {
         let matching_base_right = base_right_matchings.find_matching_for(right_child);
         let matching_left_right = left_right_matchings.find_matching_for(right_child);
@@ -212,9 +211,54 @@ pub fn unordered_merge<'a>(
         }
     }
 
+    let mut final_children = Vec::with_capacity((result_children.len() * 2) + 1);
+    if let Some(start_delimiter) = left.delimiters.map(|delimiter| delimiter.start()) {
+        final_children.push(MergedCSTNode::Terminal {
+            kind: "SYNTHETIC_MERGE_DELIMITER",
+            value: std::borrow::Cow::Borrowed(start_delimiter),
+            leading_white_space: left
+                .get_children()
+                .first()
+                .and_then(|v| v.leading_white_space()),
+        });
+    }
+
+    let mut iter = result_children.into_iter();
+    if let Some(first_child) = iter.next() {
+        final_children.push(first_child);
+    }
+
+    for child in iter {
+        if let Some(separator) = left
+            .delimiters
+            .and_then(|delimiters| delimiters.separator())
+        {
+            final_children.push(MergedCSTNode::Terminal {
+                kind: "SYNTHETIC_MERGE_DELIMITER",
+                value: std::borrow::Cow::Borrowed(separator),
+                leading_white_space: left
+                    .get_children()
+                    .first()
+                    .and_then(|v| v.leading_white_space()),
+            });
+        }
+        final_children.push(child)
+    }
+
+    if let Some(end_delimiter) = left.delimiters.map(|delimiter| delimiter.end()) {
+        final_children.push(MergedCSTNode::Terminal {
+            kind: "SYNTHETIC_MERGE_DELIMITER",
+            value: std::borrow::Cow::Borrowed(end_delimiter),
+            leading_white_space: left
+                .get_children()
+                .last()
+                .and_then(|v| v.leading_white_space()),
+        });
+    }
+
     Ok(MergedCSTNode::NonTerminal {
         kind: left.kind,
-        children: result_children,
+        children: final_children,
         leading_white_space: left.leading_white_space,
     })
 }
@@ -393,7 +437,7 @@ mod tests {
             kind: "interface_body",
             children: vec![
                 MergedCSTNode::Terminal {
-                    kind: "{",
+                    kind: "SYNTHETIC_MERGE_DELIMITER",
                     value: std::borrow::Cow::Borrowed("{"),
                     leading_white_space: None,
                 },
@@ -403,7 +447,7 @@ mod tests {
                     leading_white_space: None,
                 },
                 MergedCSTNode::Terminal {
-                    kind: "}",
+                    kind: "SYNTHETIC_MERGE_DELIMITER",
                     value: std::borrow::Cow::Borrowed("}"),
                     leading_white_space: None,
                 },
@@ -544,7 +588,7 @@ mod tests {
             kind: "interface_body",
             children: vec![
                 MergedCSTNode::Terminal {
-                    kind: "{",
+                    kind: "SYNTHETIC_MERGE_DELIMITER",
                     value: std::borrow::Cow::Borrowed("{"),
                     leading_white_space: None,
                 },
@@ -558,7 +602,7 @@ mod tests {
                     leading_white_space: None,
                 },
                 MergedCSTNode::Terminal {
-                    kind: "}",
+                    kind: "SYNTHETIC_MERGE_DELIMITER",
                     value: std::borrow::Cow::Borrowed("}"),
                     leading_white_space: None,
                 },
@@ -639,6 +683,7 @@ mod tests {
             are_children_unordered: true,
             start_position: model::Point { row: 0, column: 0 },
             end_position: model::Point { row: 0, column: 0 },
+            delimiters: Some(&Delimiters::new("{", "}")),
             children: vec![
                 CSTNode::Terminal(Terminal {
                     id: uuid::Uuid::new_v4(),
@@ -694,6 +739,7 @@ mod tests {
             are_children_unordered: true,
             start_position: model::Point { row: 0, column: 0 },
             end_position: model::Point { row: 0, column: 0 },
+            delimiters: Some(&Delimiters::new("{", "}")),
             children: vec![
                 CSTNode::Terminal(Terminal {
                     id: uuid::Uuid::new_v4(),
@@ -720,12 +766,12 @@ mod tests {
             kind: "interface_body",
             children: vec![
                 MergedCSTNode::Terminal {
-                    kind: "{",
+                    kind: "SYNTHETIC_MERGE_DELIMITER",
                     value: std::borrow::Cow::Borrowed("{"),
                     leading_white_space: None,
                 },
                 MergedCSTNode::Terminal {
-                    kind: "}",
+                    kind: "SYNTHETIC_MERGE_DELIMITER",
                     value: std::borrow::Cow::Borrowed("}"),
                     leading_white_space: None,
                 },
@@ -926,7 +972,7 @@ mod tests {
                 kind: "interface_body",
                 children: vec![
                     MergedCSTNode::Terminal {
-                        kind: "{",
+                        kind: "SYNTHETIC_MERGE_DELIMITER",
                         value: std::borrow::Cow::Borrowed("{"),
                         leading_white_space: None,
                     },
@@ -960,7 +1006,7 @@ mod tests {
                         right: None,
                     },
                     MergedCSTNode::Terminal {
-                        kind: "}",
+                        kind: "SYNTHETIC_MERGE_DELIMITER",
                         value: std::borrow::Cow::Borrowed("}"),
                         leading_white_space: None,
                     },
@@ -968,6 +1014,7 @@ mod tests {
                 leading_white_space: None,
             },
         )?;
+
         assert_merge_output_is(
             &base,
             &parent_b,
@@ -977,7 +1024,7 @@ mod tests {
                 leading_white_space: None,
                 children: vec![
                     MergedCSTNode::Terminal {
-                        kind: "{",
+                        kind: "SYNTHETIC_MERGE_DELIMITER",
                         value: std::borrow::Cow::Borrowed("{"),
                         leading_white_space: None,
                     },
@@ -1011,7 +1058,7 @@ mod tests {
                         })),
                     },
                     MergedCSTNode::Terminal {
-                        kind: "}",
+                        kind: "SYNTHETIC_MERGE_DELIMITER",
                         value: std::borrow::Cow::Borrowed("}"),
                         leading_white_space: None,
                     },

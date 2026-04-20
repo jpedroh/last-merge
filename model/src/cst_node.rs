@@ -88,11 +88,28 @@ impl CSTNode<'_> {
 pub struct Delimiters<'a> {
     start: &'a str,
     end: &'a str,
+    separator: Option<&'a str>,
 }
 
 impl Delimiters<'_> {
     pub fn new<'a>(start: &'a str, end: &'a str) -> Delimiters<'a> {
-        Delimiters { start, end }
+        Delimiters {
+            start,
+            end,
+            separator: None,
+        }
+    }
+
+    pub fn new_with_separator<'a>(
+        start: &'a str,
+        end: &'a str,
+        separator: &'a str,
+    ) -> Delimiters<'a> {
+        Delimiters {
+            start,
+            end,
+            separator: Some(separator),
+        }
     }
 
     pub fn start(&self) -> &str {
@@ -101,6 +118,21 @@ impl Delimiters<'_> {
 
     pub fn end(&self) -> &str {
         self.end
+    }
+
+    pub fn separator(&self) -> Option<&str> {
+        self.separator
+    }
+
+    pub fn is_delimiter(&self, a_node: &CSTNode) -> bool {
+        match a_node {
+            CSTNode::Terminal(terminal) => {
+                terminal.kind == self.end()
+                    || terminal.kind == self.start()
+                    || (self.separator.is_some() && self.separator.unwrap() == terminal.kind)
+            }
+            CSTNode::NonTerminal(_) => false,
+        }
     }
 }
 
