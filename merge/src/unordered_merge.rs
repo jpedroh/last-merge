@@ -1,5 +1,4 @@
 use std::collections::HashSet;
-use std::result;
 
 use matching::Matchings;
 use model::cst_node::NonTerminal;
