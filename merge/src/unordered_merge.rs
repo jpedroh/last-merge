@@ -211,7 +211,7 @@ pub fn unordered_merge<'a>(
         }
     }
 
-    let mut final_children = vec![];
+    let mut final_children = Vec::with_capacity((result_children.len() * 2) + 1);
     if let Some(start_delimiter) = left.delimiters.map(|delimiter| delimiter.start()) {
         final_children.push(MergedCSTNode::Terminal {
             kind: "SYNTHETIC_MERGE_DELIMITER",
