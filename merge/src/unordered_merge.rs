@@ -1,5 +1,4 @@
 use std::collections::HashSet;
-use std::result;
 
 use matching::Matchings;
 use model::cst_node::NonTerminal;
@@ -229,7 +228,7 @@ pub fn unordered_merge<'a>(
         final_children.push(first_child);
     }
 
-    while let Some(next) = iter.next() {
+    for child in iter {
         if let Some(separator) = left
             .delimiters
             .and_then(|delimiters| delimiters.separator())
@@ -243,7 +242,7 @@ pub fn unordered_merge<'a>(
                     .and_then(|v| v.leading_white_space()),
             });
         }
-        final_children.push(next)
+        final_children.push(child)
     }
 
     if let Some(end_delimiter) = left.delimiters.map(|delimiter| delimiter.end()) {
