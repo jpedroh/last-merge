@@ -8,5 +8,4 @@ public class Test {
         }
     }
     public String nome = "Joao";
-
 }
