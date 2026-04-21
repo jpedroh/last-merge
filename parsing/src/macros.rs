@@ -6,7 +6,7 @@ macro_rules! tree_sitter_queries_identifier_extractors {
             $( $key:literal : $query:literal ),* $(,)?
         }
     ) => {{
-        use crate::identifier_extractor::{IdentifierExtractor, TreeSitterQuery};
+        use $crate::identifier_extractor::{IdentifierExtractor, TreeSitterQuery};
         std::collections::HashMap::from([
             $(
                 (
