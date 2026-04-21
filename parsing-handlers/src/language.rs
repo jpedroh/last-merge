@@ -6,6 +6,7 @@ impl From<Language> for ParsingHandlers {
         match language {
             Language::Java => get_default_java_parsing_handlers(),
             Language::CSharp => ParsingHandlers::new(vec![]),
+            _ => ParsingHandlers::new(vec![]),
         }
     }
 }

@@ -69,6 +69,23 @@ impl From<Language> for ParserConfiguration {
                     }
                 },
             },
+            Language::JavaScript => Self {
+                language: tree_sitter_javascript::LANGUAGE.into(),
+                stop_compilation_at: [].into(),
+                kinds_with_unordered_children: HashSet::from(["object", "class_body"]),
+                delimiters: HashMap::from([
+                    ("object", Delimiters::new_with_separator("{", "}", ",")),
+                    ("class_body", Delimiters::new("{", "}")),
+                ]),
+                handlers: ParsingHandlers::empty(),
+                identifier_extractors: tree_sitter_queries_identifier_extractors! {
+                    language: tree_sitter_javascript::LANGUAGE,
+                    queries: {
+                        "pair": "(pair key: (property_identifier) @key)",
+                        "method_definition": "(method_definition name: (_) @name)",
+                    }
+                },
+            },
         }
     }
 }

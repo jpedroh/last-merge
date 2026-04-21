@@ -11,6 +11,10 @@ impl ParsingHandlers {
         Self { handlers }
     }
 
+    pub fn empty() -> Self {
+        Self::new(vec![])
+    }
+
     pub fn run<'a>(&'a self, root: CSTNode<'a>) -> CSTNode<'a> {
         self.handlers.iter().fold(root, |acc, handler| handler(acc))
     }
