@@ -236,10 +236,7 @@ pub fn unordered_merge<'a>(
             final_children.push(MergedCSTNode::Terminal {
                 kind: "SYNTHETIC_MERGE_DELIMITER",
                 value: std::borrow::Cow::Borrowed(separator),
-                leading_white_space: left
-                    .get_children()
-                    .first()
-                    .and_then(|v| v.leading_white_space()),
+                leading_white_space: None,
             });
         }
         final_children.push(child)
