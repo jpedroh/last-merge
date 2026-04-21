@@ -2,7 +2,8 @@ use model::{cst_node::Delimiters, Language};
 use parsing_handlers::ParsingHandlers;
 use std::collections::{HashMap, HashSet};
 
-use crate::identifier_extractor::{IdentifierExtractor, TreeSitterQuery};
+use crate::identifier_extractor::IdentifierExtractor;
+use crate::tree_sitter_queries_identifier_extractors;
 
 pub struct ParserConfiguration {
     pub(crate) language: tree_sitter::Language,
@@ -31,103 +32,22 @@ impl From<Language> for ParserConfiguration {
                     ("class_body", Delimiters::new("{", "}")),
                 ]),
                 handlers: ParsingHandlers::from(Language::Java),
-                identifier_extractors: {
-                    let mut map: HashMap<&'static str, Box<dyn IdentifierExtractor>> =
-                        HashMap::new();
-                    map.insert(
-                        "constructor_declaration",
-                        Box::new(TreeSitterQuery::new(
-                            r#"(constructor_declaration name: (identifier) @method_name parameters: (formal_parameters ([ (formal_parameter type: _@parameter_type) (spread_parameter (type_identifier) @parameter_type "..." @parameter_type _) ] "," ?) *))"#,
-                            tree_sitter_java::LANGUAGE.into(),
-                        )),
-                    );
-                    map.insert(
-                        "method_declaration",
-                        Box::new(TreeSitterQuery::new(
-                            r#"(method_declaration name: (identifier) @method_name parameters: (formal_parameters ([ (formal_parameter type: _@parameter_type) (spread_parameter (type_identifier) @parameter_type "..." @parameter_type _) ] "," ?) *))"#,
-                            tree_sitter_java::LANGUAGE.into(),
-                        )),
-                    );
-                    map.insert(
-                        "field_declaration",
-                        Box::new(TreeSitterQuery::new(
-                            r#"(variable_declarator name: _ @name)"#,
-                            tree_sitter_java::LANGUAGE.into(),
-                        )),
-                    );
-                    map.insert(
-                        "import_declaration",
-                        Box::new(TreeSitterQuery::new(
-                            r#"(import_declaration "import" "static"? @resource (scoped_identifier) @resource (asterisk)? @resource)"#,
-                            tree_sitter_java::LANGUAGE.into(),
-                        )),
-                    );
-
-                    map.insert(
-                        "class_declaration",
-                        Box::new(TreeSitterQuery::new(
-                            r#"(class_declaration (identifier) @class_name)"#,
-                            tree_sitter_java::LANGUAGE.into(),
-                        )),
-                    );
-
-                    map.insert(
-                        "enum_declaration",
-                        Box::new(TreeSitterQuery::new(
-                            r#"(enum_declaration (identifier) @class_name)"#,
-                            tree_sitter_java::LANGUAGE.into(),
-                        )),
-                    );
-
-                    map.insert(
-                        "interface_declaration",
-                        Box::new(TreeSitterQuery::new(
-                            r#"(interface_declaration (identifier) @class_name)"#,
-                            tree_sitter_java::LANGUAGE.into(),
-                        )),
-                    );
-
-                    map.insert(
-                        "variable_declarator",
-                        Box::new(TreeSitterQuery::new(
-                            r#"(variable_declarator (identifier) @name)"#,
-                            tree_sitter_java::LANGUAGE.into(),
-                        )),
-                    );
-
-                    map.insert(
-                        "object_creation_expression",
-                        Box::new(TreeSitterQuery::new(
-                            r#"(object_creation_expression (type_identifier) @type_identifier)"#,
-                            tree_sitter_java::LANGUAGE.into(),
-                        )),
-                    );
-
-                    map.insert(
-                        "marker_annotation",
-                        Box::new(TreeSitterQuery::new(
-                            r#"(marker_annotation name: _ @name)"#,
-                            tree_sitter_java::LANGUAGE.into(),
-                        )),
-                    );
-
-                    map.insert(
-                        "annotation",
-                        Box::new(TreeSitterQuery::new(
-                            r#"(annotation name: _ @name)"#,
-                            tree_sitter_java::LANGUAGE.into(),
-                        )),
-                    );
-
-                    map.insert(
-                        "method_invocation",
-                        Box::new(TreeSitterQuery::new(
-                            r#"(method_invocation object: (identifier) @object name: (identifier) @method)"#,
-                            tree_sitter_java::LANGUAGE.into(),
-                        )),
-                    );
-
-                    map
+                identifier_extractors: tree_sitter_queries_identifier_extractors! {
+                    language: tree_sitter_java::LANGUAGE,
+                    queries: {
+                        "constructor_declaration": r#"(constructor_declaration name: (identifier) @method_name parameters: (formal_parameters ([ (formal_parameter type: _@parameter_type) (spread_parameter (type_identifier) @parameter_type "..." @parameter_type _) ] "," ?) *))"#,
+                        "method_declaration": r#"(method_declaration name: (identifier) @method_name parameters: (formal_parameters ([ (formal_parameter type: _@parameter_type) (spread_parameter (type_identifier) @parameter_type "..." @parameter_type _) ] "," ?) *))"#,
+                        "field_declaration": r#"(variable_declarator name: _ @name)"#,
+                        "import_declaration": r#"(import_declaration "import" "static"? @resource (scoped_identifier) @resource (asterisk)? @resource)"#,
+                        "class_declaration": r#"(class_declaration (identifier) @class_name)"#,
+                        "enum_declaration": r#"(enum_declaration (identifier) @class_name)"#,
+                        "interface_declaration": r#"(interface_declaration (identifier) @class_name)"#,
+                        "variable_declarator": r#"(variable_declarator (identifier) @name)"#,
+                        "object_creation_expression": r#"(object_creation_expression (type_identifier) @type_identifier)"#,
+                        "marker_annotation": r#"(marker_annotation name: _ @name)"#,
+                        "annotation": r#"(annotation name: _ @name)"#,
+                        "method_invocation": r#"(method_invocation object: (identifier) @object name: (identifier) @method)"#,
+                    }
                 },
             },
             Language::CSharp => Self {
@@ -137,58 +57,16 @@ impl From<Language> for ParserConfiguration {
                     .into(),
                 delimiters: HashMap::from([("declaration_list", Delimiters::new("{", "}"))]),
                 handlers: ParsingHandlers::new(vec![]),
-                identifier_extractors: {
-                    let mut map: HashMap<&'static str, Box<dyn IdentifierExtractor>> =
-                        HashMap::new();
-                    map.insert(
-                        "constructor_declaration",
-                        Box::new(TreeSitterQuery::new(
-                            r#"(constructor_declaration name: (identifier) @method_name parameters: (parameter_list ([ (parameter type: _@parameter_type) ] "," ?) *))"#,
-                            tree_sitter_c_sharp::LANGUAGE.into(),
-                        )),
-                    );
-
-                    map.insert(
-                        "method_declaration",
-                        Box::new(TreeSitterQuery::new(
-                            r#"(method_declaration name: (identifier) @method_name parameters: (parameter_list ([ (parameter type: _@parameter_type) ] "," ?) *))"#,
-                            tree_sitter_c_sharp::LANGUAGE.into(),
-                        )),
-                    );
-
-                    map.insert(
-                        "class_declaration",
-                        Box::new(TreeSitterQuery::new(
-                            r#"(class_declaration (identifier) @class_name)"#,
-                            tree_sitter_c_sharp::LANGUAGE.into(),
-                        )),
-                    );
-
-                    map.insert(
-                        "enum_declaration",
-                        Box::new(TreeSitterQuery::new(
-                            r#"(enum_declaration (identifier) @class_name)"#,
-                            tree_sitter_c_sharp::LANGUAGE.into(),
-                        )),
-                    );
-
-                    map.insert(
-                        "interface_declaration",
-                        Box::new(TreeSitterQuery::new(
-                            r#"(interface_declaration (identifier) @class_name)"#,
-                            tree_sitter_c_sharp::LANGUAGE.into(),
-                        )),
-                    );
-
-                    map.insert(
-                        "variable_declaration",
-                        Box::new(TreeSitterQuery::new(
-                            r#"(variable_declarator (identifier) @name)"#,
-                            tree_sitter_c_sharp::LANGUAGE.into(),
-                        )),
-                    );
-
-                    map
+                identifier_extractors: tree_sitter_queries_identifier_extractors! {
+                    language: tree_sitter_c_sharp::LANGUAGE,
+                    queries: {
+                        "constructor_declaration": r#"(constructor_declaration name: (identifier) @method_name parameters: (parameter_list ([ (parameter type: _@parameter_type) ] "," ?) *))"#,
+                        "method_declaration": r#"(method_declaration name: (identifier) @method_name parameters: (parameter_list ([ (parameter type: _@parameter_type) ] "," ?) *))"#,
+                        "class_declaration": r#"(class_declaration (identifier) @class_name)"#,
+                        "enum_declaration": r#"(enum_declaration (identifier) @class_name)"#,
+                        "interface_declaration": r#"(interface_declaration (identifier) @class_name)"#,
+                        "variable_declaration": r#"(variable_declarator (identifier) @name)"#,
+                    }
                 },
             },
         }
