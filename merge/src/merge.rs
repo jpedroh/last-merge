@@ -18,15 +18,12 @@ pub fn merge<'a>(
     log_state: &mut Option<LogState<'a>>,
 ) -> Result<MergedCSTNode<'a>, MergeError> {
     if left.kind() != right.kind() {
-        log::debug!(
-            "Error while merging\n left: {}\n right:{}",
+        log::warn!(
+            "Tried to merge nodes of different kinds\n left: {}\n right:{}. Falling back to conflict",
             left.contents(),
             right.contents()
         );
-        return Err(MergeError::NodesWithDifferentKinds(
-            left.kind().to_string(),
-            right.kind().to_string(),
-        ));
+        return Ok(MergedCSTNode::Conflict { left: Some(Box::new(left.into())), right: Some(Box::new(right.into())) });
     }
 
     match (base, left, right) {

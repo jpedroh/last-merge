@@ -82,7 +82,7 @@ impl From<Language> for ParserConfiguration {
                     language: tree_sitter_javascript::LANGUAGE,
                     queries: {
                         "pair": "(pair key: (property_identifier) @key)",
-                        "method_definition": "(method_definition name: (_) @name)",
+                        "method_definition": r#"(method_definition ["get" "set"]? @accessor name: (_) @name)"#,
                     }
                 },
             },
