@@ -23,7 +23,10 @@ pub fn merge<'a>(
             left.contents(),
             right.contents()
         );
-        return Ok(MergedCSTNode::Conflict { left: Some(Box::new(left.into())), right: Some(Box::new(right.into())) });
+        return Ok(MergedCSTNode::Conflict {
+            left: Some(Box::new(left.into())),
+            right: Some(Box::new(right.into())),
+        });
     }
 
     match (base, left, right) {
