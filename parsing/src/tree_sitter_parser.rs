@@ -89,10 +89,16 @@ impl From<Language> for ParserConfiguration {
             Language::Go => Self {
                 language: tree_sitter_go::LANGUAGE.into(),
                 stop_compilation_at: [].into(),
-                kinds_with_unordered_children: ["interface_type", "import_spec_list"].into(),
+                kinds_with_unordered_children: [
+                    "interface_type",
+                    "import_spec_list",
+                    "field_declaration_list",
+                ]
+                .into(),
                 delimiters: HashMap::from([
                     ("interface_type", Delimiters::new("interface", "}")),
                     ("import_spec_list", Delimiters::new("(", ")")),
+                    ("field_declaration_list", Delimiters::new("{", "}")),
                 ]),
                 handlers: ParsingHandlers::empty(),
                 identifier_extractors: tree_sitter_queries_identifier_extractors! {
@@ -100,7 +106,8 @@ impl From<Language> for ParserConfiguration {
                     queries: {
                         "method_elem": r#"(field_identifier) @method_name"#,
                         "method_declaration": r#"(field_identifier) @method_name"#,
-                        "import_spec": r#"(_) @import_name"#
+                        "import_spec": r#"(_) @import_name"#,
+                        "field_declaration": r#"(field_identifier) @field_name"#,
                     }
                 },
             },
