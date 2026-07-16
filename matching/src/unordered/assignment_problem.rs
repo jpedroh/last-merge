@@ -1,28 +1,9 @@
-#![allow(dead_code)]
-
 use std::cmp::max;
 
 use pathfinding::{kuhn_munkres::Weights, matrix};
 use unordered_pair::UnorderedPair;
 
 use crate::{matches::Matches, MatchingEntry, Matchings};
-
-pub fn calculate_matchings<'a>(
-    left: &'a model::CSTNode<'a>,
-    right: &'a model::CSTNode<'a>,
-) -> Matchings<'a> {
-    match (left, right) {
-        (model::CSTNode::NonTerminal(nt_left), model::CSTNode::NonTerminal(nt_right)) => {
-            let left_children: Vec<&model::CSTNode<'a>> = nt_left.get_children().iter().collect();
-            let right_children: Vec<&model::CSTNode<'a>> = nt_right.get_children().iter().collect();
-
-            calculate_matchings_for_children(left, right, &left_children, &right_children)
-        }
-        (_, _) => unreachable!(
-            "Unordered matching must never be called if the nodes are not NonTerminals."
-        ),
-    }
-}
 
 pub fn calculate_matchings_for_children<'a>(
     left: &'a model::CSTNode<'a>,

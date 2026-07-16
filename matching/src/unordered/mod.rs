@@ -3,7 +3,6 @@ use std::collections::{HashMap, HashSet};
 use model::cst_node::{CSTNode, Delimiters, NonTerminal};
 
 mod assignment_problem;
-mod unique_label;
 
 use crate::matches::Matches;
 use crate::{MatchingEntry, Matchings};
