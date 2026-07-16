@@ -1,5 +1,4 @@
 package main
 
 func Main() {
-	z := 0 + 1
-}
+	z := 0 + 1}
