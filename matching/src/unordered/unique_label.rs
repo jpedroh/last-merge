@@ -1,3 +1,5 @@
+#![allow(dead_code)]
+
 use unordered_pair::UnorderedPair;
 
 use crate::{matches::Matches, MatchingEntry, Matchings};

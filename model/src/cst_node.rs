@@ -69,6 +69,27 @@ impl CSTNode<'_> {
         self.get_subtree_size() + 1
     }
 
+    fn get_subtree_size_without_delimiters(&self) -> usize {
+        match self {
+            CSTNode::Terminal(_) => 0,
+            CSTNode::NonTerminal(node) => node.children.iter().fold(
+                node.children
+                    .iter()
+                    .filter(|child| {
+                        node.delimiters
+                            .map(|delimiters| !delimiters.is_delimiter(child))
+                            .unwrap_or(true)
+                    })
+                    .count(),
+                |acc, child| acc + child.get_subtree_size_without_delimiters(),
+            ),
+        }
+    }
+
+    pub fn get_tree_size_without_delimiters(&self) -> usize {
+        self.get_subtree_size_without_delimiters() + 1
+    }
+
     pub fn has_identifier(&self) -> bool {
         match self {
             CSTNode::Terminal(_) => true,

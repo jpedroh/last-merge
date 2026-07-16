@@ -10,7 +10,9 @@ impl MatchingEntry {
     pub fn new(left: &CSTNode, right: &CSTNode, score: usize) -> Self {
         MatchingEntry {
             score,
-            is_perfect_match: (2 * score) == (left.get_tree_size() + right.get_tree_size()),
+            is_perfect_match: (2 * score)
+                == (left.get_tree_size_without_delimiters()
+                    + right.get_tree_size_without_delimiters()),
         }
     }
 }

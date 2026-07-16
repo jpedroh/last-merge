@@ -1,3 +1,5 @@
+#![allow(dead_code)]
+
 use std::cmp::max;
 
 use pathfinding::{kuhn_munkres::Weights, matrix};
@@ -11,34 +13,44 @@ pub fn calculate_matchings<'a>(
 ) -> Matchings<'a> {
     match (left, right) {
         (model::CSTNode::NonTerminal(nt_left), model::CSTNode::NonTerminal(nt_right)) => {
-            if !left.matches(right) {
-                return Matchings::empty();
-            }
+            let left_children: Vec<&model::CSTNode<'a>> = nt_left.get_children().iter().collect();
+            let right_children: Vec<&model::CSTNode<'a>> = nt_right.get_children().iter().collect();
 
-            let children_matchings = nt_left
-                .get_children()
-                .iter()
-                .map(|left_child| {
-                    nt_right
-                        .get_children()
-                        .iter()
-                        .map(|right_child| {
-                            let w = crate::calculate_matchings(left_child, right_child);
-                            let matching = w
-                                .get_matching_entry(left_child, right_child)
-                                .unwrap_or_default();
-                            (matching.score, w)
-                        })
-                        .collect()
-                })
-                .collect();
-
-            solve_assignment_problem(left, right, children_matchings)
+            calculate_matchings_for_children(left, right, &left_children, &right_children)
         }
         (_, _) => unreachable!(
             "Unordered matching must never be called if the nodes are not NonTerminals."
         ),
     }
+}
+
+pub fn calculate_matchings_for_children<'a>(
+    left: &'a model::CSTNode<'a>,
+    right: &'a model::CSTNode<'a>,
+    left_children: &[&'a model::CSTNode<'a>],
+    right_children: &[&'a model::CSTNode<'a>],
+) -> Matchings<'a> {
+    if !left.matches(right) {
+        return Matchings::empty();
+    }
+
+    let children_matchings = left_children
+        .iter()
+        .map(|left_child| {
+            right_children
+                .iter()
+                .map(|right_child| {
+                    let w = crate::calculate_matchings(left_child, right_child);
+                    let matching = w
+                        .get_matching_entry(left_child, right_child)
+                        .unwrap_or_default();
+                    (matching.score, w)
+                })
+                .collect()
+        })
+        .collect();
+
+    solve_assignment_problem(left, right, children_matchings)
 }
 
 fn solve_assignment_problem<'a>(
@@ -47,7 +59,21 @@ fn solve_assignment_problem<'a>(
     children_matchings: Vec<Vec<(usize, Matchings<'a>)>>,
 ) -> Matchings<'a> {
     let m = children_matchings.len();
+    if m == 0 {
+        return Matchings::from_single(
+            UnorderedPair(left, right),
+            MatchingEntry::new(left, right, 1),
+        );
+    }
+
     let n = children_matchings[0].len();
+    if n == 0 {
+        return Matchings::from_single(
+            UnorderedPair(left, right),
+            MatchingEntry::new(left, right, 1),
+        );
+    }
+
     let max_size = max(m, n);
 
     let mut matrix: Vec<Vec<i32>> = vec![vec![0; max_size]; max_size];
