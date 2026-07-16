@@ -86,6 +86,14 @@ impl From<Language> for ParserConfiguration {
                     }
                 },
             },
+            Language::Go => Self {
+                language: tree_sitter_go::LANGUAGE.into(),
+                stop_compilation_at: [].into(),
+                kinds_with_unordered_children: [].into(),
+                delimiters: [].into(),
+                handlers: ParsingHandlers::empty(),
+                identifier_extractors: [].into(),
+            },
         }
     }
 }
