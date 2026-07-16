@@ -115,8 +115,8 @@ pub struct Delimiters<'a> {
 impl Delimiters<'_> {
     pub fn new<'a>(start: &'a str, end: &'a str) -> Delimiters<'a> {
         Delimiters {
-            start: start,
-            end: end,
+            start,
+            end,
             separator: None,
         }
     }
