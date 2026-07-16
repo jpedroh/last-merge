@@ -81,7 +81,7 @@ impl From<Language> for ParserConfiguration {
                 identifier_extractors: tree_sitter_queries_identifier_extractors! {
                     language: tree_sitter_javascript::LANGUAGE,
                     queries: {
-                        "pair": "(pair key: (property_identifier) @key)",
+                        "pair": "(pair key: (_) @key)",
                         "method_definition": r#"(method_definition ["get" "set"]? @accessor name: (_) @name)"#,
                     }
                 },
