@@ -63,11 +63,7 @@ pub fn calculate_matchings<'a>(
                     .unwrap_or(0);
 
                 let mut result = label_matchings;
-                for (pair, entry) in assignment_matchings.into_iter() {
-                    if pair != UnorderedPair(left, right) {
-                        result.extend(Matchings::from_single(pair, entry));
-                    }
-                }
+                result.extend(assignment_matchings);
                 result.extend(Matchings::from_single(
                     UnorderedPair(left, right),
                     MatchingEntry::new(left, right, label_score + assignment_score),
