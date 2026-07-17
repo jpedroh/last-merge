@@ -93,21 +93,27 @@ impl From<Language> for ParserConfiguration {
                     "interface_type",
                     "import_spec_list",
                     "field_declaration_list",
+                    "source_file_synthetic_tail",
+                    "var_spec_list",
                 ]
                 .into(),
                 delimiters: HashMap::from([
                     ("interface_type", Delimiters::new("interface", "}")),
                     ("import_spec_list", Delimiters::new("(", ")")),
                     ("field_declaration_list", Delimiters::new("{", "}")),
+                    ("var_spec_list", Delimiters::new("(", ")")),
                 ]),
-                handlers: ParsingHandlers::empty(),
+                handlers: ParsingHandlers::from(Language::Go),
                 identifier_extractors: tree_sitter_queries_identifier_extractors! {
                     language: tree_sitter_go::LANGUAGE,
                     queries: {
                         "method_elem": r#"(field_identifier) @method_name"#,
                         "method_declaration": r#"(field_identifier) @method_name"#,
+                        "function_declaration": r#"(field_identifier) @function_name"#,
                         "import_spec": r#"(_) @import_name"#,
                         "field_declaration": r#"(field_identifier) @field_name"#,
+                        "var_spec": r#"(identifier) @name"#,
+                        "type_spec": r#"(type_spec (type_identifier) @name)"#
                     }
                 },
             },
