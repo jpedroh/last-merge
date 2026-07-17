@@ -95,6 +95,7 @@ impl From<Language> for ParserConfiguration {
                     "field_declaration_list",
                     "source_file_synthetic_tail",
                     "var_spec_list",
+                    "const_declaration"
                 ]
                 .into(),
                 delimiters: HashMap::from([
@@ -102,6 +103,7 @@ impl From<Language> for ParserConfiguration {
                     ("import_spec_list", Delimiters::new("(", ")")),
                     ("field_declaration_list", Delimiters::new("{", "}")),
                     ("var_spec_list", Delimiters::new("(", ")")),
+                    ("const_declaration", Delimiters::new("const (", ")")),
                 ]),
                 handlers: ParsingHandlers::from(Language::Go),
                 identifier_extractors: tree_sitter_queries_identifier_extractors! {
@@ -113,6 +115,7 @@ impl From<Language> for ParserConfiguration {
                         "import_spec": r#"(_) @import_name"#,
                         "field_declaration": r#"(field_identifier) @field_name"#,
                         "var_spec": r#"(identifier) @name"#,
+                        "const_spec": r#"(identifier) @name"#,
                         "type_spec": r#"(type_spec (type_identifier) @name)"#
                     }
                 },
