@@ -1,4 +1,6 @@
-use crate::{java::get_default_java_parsing_handlers, ParsingHandlers};
+use crate::{
+    go::get_default_go_parsing_handlers, java::get_default_java_parsing_handlers, ParsingHandlers,
+};
 use model::Language;
 
 impl From<Language> for ParsingHandlers {
@@ -6,6 +8,7 @@ impl From<Language> for ParsingHandlers {
         match language {
             Language::Java => get_default_java_parsing_handlers(),
             Language::CSharp => ParsingHandlers::new(vec![]),
+            Language::Go => get_default_go_parsing_handlers(),
             _ => ParsingHandlers::new(vec![]),
         }
     }

@@ -1,3 +1,4 @@
+mod go;
 mod java;
 mod language;
 mod parsing_handlers;

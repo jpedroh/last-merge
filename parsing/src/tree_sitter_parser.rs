@@ -86,6 +86,40 @@ impl From<Language> for ParserConfiguration {
                     }
                 },
             },
+            Language::Go => Self {
+                language: tree_sitter_go::LANGUAGE.into(),
+                stop_compilation_at: [].into(),
+                kinds_with_unordered_children: [
+                    "interface_type",
+                    "import_spec_list",
+                    "field_declaration_list",
+                    "source_file_synthetic_tail",
+                    "var_spec_list",
+                    "const_spec_list", // This is synthetic (handler made)
+                    "type_spec_list",  // This is synthetic (handler made)
+                ]
+                .into(),
+                delimiters: HashMap::from([
+                    ("interface_type", Delimiters::new("interface", "}")),
+                    ("import_spec_list", Delimiters::new("(", ")")),
+                    ("field_declaration_list", Delimiters::new("{", "}")),
+                    ("var_spec_list", Delimiters::new("(", ")")),
+                ]),
+                handlers: ParsingHandlers::from(Language::Go),
+                identifier_extractors: tree_sitter_queries_identifier_extractors! {
+                    language: tree_sitter_go::LANGUAGE,
+                    queries: {
+                        "method_elem": r#"(field_identifier) @method_name"#,
+                        "method_declaration": r#"(field_identifier) @method_name"#,
+                        "function_declaration": r#"(field_identifier) @function_name"#,
+                        "import_spec": r#"(_) @import_name"#,
+                        "field_declaration": r#"(field_identifier) @field_name"#,
+                        "var_spec": r#"(identifier) @name"#,
+                        "const_spec": r#"(identifier) @name"#,
+                        "type_spec": r#"(type_spec (type_identifier) @name)"#
+                    }
+                },
+            },
         }
     }
 }

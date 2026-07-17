@@ -3,4 +3,5 @@ pub enum Language {
     Java,
     CSharp,
     JavaScript,
+    Go,
 }

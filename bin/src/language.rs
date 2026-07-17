@@ -3,6 +3,7 @@ pub fn get_language_from_name(name: &str) -> Result<model::Language, String> {
         "java" => Ok(model::Language::Java),
         "csharp" | "cs" => Ok(model::Language::CSharp),
         "javascript" | "js" => Ok(model::Language::JavaScript),
+        "go" => Ok(model::Language::Go),
         _ => Err(format!("Invalid language provided: {name}")),
     }
 }
@@ -15,6 +16,7 @@ pub fn get_language_by_file_path(file_path: &std::path::Path) -> Result<model::L
             "java" => Some(model::Language::Java),
             "cs" => Some(model::Language::CSharp),
             "js" => Some(model::Language::JavaScript),
+            "go" => Some(model::Language::Go),
             _ => None,
         })
         .ok_or(format!(

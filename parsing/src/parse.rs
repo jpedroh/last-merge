@@ -30,6 +30,8 @@ fn explore_node<'a>(node: Node, src: &'a str, config: &'a ParserConfiguration) -
             .get(node.kind())
             .and_then(|extractor| extractor.extract_identifier_from_node(node, src));
 
+        log::debug!("Passing over node {:?}", node);
+
         if let Some(ref identifier) = identifier {
             log::debug!("Found identifier {:?} for node {:?}", identifier, node);
         }
@@ -47,7 +49,7 @@ fn explore_node<'a>(node: Node, src: &'a str, config: &'a ParserConfiguration) -
             },
             children: node
                 .children(&mut cursor)
-                .map(|child| explore_node(child, src, config))
+                .map(|child| config.handlers.run(explore_node(child, src, config)))
                 .collect(),
             identifier,
             leading_white_space: node
