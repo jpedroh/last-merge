@@ -54,10 +54,7 @@ fn handle<'a>(
         })
     } else {
         let trailing_nodes: Vec<_> = children.iter().take(2).cloned().collect();
-        let final_node = children
-            .last()
-            .cloned()
-            .expect("List should not be empty");
+        let final_node = children.last().cloned().expect("List should not be empty");
 
         let internal_declarations: Vec<_> = children
             .into_iter()
