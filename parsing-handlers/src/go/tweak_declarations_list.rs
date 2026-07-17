@@ -2,50 +2,102 @@ use model::{cst_node::NonTerminal, CSTNode};
 
 pub fn tweak_declarations_list(root: CSTNode<'_>) -> CSTNode<'_> {
     match root {
-        CSTNode::Terminal(_) => root,
-        CSTNode::NonTerminal(non_terminal) if non_terminal.kind != "const_declaration" => {
-            CSTNode::NonTerminal(non_terminal)
+        CSTNode::NonTerminal(nt) if nt.kind == "const_declaration" => {
+            handle(nt, "const_spec", "const_spec_list")
         }
-        CSTNode::NonTerminal(const_declaration) => {
-            let internal_declaration_count = const_declaration
-                .children
-                .iter()
-                .filter(|node| node.kind() == "const_spec")
-                .count();
-
-            if internal_declaration_count <= 1 {
-                CSTNode::NonTerminal(const_declaration)
-            } else {
-                let NonTerminal {
-                    id,
-                    kind,
-                    children,
-                    start_position,
-                    end_position,
-                    are_children_unordered: _,
-                    identifier: _,
-                    leading_white_space,
-                    delimiters,
-                } = const_declaration;
-
-                let internal_declarations: Vec<_> = children
-                    .into_iter()
-                    .filter(|node| node.kind() == "const_spec")
-                    .collect();
-
-                CSTNode::NonTerminal(NonTerminal {
-                    id,
-                    kind,
-                    start_position,
-                    end_position,
-                    children: internal_declarations,
-                    are_children_unordered: true,
-                    identifier: None,
-                    leading_white_space,
-                    delimiters,
-                })
-            }
+        CSTNode::NonTerminal(nt) if nt.kind == "type_declaration" => {
+            handle(nt, "type_spec", "type_spec_list")
         }
+        _ => root,
+    }
+}
+
+fn handle<'a>(
+    declaration: NonTerminal<'a>,
+    child_name: &'static str,
+    new_kind: &'static str,
+) -> CSTNode<'a> {
+    let NonTerminal {
+        id,
+        kind,
+        children,
+        start_position,
+        end_position,
+        are_children_unordered,
+        identifier,
+        leading_white_space,
+        delimiters,
+    } = declaration;
+
+    let internal_declaration_count = children
+        .iter()
+        .filter(|node| node.kind() == child_name)
+        .count();
+
+    log::debug!(
+        "Found {:?} declarations of type {:?}",
+        internal_declaration_count,
+        child_name
+    );
+
+    if internal_declaration_count <= 1 {
+        CSTNode::NonTerminal(NonTerminal {
+            id,
+            kind,
+            children,
+            start_position,
+            end_position,
+            are_children_unordered,
+            identifier,
+            leading_white_space,
+            delimiters,
+        })
+    } else {
+        let trailing_nodes: Vec<_> = children.iter().take(2).cloned().collect();
+        let final_node = children
+            .last()
+            .cloned()
+            .expect("List should not be empty");
+
+        let internal_declarations: Vec<_> = children
+            .into_iter()
+            .filter(|node| node.kind() == child_name)
+            .collect();
+
+        let declaration_list_node = CSTNode::NonTerminal(NonTerminal {
+            id: uuid::Uuid::new_v4(),
+            kind: new_kind,
+            start_position: internal_declarations
+                .first()
+                .expect("Should not be empty")
+                .start_position(),
+            end_position: internal_declarations
+                .last()
+                .expect("Should not be empty")
+                .end_position(),
+            children: internal_declarations,
+            are_children_unordered: true,
+            identifier: None,
+            leading_white_space: None,
+            delimiters: None,
+        });
+
+        let mut resulting_children = vec![];
+        resulting_children.extend(trailing_nodes);
+        resulting_children.push(declaration_list_node);
+        resulting_children.push(final_node);
+
+        CSTNode::NonTerminal(NonTerminal {
+            id,
+            kind,
+            children: resulting_children,
+            start_position,
+            end_position,
+            are_children_unordered,
+            identifier,
+            leading_white_space,
+            delimiters,
+        })
     }
 }
 
@@ -108,12 +160,25 @@ mod tests {
         match tweaked {
             CSTNode::NonTerminal(non_terminal) => {
                 assert_eq!(non_terminal.kind, "const_declaration");
-                assert!(non_terminal.are_children_unordered);
-                assert_eq!(non_terminal.children.len(), 2);
-                assert!(non_terminal
-                    .children
-                    .iter()
-                    .all(|node| node.kind() == "const_spec"));
+                assert!(!non_terminal.are_children_unordered);
+                assert_eq!(non_terminal.children.len(), 4);
+                assert_eq!(non_terminal.children[0].kind(), "const_spec");
+                assert_eq!(non_terminal.children[1].kind(), "other");
+                assert_eq!(non_terminal.children[2].kind(), "const_spec_list");
+                assert_eq!(non_terminal.children[3].kind(), "const_spec");
+
+                match &non_terminal.children[2] {
+                    CSTNode::NonTerminal(list_node) => {
+                        assert!(list_node.are_children_unordered);
+                        assert_eq!(list_node.kind, "const_spec_list");
+                        assert_eq!(list_node.children.len(), 2);
+                        assert!(list_node
+                            .children
+                            .iter()
+                            .all(|node| node.kind() == "const_spec"));
+                    }
+                    CSTNode::Terminal(_) => panic!("expected synthetic list node"),
+                }
             }
             CSTNode::Terminal(_) => panic!("expected non-terminal result"),
         }
