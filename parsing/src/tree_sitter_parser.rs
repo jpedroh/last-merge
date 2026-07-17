@@ -95,7 +95,7 @@ impl From<Language> for ParserConfiguration {
                     "field_declaration_list",
                     "source_file_synthetic_tail",
                     "var_spec_list",
-                    "const_declaration"
+                    "const_declaration",
                 ]
                 .into(),
                 delimiters: HashMap::from([
