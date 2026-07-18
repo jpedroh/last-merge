@@ -65,11 +65,6 @@ pub fn yang<'a>(
             Direction::Left => j -= 1,
             Direction::Diag => {
                 if matrix_m[i][j] > matrix_m[i - 1][j - 1] {
-                    log::debug!(
-                        "Assigning a match between {:?} and {:?}",
-                        left_children.get(i - 1).unwrap().contents(),
-                        right_children.get(j - 1).unwrap().contents()
-                    );
                     matchings.extend(matrix_t[i][j].1.clone());
                 }
                 i -= 1;

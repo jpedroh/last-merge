@@ -13,17 +13,25 @@ pub fn calculate_matchings<'a>(
         let root_matching: usize = (left.matches(right)).into();
         let mut matchings: Matchings<'_> = Matchings::empty();
 
-        let (first_identical_roots, identical_children_score) = identical_matches(
+        let (prefix, suffix, identical_children_score) = identical_matches(
             nt_left.get_children(),
             nt_right.get_children(),
             &mut matchings,
         );
 
-        log::debug!("Starting calculation at {:?}", first_identical_roots);
+        let left_children = nt_left.get_children();
+        let right_children = nt_right.get_children();
+        log::debug!(
+            "Identical suffix/prefix reduced search space from {:?}x{:?} to {:?}x{:?}",
+            left_children.len(),
+            right_children.len(),
+            left_children.len() - prefix - suffix,
+            right_children.len() - prefix - suffix,
+        );
 
         let maximum_children_score = yang::yang(
-            nt_left.get_children()[first_identical_roots..].as_ref(),
-            nt_right.get_children()[first_identical_roots..].as_ref(),
+            left_children[prefix..left_children.len() - suffix].as_ref(),
+            right_children[prefix..right_children.len() - suffix].as_ref(),
             &mut matchings,
         );
         matchings.push(
