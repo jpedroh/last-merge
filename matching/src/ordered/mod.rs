@@ -6,9 +6,19 @@ pub fn calculate_matchings<'a>(
     left: &'a model::CSTNode,
     right: &'a model::CSTNode,
 ) -> Matchings<'a> {
-    if let (model::CSTNode::NonTerminal(_), model::CSTNode::NonTerminal(_)) = (left, right) {
+    if let (model::CSTNode::NonTerminal(nt_left), model::CSTNode::NonTerminal(nt_right)) =
+        (left, right)
+    {
         let root_matching: usize = (left.matches(right)).into();
-        yang::yang(left, right, root_matching)
+        let mut matchings = Matchings::empty();
+
+        let maximum_children_score = yang::yang(
+            nt_left.get_children(),
+            nt_right.get_children(),
+            &mut matchings,
+        );
+        matchings.push(left, right, maximum_children_score + root_matching);
+        matchings
     } else {
         Matchings::empty()
     }
