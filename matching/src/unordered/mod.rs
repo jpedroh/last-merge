@@ -5,8 +5,6 @@ use model::cst_node::{CSTNode, Delimiters, NonTerminal};
 mod assignment_problem;
 
 use crate::matches::Matches;
-use crate::{MatchingEntry, Matchings};
-use unordered_pair::UnorderedPair;
 
 pub fn calculate_matchings<'a>(
     left: &'a model::CSTNode<'a>,
@@ -38,10 +36,7 @@ pub fn calculate_matchings<'a>(
                     right.kind()
                 );
                 let mut result = label_matchings;
-                result.extend(Matchings::from_single(
-                    UnorderedPair(left, right),
-                    MatchingEntry::new(left, right, label_score + root_matching),
-                ));
+                result.push(left, right, label_score + root_matching);
                 result
             } else {
                 log::debug!(
@@ -63,11 +58,8 @@ pub fn calculate_matchings<'a>(
                     .unwrap_or(0);
 
                 let mut result = label_matchings;
+                result.push(left, right, label_score + assignment_score);
                 result.extend(assignment_matchings);
-                result.extend(Matchings::from_single(
-                    UnorderedPair(left, right),
-                    MatchingEntry::new(left, right, label_score + assignment_score),
-                ));
                 result
             }
         }

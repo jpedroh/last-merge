@@ -8,7 +8,6 @@ pub mod unordered;
 use matches::Matches;
 pub use matching_entry::MatchingEntry;
 pub use matchings::Matchings;
-use unordered_pair::UnorderedPair;
 
 pub fn calculate_matchings<'a>(
     left: &'a model::CSTNode,
@@ -43,10 +42,7 @@ pub fn calculate_matchings<'a>(
             }),
         ) => {
             let is_perfect_match = kind_left == kind_right && value_left == value_right;
-            Matchings::from_single(
-                UnorderedPair(left, right),
-                MatchingEntry::new(left, right, is_perfect_match.into()),
-            )
+            Matchings::from_single(left, right, is_perfect_match.into())
         }
         (_, _) => Matchings::empty(),
     }

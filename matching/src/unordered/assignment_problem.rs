@@ -1,9 +1,8 @@
 use std::cmp::max;
 
 use pathfinding::{kuhn_munkres::Weights, matrix};
-use unordered_pair::UnorderedPair;
 
-use crate::{matches::Matches, MatchingEntry, Matchings};
+use crate::{matches::Matches, Matchings};
 
 pub fn calculate_matchings_for_children<'a>(
     left: &'a model::CSTNode<'a>,
@@ -41,18 +40,12 @@ fn solve_assignment_problem<'a>(
 ) -> Matchings<'a> {
     let m = children_matchings.len();
     if m == 0 {
-        return Matchings::from_single(
-            UnorderedPair(left, right),
-            MatchingEntry::new(left, right, 1),
-        );
+        return Matchings::from_single(left, right, 1);
     }
 
     let n = children_matchings[0].len();
     if n == 0 {
-        return Matchings::from_single(
-            UnorderedPair(left, right),
-            MatchingEntry::new(left, right, 1),
-        );
+        return Matchings::from_single(left, right, 1);
     }
 
     let max_size = max(m, n);
@@ -78,10 +71,7 @@ fn solve_assignment_problem<'a>(
         }
     }
 
-    result.extend(Matchings::from_single(
-        UnorderedPair(left, right),
-        MatchingEntry::new(left, right, max_matching as usize + 1),
-    ));
+    result.push(left, right, max_matching as usize + 1);
 
     result
 }
