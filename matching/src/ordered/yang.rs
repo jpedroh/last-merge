@@ -24,6 +24,11 @@ pub fn yang<'a>(
 ) -> usize {
     let m = left_children.len();
     let n = right_children.len();
+    log::debug!(
+        "Starting Yang algorithm comparing {:?} and {:?} children",
+        m,
+        n
+    );
 
     let mut matrix_m = vec![vec![0; n + 1]; m + 1];
     let mut matrix_t = vec![vec![Entry::default(); n + 1]; m + 1];

@@ -21,24 +21,33 @@ pub fn calculate_matchings<'a>(
 
         let left_children = nt_left.get_children();
         let right_children = nt_right.get_children();
-        log::debug!(
-            "Identical suffix/prefix reduced search space from {:?}x{:?} to {:?}x{:?}",
-            left_children.len(),
-            right_children.len(),
-            left_children.len() - prefix - suffix,
-            right_children.len() - prefix - suffix,
-        );
 
-        let maximum_children_score = yang::yang(
-            left_children[prefix..left_children.len() - suffix].as_ref(),
-            right_children[prefix..right_children.len() - suffix].as_ref(),
-            &mut matchings,
-        );
-        matchings.push(
-            left,
-            right,
-            identical_children_score + maximum_children_score + root_matching,
-        );
+        let remaining_children_left = left_children.len() - prefix - suffix;
+        let remaining_children_right = right_children.len() - prefix - suffix;
+
+        if remaining_children_left == 0 && remaining_children_right == 0 {
+            log::debug!("Identical suffix/prefix fully reduced search space");
+            matchings.push(left, right, identical_children_score + root_matching);
+        } else {
+            log::debug!(
+                "Identical suffix/prefix reduced search space from {:?}x{:?} to {:?}x{:?}",
+                left_children.len(),
+                right_children.len(),
+                remaining_children_left,
+                remaining_children_right,
+            );
+
+            let maximum_children_score = yang::yang(
+                left_children[prefix..left_children.len() - suffix].as_ref(),
+                right_children[prefix..right_children.len() - suffix].as_ref(),
+                &mut matchings,
+            );
+            matchings.push(
+                left,
+                right,
+                identical_children_score + maximum_children_score + root_matching,
+            );
+        }
         matchings
     } else {
         Matchings::empty()
