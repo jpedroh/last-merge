@@ -1,89 +1,56 @@
-use crate::{matches::Matches, matching_entry::MatchingEntry, Matchings};
-use unordered_pair::UnorderedPair;
+mod identical;
+mod yang;
 
-#[derive(PartialEq, Eq, Debug, Clone)]
-enum Direction {
-    Top,
-    Left,
-    Diag,
-}
-
-#[derive(Clone)]
-struct Entry<'a>(pub Direction, pub Matchings<'a>);
-
-impl Default for Entry<'_> {
-    fn default() -> Self {
-        Self(Direction::Top, Default::default())
-    }
-}
+use crate::{matches::Matches, ordered::identical::identical_matches, Matchings};
 
 pub fn calculate_matchings<'a>(
     left: &'a model::CSTNode,
     right: &'a model::CSTNode,
 ) -> Matchings<'a> {
-    match (left, right) {
-        (model::CSTNode::NonTerminal(nt_left), model::CSTNode::NonTerminal(nt_right)) => {
-            let root_matching: usize = (left.matches(right)).into();
+    if let (model::CSTNode::NonTerminal(nt_left), model::CSTNode::NonTerminal(nt_right)) =
+        (left, right)
+    {
+        let root_matching: usize = (left.matches(right)).into();
+        let mut matchings: Matchings<'_> = Matchings::empty();
 
-            let m = nt_left.get_children().len();
-            let n = nt_right.get_children().len();
+        let (prefix, suffix, identical_children_score) = identical_matches(
+            nt_left.get_children(),
+            nt_right.get_children(),
+            &mut matchings,
+        );
 
-            let mut matrix_m = vec![vec![0; n + 1]; m + 1];
-            let mut matrix_t = vec![vec![Entry::default(); n + 1]; m + 1];
+        let left_children = nt_left.get_children();
+        let right_children = nt_right.get_children();
 
-            for i in 1..m + 1 {
-                for j in 1..n + 1 {
-                    let left_child = nt_left.get_children().get(i - 1).unwrap();
-                    let right_child = nt_right.get_children().get(j - 1).unwrap();
+        let remaining_children_left = left_children.len() - prefix - suffix;
+        let remaining_children_right = right_children.len() - prefix - suffix;
 
-                    let w = crate::calculate_matchings(left_child, right_child);
-                    let matching = w
-                        .get_matching_entry(left_child, right_child)
-                        .unwrap_or_default();
-
-                    if matrix_m[i][j - 1] > matrix_m[i - 1][j] {
-                        if matrix_m[i][j - 1] > matrix_m[i - 1][j - 1] + matching.score {
-                            matrix_m[i][j] = matrix_m[i][j - 1];
-                            matrix_t[i][j] = Entry(Direction::Left, w);
-                        } else {
-                            matrix_m[i][j] = matrix_m[i - 1][j - 1] + matching.score;
-                            matrix_t[i][j] = Entry(Direction::Diag, w);
-                        }
-                    } else if matrix_m[i - 1][j] > matrix_m[i - 1][j - 1] + matching.score {
-                        matrix_m[i][j] = matrix_m[i - 1][j];
-                        matrix_t[i][j] = Entry(Direction::Top, w);
-                    } else {
-                        matrix_m[i][j] = matrix_m[i - 1][j - 1] + matching.score;
-                        matrix_t[i][j] = Entry(Direction::Diag, w);
-                    }
-                }
-            }
-
-            let mut i = m;
-            let mut j = n;
-
-            let mut matchings = Matchings::from_single(
-                UnorderedPair(left, right),
-                MatchingEntry::new(left, right, matrix_m[m][n] + root_matching),
+        if remaining_children_left == 0 && remaining_children_right == 0 {
+            log::debug!("Identical suffix/prefix fully reduced search space");
+            matchings.push(left, right, identical_children_score + root_matching);
+        } else {
+            log::debug!(
+                "Identical suffix/prefix reduced search space from {:?}x{:?} to {:?}x{:?}",
+                left_children.len(),
+                right_children.len(),
+                remaining_children_left,
+                remaining_children_right,
             );
 
-            while i >= 1 && j >= 1 {
-                match matrix_t.get(i).unwrap().get(j).unwrap().0 {
-                    Direction::Top => i -= 1,
-                    Direction::Left => j -= 1,
-                    Direction::Diag => {
-                        if matrix_m[i][j] > matrix_m[i - 1][j - 1] {
-                            matchings.extend(matrix_t[i][j].1.clone());
-                        }
-                        i -= 1;
-                        j -= 1;
-                    }
-                }
-            }
-
-            matchings
+            let maximum_children_score = yang::yang(
+                left_children[prefix..left_children.len() - suffix].as_ref(),
+                right_children[prefix..right_children.len() - suffix].as_ref(),
+                &mut matchings,
+            );
+            matchings.push(
+                left,
+                right,
+                identical_children_score + maximum_children_score + root_matching,
+            );
         }
-        (_, _) => Matchings::empty(),
+        matchings
+    } else {
+        Matchings::empty()
     }
 }
 

@@ -69,6 +69,13 @@ impl<'a> Matchings<'a> {
         );
         self.matching_entries.extend(matchings);
     }
+
+    pub fn push(&mut self, left: &'a CSTNode<'a>, right: &'a CSTNode<'a>, score: usize) {
+        self.extend(Matchings::from_single(
+            UnorderedPair(left, right),
+            MatchingEntry::new(left, right, score),
+        ));
+    }
 }
 
 impl Default for Matchings<'_> {

@@ -30,8 +30,6 @@ fn explore_node<'a>(node: Node, src: &'a str, config: &'a ParserConfiguration) -
             .get(node.kind())
             .and_then(|extractor| extractor.extract_identifier_from_node(node, src));
 
-        log::debug!("Passing over node {:?}", node);
-
         if let Some(ref identifier) = identifier {
             log::debug!("Found identifier {:?} for node {:?}", identifier, node);
         }
