@@ -3,10 +3,10 @@ LANGUAGE=java
 LOG_LEVEL=debug
 
 run_merge_on_dir:
-	cargo run -- merge --left-path=$(DIR)/left$(SUFFIX) --base-path=$(DIR)/base$(SUFFIX) --right-path=$(DIR)/right$(SUFFIX) --merge-path=$(DIR)/merge$(SUFFIX) --log-level=$(LOG_LEVEL)
+	cargo run --release -- merge --left-path=$(DIR)/left$(SUFFIX) --base-path=$(DIR)/base$(SUFFIX) --right-path=$(DIR)/right$(SUFFIX) --merge-path=$(DIR)/merge$(SUFFIX) --log-level=$(LOG_LEVEL)
 
 run_diff:
-	cargo run -- diff --left-path=$(LEFT_PATH) --right-path=$(RIGHT_PATH) --language=$(LANGUAGE) --log-level=$(LOG_LEVEL)
+	cargo run --release -- diff --left-path=$(LEFT) --right-path=$(RIGHT) --log-level=$(LOG_LEVEL)
 
 rebuild_snapshots:
 	for SCENARIO in $(SCENARIOS); do \
