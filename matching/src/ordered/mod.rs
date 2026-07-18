@@ -1,6 +1,7 @@
+mod identical;
 mod yang;
 
-use crate::{matches::Matches, Matchings};
+use crate::{matches::Matches, ordered::identical::identical_matches, Matchings};
 
 pub fn calculate_matchings<'a>(
     left: &'a model::CSTNode,
@@ -10,14 +11,26 @@ pub fn calculate_matchings<'a>(
         (left, right)
     {
         let root_matching: usize = (left.matches(right)).into();
-        let mut matchings = Matchings::empty();
+        let mut matchings: Matchings<'_> = Matchings::empty();
 
-        let maximum_children_score = yang::yang(
+        let (first_identical_roots, identical_children_score) = identical_matches(
             nt_left.get_children(),
             nt_right.get_children(),
             &mut matchings,
         );
-        matchings.push(left, right, maximum_children_score + root_matching);
+
+        log::debug!("Starting calculation at {:?}", first_identical_roots);
+
+        let maximum_children_score = yang::yang(
+            nt_left.get_children()[first_identical_roots..].as_ref(),
+            nt_right.get_children()[first_identical_roots..].as_ref(),
+            &mut matchings,
+        );
+        matchings.push(
+            left,
+            right,
+            identical_children_score + maximum_children_score + root_matching,
+        );
         matchings
     } else {
         Matchings::empty()
