@@ -4,12 +4,13 @@ use model::cst_node::{CSTNode, Delimiters, NonTerminal};
 
 mod assignment_problem;
 
-use crate::matches::Matches;
+use crate::{matches::Matches, Matchings};
 
 pub fn calculate_matchings<'a>(
     left: &'a model::CSTNode<'a>,
     right: &'a model::CSTNode<'a>,
-) -> crate::Matchings<'a> {
+    matchings: &mut Matchings<'a>,
+) -> usize {
     match (left, right) {
         (model::CSTNode::NonTerminal(left_nt), model::CSTNode::NonTerminal(right_nt)) => {
             let root_matching: usize = left.matches(right).into();
@@ -35,9 +36,9 @@ pub fn calculate_matchings<'a>(
                     left.kind(),
                     right.kind()
                 );
-                let mut result = label_matchings;
-                result.push(left, right, label_score + root_matching);
-                result
+                matchings.push(left, right, label_score + root_matching);
+                matchings.extend(label_matchings);
+                label_score + root_matching
             } else {
                 log::debug!(
                     "Matching children of \"{}\" with \"{}\" using hybrid unique label plus assignment problem matching.",
@@ -57,10 +58,10 @@ pub fn calculate_matchings<'a>(
                     .map(|matching_entry| matching_entry.score)
                     .unwrap_or(0);
 
-                let mut result = label_matchings;
-                result.push(left, right, label_score + assignment_score);
-                result.extend(assignment_matchings);
-                result
+                matchings.push(left, right, label_score + assignment_score);
+                matchings.extend(label_matchings);
+                matchings.extend(assignment_matchings);
+                label_score + assignment_score
             }
         }
         _ => unreachable!("Unordered matching is only supported for non-terminals."),

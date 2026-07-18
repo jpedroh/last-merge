@@ -4,20 +4,17 @@ mod yang;
 use crate::{matches::Matches, ordered::identical::identical_matches, Matchings};
 
 pub fn calculate_matchings<'a>(
-    left: &'a model::CSTNode,
-    right: &'a model::CSTNode,
-) -> Matchings<'a> {
+    left: &'a model::CSTNode<'a>,
+    right: &'a model::CSTNode<'a>,
+    matchings: &mut Matchings<'a>,
+) -> usize {
     if let (model::CSTNode::NonTerminal(nt_left), model::CSTNode::NonTerminal(nt_right)) =
         (left, right)
     {
         let root_matching: usize = (left.matches(right)).into();
-        let mut matchings: Matchings<'_> = Matchings::empty();
 
-        let (prefix, suffix, identical_children_score) = identical_matches(
-            nt_left.get_children(),
-            nt_right.get_children(),
-            &mut matchings,
-        );
+        let (prefix, suffix, identical_children_score) =
+            identical_matches(nt_left.get_children(), nt_right.get_children(), matchings);
 
         let left_children = nt_left.get_children();
         let right_children = nt_right.get_children();
@@ -28,6 +25,7 @@ pub fn calculate_matchings<'a>(
         if remaining_children_left == 0 && remaining_children_right == 0 {
             log::debug!("Identical suffix/prefix fully reduced search space");
             matchings.push(left, right, identical_children_score + root_matching);
+            identical_children_score + root_matching
         } else {
             log::debug!(
                 "Identical suffix/prefix reduced search space from {:?}x{:?} to {:?}x{:?}",
@@ -40,17 +38,17 @@ pub fn calculate_matchings<'a>(
             let maximum_children_score = yang::yang(
                 left_children[prefix..left_children.len() - suffix].as_ref(),
                 right_children[prefix..right_children.len() - suffix].as_ref(),
-                &mut matchings,
+                matchings,
             );
             matchings.push(
                 left,
                 right,
                 identical_children_score + maximum_children_score + root_matching,
             );
+            identical_children_score + maximum_children_score + root_matching
         }
-        matchings
     } else {
-        Matchings::empty()
+        0
     }
 }
 

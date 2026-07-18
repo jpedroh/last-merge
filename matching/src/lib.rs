@@ -13,8 +13,19 @@ pub fn calculate_matchings<'a>(
     left: &'a model::CSTNode,
     right: &'a model::CSTNode,
 ) -> Matchings<'a> {
+    let largest_tree = left.get_tree_size().max(right.get_tree_size());
+    let mut matchings = Matchings::with_capacity(largest_tree);
+    calculate_matchings_internal(left, right, &mut matchings);
+    matchings
+}
+
+pub fn calculate_matchings_internal<'a>(
+    left: &'a model::CSTNode<'a>,
+    right: &'a model::CSTNode<'a>,
+    matchings: &mut Matchings<'a>,
+) -> usize {
     if !left.matches(right) {
-        return Matchings::empty();
+        return 0;
     }
 
     match (left, right) {
@@ -24,9 +35,9 @@ pub fn calculate_matchings<'a>(
         ) => {
             if non_terminal_left.are_children_unordered && non_terminal_right.are_children_unordered
             {
-                unordered::calculate_matchings(left, right)
+                unordered::calculate_matchings(left, right, matchings)
             } else {
-                ordered::calculate_matchings(left, right)
+                ordered::calculate_matchings(left, right, matchings)
             }
         }
         (
@@ -41,10 +52,11 @@ pub fn calculate_matchings<'a>(
                 ..
             }),
         ) => {
-            let is_perfect_match = kind_left == kind_right && value_left == value_right;
-            Matchings::from_single(left, right, is_perfect_match.into())
+            let score: usize = (kind_left == kind_right && value_left == value_right).into();
+            matchings.push(left, right, score);
+            score
         }
-        (_, _) => Matchings::empty(),
+        (_, _) => 0,
     }
 }
 

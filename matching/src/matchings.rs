@@ -13,6 +13,13 @@ pub struct Matchings<'a> {
 }
 
 impl<'a> Matchings<'a> {
+    pub fn with_capacity(capacity: usize) -> Self {
+        Matchings {
+            matching_entries: HashMap::with_capacity(capacity),
+            individual_matchings: HashMap::with_capacity(capacity * 2),
+        }
+    }
+
     pub fn empty() -> Self {
         Matchings {
             matching_entries: HashMap::new(),
