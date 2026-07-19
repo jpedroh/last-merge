@@ -1,56 +1,42 @@
 mod identical;
 mod yang;
 
-use crate::{matches::Matches, ordered::identical::identical_matches, Matchings};
+use model::cst_node::NonTerminal;
 
-pub fn calculate_matchings<'a>(
-    left: &'a model::CSTNode,
-    right: &'a model::CSTNode,
-) -> Matchings<'a> {
-    if let (model::CSTNode::NonTerminal(nt_left), model::CSTNode::NonTerminal(nt_right)) =
-        (left, right)
-    {
-        let root_matching: usize = (left.matches(right)).into();
-        let mut matchings: Matchings<'_> = Matchings::empty();
+use crate::Matchings;
 
-        let (prefix, suffix, identical_children_score) = identical_matches(
-            nt_left.get_children(),
-            nt_right.get_children(),
-            &mut matchings,
+pub fn calculate_subtree_matching<'a>(
+    left: &'a NonTerminal<'a>,
+    right: &'a NonTerminal<'a>,
+    matchings: &mut Matchings<'a>,
+) -> usize {
+    let (prefix, suffix, identical_children_score) =
+        identical::identical_matches(left.get_children(), right.get_children(), matchings);
+
+    let left_children = left.get_children();
+    let right_children = right.get_children();
+
+    let remaining_children_left = left_children.len() - prefix - suffix;
+    let remaining_children_right = right_children.len() - prefix - suffix;
+
+    if remaining_children_left == 0 && remaining_children_right == 0 {
+        log::debug!("Identical suffix/prefix fully reduced search space");
+        identical_children_score
+    } else {
+        log::debug!(
+            "Identical suffix/prefix reduced search space from {:?}x{:?} to {:?}x{:?}",
+            left_children.len(),
+            right_children.len(),
+            remaining_children_left,
+            remaining_children_right,
         );
 
-        let left_children = nt_left.get_children();
-        let right_children = nt_right.get_children();
-
-        let remaining_children_left = left_children.len() - prefix - suffix;
-        let remaining_children_right = right_children.len() - prefix - suffix;
-
-        if remaining_children_left == 0 && remaining_children_right == 0 {
-            log::debug!("Identical suffix/prefix fully reduced search space");
-            matchings.push(left, right, identical_children_score + root_matching);
-        } else {
-            log::debug!(
-                "Identical suffix/prefix reduced search space from {:?}x{:?} to {:?}x{:?}",
-                left_children.len(),
-                right_children.len(),
-                remaining_children_left,
-                remaining_children_right,
-            );
-
-            let maximum_children_score = yang::yang(
-                left_children[prefix..left_children.len() - suffix].as_ref(),
-                right_children[prefix..right_children.len() - suffix].as_ref(),
-                &mut matchings,
-            );
-            matchings.push(
-                left,
-                right,
-                identical_children_score + maximum_children_score + root_matching,
-            );
-        }
-        matchings
-    } else {
-        Matchings::empty()
+        let maximum_children_score = yang::yang(
+            left_children[prefix..left_children.len() - suffix].as_ref(),
+            right_children[prefix..right_children.len() - suffix].as_ref(),
+            matchings,
+        );
+        identical_children_score + maximum_children_score
     }
 }
 
@@ -60,6 +46,8 @@ mod tests {
         cst_node::{NonTerminal, Terminal},
         CSTNode, Point,
     };
+
+    use crate::Matchings;
 
     #[test]
     fn it_matches_deep_nodes_as_well() {
@@ -71,7 +59,7 @@ mod tests {
             end_position: Point { row: 1, column: 7 },
             leading_white_space: None,
         });
-        let left = CSTNode::NonTerminal(NonTerminal {
+        let left = NonTerminal {
             id: uuid::Uuid::new_v4(),
             kind: "kind_a",
             are_children_unordered: false,
@@ -79,8 +67,8 @@ mod tests {
             end_position: Point { row: 1, column: 7 },
             children: vec![child.clone()],
             ..Default::default()
-        });
-        let right = CSTNode::NonTerminal(NonTerminal {
+        };
+        let right = NonTerminal {
             id: uuid::Uuid::new_v4(),
             kind: "kind_a",
             are_children_unordered: false,
@@ -88,9 +76,10 @@ mod tests {
             end_position: Point { row: 1, column: 7 },
             children: vec![child.clone()],
             ..Default::default()
-        });
+        };
 
-        let matchings = super::calculate_matchings(&left, &right);
+        let mut matchings = Matchings::empty();
+        super::calculate_subtree_matching(&left, &right, &mut matchings);
 
         let child_matching = matchings.get_matching_entry(&child, &child);
         assert!(child_matching.is_some());
@@ -117,7 +106,7 @@ mod tests {
             leading_white_space: None,
         });
 
-        let left = CSTNode::NonTerminal(NonTerminal {
+        let left = NonTerminal {
             id: uuid::Uuid::new_v4(),
             kind: "kind_a",
             are_children_unordered: false,
@@ -125,8 +114,8 @@ mod tests {
             start_position: Point { row: 1, column: 0 },
             end_position: Point { row: 0, column: 7 },
             ..Default::default()
-        });
-        let right = CSTNode::NonTerminal(NonTerminal {
+        };
+        let right = NonTerminal {
             id: uuid::Uuid::new_v4(),
             kind: "kind_a",
             are_children_unordered: false,
@@ -134,16 +123,17 @@ mod tests {
             start_position: Point { row: 1, column: 0 },
             end_position: Point { row: 0, column: 7 },
             ..Default::default()
-        });
+        };
 
-        let matchings = super::calculate_matchings(&left, &right);
+        let mut matchings = Matchings::empty();
+        super::calculate_subtree_matching(&left, &right, &mut matchings);
         assert!(matchings
             .get_matching_entry(&left_child, &right_child)
             .is_none())
     }
 
     #[test]
-    fn the_matching_between_two_subtrees_is_the_sum_of_the_matchings_plus_the_root() {
+    fn the_matching_between_two_subtrees_is_the_sum_of_the_matchings() {
         let common_child = CSTNode::Terminal(Terminal {
             id: uuid::Uuid::new_v4(),
             kind: "kind_b",
@@ -161,7 +151,7 @@ mod tests {
             leading_white_space: None,
         });
 
-        let left = CSTNode::NonTerminal(NonTerminal {
+        let left = NonTerminal {
             id: uuid::Uuid::new_v4(),
             kind: "kind_a",
             are_children_unordered: false,
@@ -169,8 +159,8 @@ mod tests {
             end_position: Point { row: 0, column: 7 },
             children: vec![common_child.clone()],
             ..Default::default()
-        });
-        let right = CSTNode::NonTerminal(NonTerminal {
+        };
+        let right = NonTerminal {
             id: uuid::Uuid::new_v4(),
             kind: "kind_a",
             are_children_unordered: false,
@@ -178,13 +168,11 @@ mod tests {
             end_position: Point { row: 0, column: 7 },
             children: vec![common_child.clone(), unique_right_child],
             ..Default::default()
-        });
+        };
 
-        let matchings = super::calculate_matchings(&left, &right);
-
-        let left_right_matchings = matchings.get_matching_entry(&left, &right).unwrap();
-        assert_eq!(2, left_right_matchings.score);
-        assert!(!left_right_matchings.is_perfect_match);
+        let mut matchings = Matchings::empty();
+        let score = super::calculate_subtree_matching(&left, &right, &mut matchings);
+        assert_eq!(1, score);
     }
 
     #[test]
@@ -198,7 +186,7 @@ mod tests {
             leading_white_space: None,
         });
 
-        let left = CSTNode::NonTerminal(NonTerminal {
+        let left = NonTerminal {
             id: uuid::Uuid::new_v4(),
             kind: "kind_a",
             are_children_unordered: false,
@@ -206,8 +194,8 @@ mod tests {
             end_position: Point { row: 0, column: 7 },
             children: vec![common_child.clone()],
             ..Default::default()
-        });
-        let right = CSTNode::NonTerminal(NonTerminal {
+        };
+        let right = NonTerminal {
             id: uuid::Uuid::new_v4(),
             kind: "kind_a",
             are_children_unordered: false,
@@ -215,13 +203,11 @@ mod tests {
             end_position: Point { row: 0, column: 7 },
             children: vec![common_child.clone()],
             ..Default::default()
-        });
+        };
 
-        let matchings = super::calculate_matchings(&left, &right);
-
-        let left_right_matchings = matchings.get_matching_entry(&left, &right).unwrap();
-        assert_eq!(2, left_right_matchings.score);
-        assert!(left_right_matchings.is_perfect_match);
+        let mut matchings = Matchings::empty();
+        let score = super::calculate_subtree_matching(&left, &right, &mut matchings);
+        assert_eq!(1, score);
     }
 
     #[test]
@@ -245,7 +231,7 @@ mod tests {
             ..Default::default()
         });
 
-        let left = CSTNode::NonTerminal(NonTerminal {
+        let left = NonTerminal {
             id: uuid::Uuid::new_v4(),
             kind: "kind_a",
             are_children_unordered: false,
@@ -253,8 +239,8 @@ mod tests {
             end_position: Point { row: 0, column: 7 },
             children: vec![intermediate.clone()],
             ..Default::default()
-        });
-        let right = CSTNode::NonTerminal(NonTerminal {
+        };
+        let right = NonTerminal {
             id: uuid::Uuid::new_v4(),
             kind: "kind_a",
             are_children_unordered: false,
@@ -262,18 +248,16 @@ mod tests {
             end_position: Point { row: 0, column: 7 },
             children: vec![intermediate.clone()],
             ..Default::default()
-        });
+        };
 
-        let matchings = super::calculate_matchings(&left, &right);
+        let mut matchings = Matchings::empty();
+        let score = super::calculate_subtree_matching(&left, &right, &mut matchings);
+        assert_eq!(2, score);
 
         let intermediate_matching = matchings
             .get_matching_entry(&intermediate, &intermediate)
             .unwrap();
         assert_eq!(2, intermediate_matching.score);
         assert!(intermediate_matching.is_perfect_match);
-
-        let left_right_matching = matchings.get_matching_entry(&left, &right).unwrap();
-        assert_eq!(3, left_right_matching.score);
-        assert!(left_right_matching.is_perfect_match);
     }
 }

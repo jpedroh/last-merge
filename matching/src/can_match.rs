@@ -1,12 +1,12 @@
 use model::CSTNode;
 
-pub trait Matches {
-    fn matches(&self, right: &CSTNode) -> bool;
+pub trait CanMatch {
+    fn can_match(&self, other: &Self) -> bool;
 }
 
-impl Matches for CSTNode<'_> {
-    fn matches(&self, right: &CSTNode) -> bool {
-        match (self, right) {
+impl CanMatch for CSTNode<'_> {
+    fn can_match(&self, other: &CSTNode) -> bool {
+        match (self, other) {
             (CSTNode::Terminal(left), CSTNode::Terminal(right)) => {
                 left.get_identifier() == right.get_identifier()
             }

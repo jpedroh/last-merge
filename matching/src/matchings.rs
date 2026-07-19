@@ -13,6 +13,13 @@ pub struct Matchings<'a> {
 }
 
 impl<'a> Matchings<'a> {
+    pub fn with_capacity(capacity: usize) -> Self {
+        Matchings {
+            matching_entries: HashMap::with_capacity(capacity),
+            individual_matchings: HashMap::with_capacity(capacity * 2),
+        }
+    }
+
     pub fn empty() -> Self {
         Matchings {
             matching_entries: HashMap::new(),
@@ -20,21 +27,25 @@ impl<'a> Matchings<'a> {
         }
     }
 
-    pub fn from_single(key: UnorderedPair<&'a CSTNode>, value: MatchingEntry) -> Self {
+    pub fn from_single(left: &'a CSTNode<'a>, right: &'a CSTNode<'a>, score: usize) -> Self {
         Matchings {
-            matching_entries: HashMap::from([(key, value)]),
-            individual_matchings: HashMap::from([(key.0, key.1), (key.1, key.0)]),
+            matching_entries: HashMap::from([(
+                UnorderedPair(left, right),
+                MatchingEntry::new(left, right, score),
+            )]),
+            individual_matchings: HashMap::from([(left, right), (right, left)]),
         }
     }
 
     pub fn new(matching_entries: HashMap<UnorderedPair<&'a CSTNode<'a>>, MatchingEntry>) -> Self {
+        let mut individual_matchings = HashMap::with_capacity(matching_entries.len() * 2);
+        for key in matching_entries.keys() {
+            individual_matchings.insert(key.0, key.1);
+            individual_matchings.insert(key.1, key.0);
+        }
+
         Matchings {
-            individual_matchings: {
-                matching_entries
-                    .keys()
-                    .flat_map(|key| [(key.0, key.1), (key.1, key.0)])
-                    .collect::<HashMap<&'a CSTNode<'a>, &'a CSTNode<'a>>>()
-            },
+            individual_matchings,
             matching_entries,
         }
     }
@@ -60,21 +71,35 @@ impl<'a> Matchings<'a> {
     }
 
     pub fn extend(&mut self, matchings: Matchings<'a>) {
-        self.individual_matchings.extend(
-            matchings
-                .matching_entries
-                .keys()
-                .flat_map(|key| [(key.0, key.1), (key.1, key.0)])
-                .collect::<HashMap<&'a CSTNode<'a>, &'a CSTNode<'a>>>(),
-        );
-        self.matching_entries.extend(matchings);
+        self.individual_matchings.reserve(matchings.len() * 2);
+        self.matching_entries.reserve(matchings.len());
+        for (UnorderedPair(left, right), entry) in matchings.matching_entries.iter() {
+            self.push(left, right, entry.score);
+        }
+    }
+
+    pub fn len(&self) -> usize {
+        self.matching_entries.len()
+    }
+
+    pub fn is_empty(&self) -> bool {
+        self.len() == 0
     }
 
     pub fn push(&mut self, left: &'a CSTNode<'a>, right: &'a CSTNode<'a>, score: usize) {
-        self.extend(Matchings::from_single(
-            UnorderedPair(left, right),
-            MatchingEntry::new(left, right, score),
-        ));
+        if let Some(existing) = self
+            .get_matching_entry(left, right)
+            .filter(|existing| existing.score > score)
+        {
+            log::debug!("Early returning because a matching with higher score ({:?} vs {:?}) already exists for {:?} and {:?}", existing.score, score, left.contents(), right.contents());
+        } else {
+            self.individual_matchings.insert(left, right);
+            self.individual_matchings.insert(right, left);
+            self.matching_entries.insert(
+                UnorderedPair(left, right),
+                MatchingEntry::new(left, right, score),
+            );
+        }
     }
 }
 
