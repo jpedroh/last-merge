@@ -15,7 +15,11 @@ pub fn calculate_matchings<'a>(
 ) -> Matchings<'a> {
     let largest_tree = left.get_tree_size().max(right.get_tree_size());
     let mut matchings = Matchings::with_capacity(largest_tree);
-    calculate_matchings_internal(left, right, &mut matchings);
+    if left.matches(right) {
+        if let Some(matching_score) = calculate_matchings_internal(left, right, &mut matchings) {
+            matchings.push(left, right, matching_score);
+        }
+    }
     matchings
 }
 
@@ -23,39 +27,17 @@ fn calculate_matchings_internal<'a>(
     left: &'a model::CSTNode<'a>,
     right: &'a model::CSTNode<'a>,
     matchings: &mut Matchings<'a>,
-) -> usize {
-    if !left.matches(right) {
-        return 0;
-    }
-
+) -> Option<usize> {
     match (left, right) {
         (model::CSTNode::NonTerminal(nt_left), model::CSTNode::NonTerminal(nt_right)) => {
-            let children_matching_score =
-                if nt_left.are_children_unordered && nt_right.are_children_unordered {
-                    unordered::calculate_matchings(nt_left, nt_right, matchings)
-                } else {
-                    ordered::calculate_matchings(nt_left, nt_right, matchings)
-                };
-            matchings.push(left, right, 1 + children_matching_score);
-            1 + children_matching_score
+            if nt_left.are_children_unordered && nt_right.are_children_unordered {
+                Some(1 + unordered::calculate_matchings(nt_left, nt_right, matchings))
+            } else {
+                Some(1 + ordered::calculate_matchings(nt_left, nt_right, matchings))
+            }
         }
-        (
-            model::CSTNode::Terminal(model::cst_node::Terminal {
-                kind: kind_left,
-                value: value_left,
-                ..
-            }),
-            model::CSTNode::Terminal(model::cst_node::Terminal {
-                kind: kind_right,
-                value: value_right,
-                ..
-            }),
-        ) => {
-            let score: usize = (kind_left == kind_right && value_left == value_right).into();
-            matchings.push(left, right, score);
-            score
-        }
-        (_, _) => 0,
+        (model::CSTNode::Terminal(_), model::CSTNode::Terminal(_)) => Some(1),
+        (_, _) => None,
     }
 }
 
