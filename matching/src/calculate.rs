@@ -9,8 +9,9 @@ pub fn calculate_matchings<'a>(
         return matchings;
     }
 
-    let score = calculate_subtree_matching(left, right, &mut matchings);
-    matchings.push(left, right, score);
+    let subtrees_matching = calculate_subtree_matching(left, right, &mut matchings);
+    let root_matching = 1;
+    matchings.push(left, right, root_matching + subtrees_matching);
 
     matchings
 }
@@ -23,12 +24,12 @@ fn calculate_subtree_matching<'a>(
     match (left, right) {
         (model::CSTNode::NonTerminal(nt_left), model::CSTNode::NonTerminal(nt_right)) => {
             if nt_left.are_children_unordered && nt_right.are_children_unordered {
-                1 + unordered::calculate_subtree_matching(nt_left, nt_right, matchings)
+                unordered::calculate_subtree_matching(nt_left, nt_right, matchings)
             } else {
-                1 + ordered::calculate_subtree_matching(nt_left, nt_right, matchings)
+                ordered::calculate_subtree_matching(nt_left, nt_right, matchings)
             }
         }
-        (model::CSTNode::Terminal(_), model::CSTNode::Terminal(_)) => 1,
+        (model::CSTNode::Terminal(_), model::CSTNode::Terminal(_)) => 0,
         _ => unreachable!("can_match guarantees both nodes have the same variant"),
     }
 }
