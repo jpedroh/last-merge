@@ -1,11 +1,11 @@
-mod matches;
+mod can_match;
 mod matching;
 mod matching_entry;
 mod matchings;
 mod ordered;
 mod unordered;
 
-use matches::Matches;
+use can_match::CanMatch;
 pub use matching_entry::MatchingEntry;
 pub use matchings::Matchings;
 
@@ -15,7 +15,7 @@ pub fn calculate_matchings<'a>(
 ) -> Matchings<'a> {
     let largest_tree = left.get_tree_size().max(right.get_tree_size());
     let mut matchings = Matchings::with_capacity(largest_tree);
-    if left.matches(right) {
+    if left.can_match(right) {
         if let Some(matching_score) = calculate_matchings_internal(left, right, &mut matchings) {
             matchings.push(left, right, matching_score);
         }

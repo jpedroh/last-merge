@@ -1,6 +1,6 @@
 use model::CSTNode;
 
-use crate::{matches::Matches, Matchings};
+use crate::{can_match::CanMatch, Matchings};
 
 pub fn identical_matches<'a>(
     left_children: &'a [CSTNode<'a>],
@@ -50,7 +50,7 @@ fn identical_match<'a>(
     right: &'a CSTNode<'a>,
     matchings: &mut Matchings<'a>,
 ) -> Option<usize> {
-    if !left.matches(right) {
+    if !left.can_match(right) {
         return None;
     }
 
