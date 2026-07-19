@@ -1,6 +1,7 @@
 use model::CSTNode;
 
 use crate::{matches::Matches, Matchings};
+
 pub fn identical_matches<'a>(
     left_children: &'a [CSTNode<'a>],
     right_children: &'a [CSTNode<'a>],
