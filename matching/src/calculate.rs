@@ -1,4 +1,4 @@
-use crate::{Matchings, can_match::CanMatch, ordered, unordered};
+use crate::{can_match::CanMatch, ordered, unordered, Matchings};
 
 pub fn calculate_matchings<'a>(
     left: &'a model::CSTNode,
