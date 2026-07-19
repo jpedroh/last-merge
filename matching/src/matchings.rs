@@ -82,6 +82,10 @@ impl<'a> Matchings<'a> {
         self.matching_entries.len()
     }
 
+    pub fn is_empty(&self) -> bool {
+        self.len() == 0
+    }
+
     pub fn push(&mut self, left: &'a CSTNode<'a>, right: &'a CSTNode<'a>, score: usize) {
         if self
             .get_matching_entry(left, right)
