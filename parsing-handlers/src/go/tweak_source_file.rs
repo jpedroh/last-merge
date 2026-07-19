@@ -1,13 +1,8 @@
 use model::{cst_node::NonTerminal, CSTNode};
 
 pub fn tweak_source_file(root: CSTNode<'_>) -> CSTNode<'_> {
-    if root.kind() != "source_file" {
-        return root.to_owned();
-    }
-
     match root {
-        CSTNode::Terminal(_) => root,
-        CSTNode::NonTerminal(source_file) => {
+        CSTNode::NonTerminal(source_file) if root.kind() == "source_file" => {
             let (head, tail): (Vec<_>, Vec<_>) = source_file
                 .children
                 .iter()
@@ -59,5 +54,6 @@ pub fn tweak_source_file(root: CSTNode<'_>) -> CSTNode<'_> {
                 delimiters: source_file.delimiters,
             })
         }
+        _ => root,
     }
 }
