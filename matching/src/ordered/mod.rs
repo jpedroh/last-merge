@@ -16,10 +16,13 @@ pub fn calculate_subtree_matching<'a>(
     let left_children = left.get_children();
     let right_children = right.get_children();
 
-    let remaining_children_left = left_children.len() - prefix - suffix;
-    let remaining_children_right = right_children.len() - prefix - suffix;
+    debug_assert!(prefix + suffix <= left_children.len());
+    debug_assert!(prefix + suffix <= right_children.len());
 
-    if remaining_children_left == 0 && remaining_children_right == 0 {
+    let remaining_children_left = left_children[prefix..left_children.len() - suffix].as_ref();
+    let remaining_children_right = right_children[prefix..right_children.len() - suffix].as_ref();
+
+    if remaining_children_left.len() == 0 || remaining_children_right.len() == 0 {
         log::debug!("Identical suffix/prefix fully reduced search space");
         identical_children_score
     } else {
@@ -27,15 +30,12 @@ pub fn calculate_subtree_matching<'a>(
             "Identical suffix/prefix reduced search space from {:?}x{:?} to {:?}x{:?}",
             left_children.len(),
             right_children.len(),
-            remaining_children_left,
-            remaining_children_right,
+            remaining_children_left.len(),
+            remaining_children_right.len(),
         );
 
-        let maximum_children_score = yang::yang(
-            left_children[prefix..left_children.len() - suffix].as_ref(),
-            right_children[prefix..right_children.len() - suffix].as_ref(),
-            matchings,
-        );
+        let maximum_children_score =
+            yang::yang(remaining_children_left, remaining_children_right, matchings);
         identical_children_score + maximum_children_score
     }
 }
@@ -259,5 +259,62 @@ mod tests {
             .unwrap();
         assert_eq!(2, intermediate_matching.score);
         assert!(intermediate_matching.is_perfect_match);
+    }
+
+    #[test]
+    fn it_matches_when_one_side_is_fully_consumed_by_prefix_reduction() {
+        fn terminal(kind: &'static str) -> CSTNode<'static> {
+            CSTNode::Terminal(Terminal {
+                id: uuid::Uuid::new_v4(),
+                kind,
+                value: kind,
+                start_position: Point { row: 0, column: 0 },
+                end_position: Point { row: 0, column: 0 },
+                leading_white_space: None,
+            })
+        }
+
+        for left_has_extra_children in [true, false] {
+            let common = terminal("common");
+
+            let mut left_children = vec![common.clone()];
+            let mut right_children = vec![common.clone()];
+
+            if left_has_extra_children {
+                left_children.push(terminal("left_only_1"));
+                left_children.push(terminal("left_only_2"));
+            } else {
+                right_children.push(terminal("right_only_1"));
+                right_children.push(terminal("right_only_2"));
+            }
+
+            let left = NonTerminal {
+                id: uuid::Uuid::new_v4(),
+                kind: "parent",
+                are_children_unordered: false,
+                children: left_children,
+                ..Default::default()
+            };
+
+            let right = NonTerminal {
+                id: uuid::Uuid::new_v4(),
+                kind: "parent",
+                are_children_unordered: false,
+                children: right_children,
+                ..Default::default()
+            };
+
+            let mut matchings = Matchings::empty();
+
+            let score = super::calculate_subtree_matching(&left, &right, &mut matchings);
+
+            assert_eq!(1, score);
+            assert!(
+                matchings
+                    .get_matching_entry(&common, &common)
+                    .unwrap()
+                    .is_perfect_match
+            );
+        }
     }
 }
