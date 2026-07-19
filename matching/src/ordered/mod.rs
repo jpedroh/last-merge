@@ -5,7 +5,7 @@ use model::cst_node::NonTerminal;
 
 use crate::Matchings;
 
-pub fn calculate_matchings<'a>(
+pub fn calculate_subtree_matching<'a>(
     left: &'a NonTerminal<'a>,
     right: &'a NonTerminal<'a>,
     matchings: &mut Matchings<'a>,
@@ -79,7 +79,7 @@ mod tests {
         };
 
         let mut matchings = Matchings::empty();
-        super::calculate_matchings(&left, &right, &mut matchings);
+        super::calculate_subtree_matching(&left, &right, &mut matchings);
 
         let child_matching = matchings.get_matching_entry(&child, &child);
         assert!(child_matching.is_some());
@@ -126,7 +126,7 @@ mod tests {
         };
 
         let mut matchings = Matchings::empty();
-        super::calculate_matchings(&left, &right, &mut matchings);
+        super::calculate_subtree_matching(&left, &right, &mut matchings);
         assert!(matchings
             .get_matching_entry(&left_child, &right_child)
             .is_none())
@@ -171,7 +171,7 @@ mod tests {
         };
 
         let mut matchings = Matchings::empty();
-        let score = super::calculate_matchings(&left, &right, &mut matchings);
+        let score = super::calculate_subtree_matching(&left, &right, &mut matchings);
         assert_eq!(1, score);
     }
 
@@ -206,7 +206,7 @@ mod tests {
         };
 
         let mut matchings = Matchings::empty();
-        let score = super::calculate_matchings(&left, &right, &mut matchings);
+        let score = super::calculate_subtree_matching(&left, &right, &mut matchings);
         assert_eq!(1, score);
     }
 
@@ -251,7 +251,7 @@ mod tests {
         };
 
         let mut matchings = Matchings::empty();
-        let score = super::calculate_matchings(&left, &right, &mut matchings);
+        let score = super::calculate_subtree_matching(&left, &right, &mut matchings);
         assert_eq!(2, score);
 
         let intermediate_matching = matchings

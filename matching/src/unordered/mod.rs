@@ -6,7 +6,7 @@ mod assignment_problem;
 
 use crate::Matchings;
 
-pub fn calculate_matchings<'a>(
+pub fn calculate_subtree_matching<'a>(
     left: &'a NonTerminal<'a>,
     right: &'a NonTerminal<'a>,
     matchings: &mut Matchings<'a>,
@@ -303,7 +303,8 @@ mod tests {
         };
 
         let mut matchings = Matchings::empty();
-        let children_matching_score = super::calculate_matchings(&left, &right, &mut matchings);
+        let children_matching_score =
+            super::calculate_subtree_matching(&left, &right, &mut matchings);
         assert_eq!(3, children_matching_score);
     }
 }
