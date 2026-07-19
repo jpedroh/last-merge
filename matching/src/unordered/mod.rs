@@ -190,7 +190,7 @@ mod tests {
         CSTNode, Point,
     };
 
-    use crate::unordered::identifier_counts;
+    use crate::{unordered::identifier_counts, Matchings};
 
     fn all_children_have_unique_identifiers(node: &NonTerminal) -> bool {
         let children: Vec<&CSTNode<'_>> = node.get_children().iter().collect();
@@ -318,10 +318,9 @@ mod tests {
             delimiters: None,
         });
 
-        let matchings = super::calculate_matchings(&left, &right);
-        let root_matching = matchings.get_matching_entry(&left, &right).unwrap();
-
-        assert_eq!(4, root_matching.score);
-        assert!(root_matching.is_perfect_match);
+        let mut matchings = Matchings::empty();
+        let root_matching_score = super::calculate_matchings(&left, &right, &mut matchings);
+        assert_eq!(4, root_matching_score);
+        assert_eq!(3, matchings.len());
     }
 }

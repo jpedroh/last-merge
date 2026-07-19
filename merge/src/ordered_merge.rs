@@ -477,7 +477,7 @@ pub fn ordered_merge<'a>(
 mod tests {
     use std::{borrow::Cow, vec};
 
-    use matching::{ordered, Matchings};
+    use matching::Matchings;
     use model::{cst_node::NonTerminal, cst_node::Terminal, CSTNode, Point};
 
     use crate::{MergeError, MergedCSTNode};
@@ -491,9 +491,9 @@ mod tests {
         expected_merge: &'a MergedCSTNode<'a>,
     ) -> Result<(), MergeError> {
         let mut log_state = None;
-        let matchings_base_parent_a = ordered::calculate_matchings(base, parent_a);
-        let matchings_base_parent_b = ordered::calculate_matchings(base, parent_b);
-        let matchings_parents = ordered::calculate_matchings(parent_a, parent_b);
+        let matchings_base_parent_a = matching::calculate_matchings(base, parent_a);
+        let matchings_base_parent_b = matching::calculate_matchings(base, parent_b);
+        let matchings_parents = matching::calculate_matchings(parent_a, parent_b);
 
         let merged_tree = ordered_merge(
             parent_a.try_into().unwrap(),
@@ -525,9 +525,9 @@ mod tests {
         expected_merge: &MergedCSTNode,
     ) -> Result<(), MergeError> {
         let mut log_state = None;
-        let matchings_base_parent_a = ordered::calculate_matchings(base, parent_a);
-        let matchings_base_parent_b = ordered::calculate_matchings(base, parent_b);
-        let matchings_parents = ordered::calculate_matchings(parent_a, parent_b);
+        let matchings_base_parent_a = matching::calculate_matchings(base, parent_a);
+        let matchings_base_parent_b = matching::calculate_matchings(base, parent_b);
+        let matchings_parents = matching::calculate_matchings(parent_a, parent_b);
 
         let merged_tree = ordered_merge(
             parent_a.try_into().unwrap(),
@@ -930,9 +930,9 @@ mod tests {
             ..Default::default()
         });
 
-        let matchings_base_parent_a = ordered::calculate_matchings(&base, &parent_a);
-        let matchings_base_parent_b = ordered::calculate_matchings(&base, &parent_b);
-        let matchings_parents = ordered::calculate_matchings(&parent_a, &parent_b);
+        let matchings_base_parent_a = matching::calculate_matchings(&base, &parent_a);
+        let matchings_base_parent_b = matching::calculate_matchings(&base, &parent_b);
+        let matchings_parents = matching::calculate_matchings(&parent_a, &parent_b);
 
         let merged_tree = ordered_merge(
             (&parent_a).try_into().unwrap(),

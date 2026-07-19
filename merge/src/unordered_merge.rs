@@ -262,7 +262,7 @@ pub fn unordered_merge<'a>(
 
 #[cfg(test)]
 mod tests {
-    use matching::{unordered::calculate_matchings, Matchings};
+    use matching::Matchings;
     use model::{
         cst_node::{Delimiters, NonTerminal, Terminal},
         CSTNode, Point,
@@ -279,9 +279,9 @@ mod tests {
         expected_merge: &MergedCSTNode,
     ) -> Result<(), MergeError> {
         let mut log_state = None;
-        let matchings_base_parent_a = calculate_matchings(base, parent_a);
-        let matchings_base_parent_b = calculate_matchings(base, parent_b);
-        let matchings_parents = calculate_matchings(parent_a, parent_b);
+        let matchings_base_parent_a = matching::calculate_matchings(base, parent_a);
+        let matchings_base_parent_b = matching::calculate_matchings(base, parent_b);
+        let matchings_parents = matching::calculate_matchings(parent_a, parent_b);
 
         let merged_tree = unordered_merge(
             parent_a.try_into().unwrap(),
@@ -313,9 +313,9 @@ mod tests {
         expected_merge: &MergedCSTNode,
     ) -> Result<(), MergeError> {
         let mut log_state = None;
-        let matchings_base_parent_a = calculate_matchings(base, parent_a);
-        let matchings_base_parent_b = calculate_matchings(base, parent_b);
-        let matchings_parents = calculate_matchings(parent_a, parent_b);
+        let matchings_base_parent_a = matching::calculate_matchings(base, parent_a);
+        let matchings_base_parent_b = matching::calculate_matchings(base, parent_b);
+        let matchings_parents = matching::calculate_matchings(parent_a, parent_b);
 
         let merged_tree = unordered_merge(
             parent_a.try_into().unwrap(),

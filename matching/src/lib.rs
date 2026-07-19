@@ -2,8 +2,8 @@ mod matches;
 mod matching;
 mod matching_entry;
 mod matchings;
-pub mod ordered;
-pub mod unordered;
+mod ordered;
+mod unordered;
 
 use matches::Matches;
 pub use matching_entry::MatchingEntry;
@@ -19,7 +19,7 @@ pub fn calculate_matchings<'a>(
     matchings
 }
 
-pub fn calculate_matchings_internal<'a>(
+fn calculate_matchings_internal<'a>(
     left: &'a model::CSTNode<'a>,
     right: &'a model::CSTNode<'a>,
     matchings: &mut Matchings<'a>,

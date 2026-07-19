@@ -59,6 +59,8 @@ mod tests {
         CSTNode, Point,
     };
 
+    use crate::Matchings;
+
     #[test]
     fn it_matches_deep_nodes_as_well() {
         let child = CSTNode::Terminal(Terminal {
@@ -88,7 +90,8 @@ mod tests {
             ..Default::default()
         });
 
-        let matchings = super::calculate_matchings(&left, &right);
+        let mut matchings = Matchings::empty();
+        super::calculate_matchings(&left, &right, &mut matchings);
 
         let child_matching = matchings.get_matching_entry(&child, &child);
         assert!(child_matching.is_some());
@@ -134,7 +137,8 @@ mod tests {
             ..Default::default()
         });
 
-        let matchings = super::calculate_matchings(&left, &right);
+        let mut matchings = Matchings::empty();
+        super::calculate_matchings(&left, &right, &mut matchings);
         assert!(matchings
             .get_matching_entry(&left_child, &right_child)
             .is_none())
@@ -178,10 +182,12 @@ mod tests {
             ..Default::default()
         });
 
-        let matchings = super::calculate_matchings(&left, &right);
+        let mut matchings = Matchings::empty();
+        let score = super::calculate_matchings(&left, &right, &mut matchings);
 
         let left_right_matchings = matchings.get_matching_entry(&left, &right).unwrap();
-        assert_eq!(2, left_right_matchings.score);
+        assert_eq!(2, score);
+        assert_eq!(score, left_right_matchings.score);
         assert!(!left_right_matchings.is_perfect_match);
     }
 
@@ -215,10 +221,12 @@ mod tests {
             ..Default::default()
         });
 
-        let matchings = super::calculate_matchings(&left, &right);
+        let mut matchings = Matchings::empty();
+        let score = super::calculate_matchings(&left, &right, &mut matchings);
 
         let left_right_matchings = matchings.get_matching_entry(&left, &right).unwrap();
-        assert_eq!(2, left_right_matchings.score);
+        assert_eq!(2, score);
+        assert_eq!(score, left_right_matchings.score);
         assert!(left_right_matchings.is_perfect_match);
     }
 
@@ -262,7 +270,8 @@ mod tests {
             ..Default::default()
         });
 
-        let matchings = super::calculate_matchings(&left, &right);
+        let mut matchings = Matchings::empty();
+        let score = super::calculate_matchings(&left, &right, &mut matchings);
 
         let intermediate_matching = matchings
             .get_matching_entry(&intermediate, &intermediate)
@@ -271,7 +280,8 @@ mod tests {
         assert!(intermediate_matching.is_perfect_match);
 
         let left_right_matching = matchings.get_matching_entry(&left, &right).unwrap();
-        assert_eq!(3, left_right_matching.score);
+        assert_eq!(3, score);
+        assert_eq!(score, left_right_matching.score);
         assert!(left_right_matching.is_perfect_match);
     }
 }

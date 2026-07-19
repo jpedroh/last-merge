@@ -78,7 +78,7 @@ impl<'a> Matchings<'a> {
         }
     }
 
-    fn len(&self) -> usize {
+    pub fn len(&self) -> usize {
         self.matching_entries.len()
     }
 
