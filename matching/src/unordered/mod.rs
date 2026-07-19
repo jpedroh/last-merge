@@ -4,67 +4,51 @@ use model::cst_node::{CSTNode, Delimiters, NonTerminal};
 
 mod assignment_problem;
 
-use crate::{matches::Matches, Matchings};
+use crate::Matchings;
 
 pub fn calculate_matchings<'a>(
-    left: &'a model::CSTNode<'a>,
-    right: &'a model::CSTNode<'a>,
+    left: &'a NonTerminal<'a>,
+    right: &'a NonTerminal<'a>,
     matchings: &mut Matchings<'a>,
 ) -> usize {
-    match (left, right) {
-        (model::CSTNode::NonTerminal(left_nt), model::CSTNode::NonTerminal(right_nt)) => {
-            let root_matching: usize = left.matches(right).into();
+    log::debug!(
+        "Starting matching between {:?} and {:?} children",
+        left.get_children().len(),
+        right.get_children().len()
+    );
 
-            log::debug!(
-                "Starting matching between {:?} and {:?} children",
-                left_nt.get_children().len(),
-                right_nt.get_children().len()
-            );
+    let (label_matchings, label_score, remaining_left_children, remaining_right_children) =
+        calculate_label_matchings(left, right);
 
-            let (label_matchings, label_score, remaining_left_children, remaining_right_children) =
-                calculate_label_matchings(left_nt, right_nt);
+    matchings.extend(label_matchings);
 
-            log::debug!(
-                "After matching with label there are {:?} and {:?} remaining children",
-                remaining_left_children.len(),
-                remaining_right_children.len()
-            );
+    log::debug!(
+        "After matching with label there are {:?} and {:?} remaining children",
+        remaining_left_children.len(),
+        remaining_right_children.len()
+    );
 
-            if remaining_left_children.is_empty() && remaining_right_children.is_empty() {
-                log::debug!(
-                    "Matching children of \"{}\" with \"{}\" using unique label matching.",
-                    left.kind(),
-                    right.kind()
-                );
-                matchings.push(left, right, label_score + root_matching);
-                matchings.extend(label_matchings);
-                label_score + root_matching
-            } else {
-                log::debug!(
+    if remaining_left_children.is_empty() && remaining_right_children.is_empty() {
+        log::debug!(
+            "Matching children of \"{}\" with \"{}\" using unique label matching.",
+            left.kind,
+            right.kind
+        );
+        label_score
+    } else {
+        log::debug!(
                     "Matching children of \"{}\" with \"{}\" using hybrid unique label plus assignment problem matching.",
-                    left.kind(),
-                    right.kind()
+                    left.kind,
+                    right.kind
                 );
 
-                let assignment_matchings = assignment_problem::calculate_matchings_for_children(
-                    left,
-                    right,
-                    &remaining_left_children,
-                    &remaining_right_children,
-                );
+        let assignment_score = assignment_problem::calculate_matchings_for_children(
+            &remaining_left_children,
+            &remaining_right_children,
+            matchings,
+        );
 
-                let assignment_score = assignment_matchings
-                    .get_matching_entry(left, right)
-                    .map(|matching_entry| matching_entry.score)
-                    .unwrap_or(0);
-
-                matchings.push(left, right, label_score + assignment_score);
-                matchings.extend(label_matchings);
-                matchings.extend(assignment_matchings);
-                label_score + assignment_score
-            }
-        }
-        _ => unreachable!("Unordered matching is only supported for non-terminals."),
+        label_score + assignment_score
     }
 }
 
@@ -287,7 +271,7 @@ mod tests {
         });
         let duplicate_right_child = duplicate_left_child.clone();
 
-        let left = CSTNode::NonTerminal(NonTerminal {
+        let left = NonTerminal {
             id: uuid::Uuid::new_v4(),
             kind: "object",
             children: vec![
@@ -301,8 +285,8 @@ mod tests {
             identifier: None,
             leading_white_space: None,
             delimiters: None,
-        });
-        let right = CSTNode::NonTerminal(NonTerminal {
+        };
+        let right = NonTerminal {
             id: uuid::Uuid::new_v4(),
             kind: "object",
             children: vec![
@@ -316,11 +300,10 @@ mod tests {
             identifier: None,
             leading_white_space: None,
             delimiters: None,
-        });
+        };
 
         let mut matchings = Matchings::empty();
-        let root_matching_score = super::calculate_matchings(&left, &right, &mut matchings);
-        assert_eq!(4, root_matching_score);
-        assert_eq!(3, matchings.len());
+        let children_matching_score = super::calculate_matchings(&left, &right, &mut matchings);
+        assert_eq!(3, children_matching_score);
     }
 }

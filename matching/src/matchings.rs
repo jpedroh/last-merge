@@ -87,11 +87,11 @@ impl<'a> Matchings<'a> {
     }
 
     pub fn push(&mut self, left: &'a CSTNode<'a>, right: &'a CSTNode<'a>, score: usize) {
-        if self
+        if let Some(existing) = self
             .get_matching_entry(left, right)
-            .is_some_and(|existing| existing.score > score)
+            .filter(|existing| existing.score > score)
         {
-            log::debug!("Early returning because a matching with higher score already exists");
+            log::debug!("Early returning because a matching with higher score ({:?} vs {:?}) already exists for {:?} and {:?}", existing.score, score, left.contents(), right.contents());
         } else {
             self.individual_matchings.insert(left, right);
             self.individual_matchings.insert(right, left);

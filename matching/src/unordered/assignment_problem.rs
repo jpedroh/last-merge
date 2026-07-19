@@ -2,18 +2,13 @@ use std::cmp::max;
 
 use pathfinding::{kuhn_munkres::Weights, matrix};
 
-use crate::{matches::Matches, Matchings};
+use crate::Matchings;
 
 pub fn calculate_matchings_for_children<'a>(
-    left: &'a model::CSTNode<'a>,
-    right: &'a model::CSTNode<'a>,
     left_children: &[&'a model::CSTNode<'a>],
     right_children: &[&'a model::CSTNode<'a>],
-) -> Matchings<'a> {
-    if !left.matches(right) {
-        return Matchings::empty();
-    }
-
+    matchings: &mut Matchings<'a>,
+) -> usize {
     let children_matchings = left_children
         .iter()
         .map(|left_child| {
@@ -30,22 +25,21 @@ pub fn calculate_matchings_for_children<'a>(
         })
         .collect();
 
-    solve_assignment_problem(left, right, children_matchings)
+    solve_assignment_problem(children_matchings, matchings)
 }
 
 fn solve_assignment_problem<'a>(
-    left: &'a model::CSTNode,
-    right: &'a model::CSTNode,
     children_matchings: Vec<Vec<(usize, Matchings<'a>)>>,
-) -> Matchings<'a> {
+    matchings: &mut Matchings<'a>,
+) -> usize {
     let m = children_matchings.len();
     if m == 0 {
-        return Matchings::from_single(left, right, 1);
+        return 1;
     }
 
     let n = children_matchings[0].len();
     if n == 0 {
-        return Matchings::from_single(left, right, 1);
+        return 1;
     }
 
     let max_size = max(m, n);
@@ -61,17 +55,13 @@ fn solve_assignment_problem<'a>(
         .expect("Could not build weights matrix for assignment problem.");
     let (max_matching, best_matches) = pathfinding::kuhn_munkres::kuhn_munkres(&weights_matrix);
 
-    let mut result = Matchings::empty();
-
     for i in 0..best_matches.len() {
         let j = best_matches[i];
         let cur_matching = weights_matrix.at(i, j);
         if cur_matching > 0 {
-            result.extend(children_matchings[i][j].1.clone());
+            matchings.extend(children_matchings[i][j].1.clone());
         }
     }
 
-    result.push(left, right, max_matching as usize + 1);
-
-    result
+    max_matching as usize
 }

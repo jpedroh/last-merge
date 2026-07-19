@@ -30,14 +30,14 @@ fn calculate_matchings_internal<'a>(
 
     match (left, right) {
         (model::CSTNode::NonTerminal(nt_left), model::CSTNode::NonTerminal(nt_right)) => {
-            if nt_left.are_children_unordered && nt_right.are_children_unordered {
-                unordered::calculate_matchings(left, right, matchings)
-            } else {
-                let children_matching_score =
-                    ordered::calculate_matchings(nt_left, nt_right, matchings);
-                matchings.push(left, right, 1 + children_matching_score);
-                1 + children_matching_score
-            }
+            let children_matching_score =
+                if nt_left.are_children_unordered && nt_right.are_children_unordered {
+                    unordered::calculate_matchings(nt_left, nt_right, matchings)
+                } else {
+                    ordered::calculate_matchings(nt_left, nt_right, matchings)
+                };
+            matchings.push(left, right, 1 + children_matching_score);
+            1 + children_matching_score
         }
         (
             model::CSTNode::Terminal(model::cst_node::Terminal {
