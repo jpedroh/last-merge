@@ -7,9 +7,9 @@ impl From<Language> for ParsingHandlers {
     fn from(language: Language) -> Self {
         match language {
             Language::Java => get_default_java_parsing_handlers(),
-            Language::CSharp => ParsingHandlers::new(vec![]),
+            Language::CSharp => ParsingHandlers::empty(),
+            Language::JavaScript => ParsingHandlers::empty(),
             Language::Go => get_default_go_parsing_handlers(),
-            _ => ParsingHandlers::new(vec![]),
         }
     }
 }

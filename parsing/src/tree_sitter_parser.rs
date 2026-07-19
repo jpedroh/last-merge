@@ -1,3 +1,4 @@
+use model::Language::JavaScript;
 use model::{cst_node::Delimiters, Language};
 use parsing_handlers::ParsingHandlers;
 use std::collections::{HashMap, HashSet};
@@ -56,7 +57,7 @@ impl From<Language> for ParserConfiguration {
                 kinds_with_unordered_children: ["declaration_list", "enum_member_declaration_list"]
                     .into(),
                 delimiters: HashMap::from([("declaration_list", Delimiters::new("{", "}"))]),
-                handlers: ParsingHandlers::new(vec![]),
+                handlers: ParsingHandlers::from(Language::CSharp),
                 identifier_extractors: tree_sitter_queries_identifier_extractors! {
                     language: tree_sitter_c_sharp::LANGUAGE,
                     queries: {
@@ -77,7 +78,7 @@ impl From<Language> for ParserConfiguration {
                     ("object", Delimiters::new_with_separator("{", "}", ",")),
                     ("class_body", Delimiters::new("{", "}")),
                 ]),
-                handlers: ParsingHandlers::empty(),
+                handlers: ParsingHandlers::from(JavaScript),
                 identifier_extractors: tree_sitter_queries_identifier_extractors! {
                     language: tree_sitter_javascript::LANGUAGE,
                     queries: {
