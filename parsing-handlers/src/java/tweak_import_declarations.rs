@@ -1,13 +1,8 @@
 use model::{cst_node::NonTerminal, CSTNode};
 
 pub fn tweak_import_declarations(root: CSTNode<'_>) -> CSTNode<'_> {
-    if root.kind() != "program" {
-        return root.to_owned();
-    }
-
     match root {
-        CSTNode::Terminal(_) => root,
-        CSTNode::NonTerminal(program) => {
+        CSTNode::NonTerminal(program) if root.kind() == "program" => {
             let import_declaration_children: Vec<CSTNode> = program
                 .children
                 .iter()
@@ -70,6 +65,7 @@ pub fn tweak_import_declarations(root: CSTNode<'_>) -> CSTNode<'_> {
                 delimiters: program.delimiters,
             })
         }
+        _ => root,
     }
 }
 

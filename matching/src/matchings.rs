@@ -27,16 +27,6 @@ impl<'a> Matchings<'a> {
         }
     }
 
-    pub fn from_single(left: &'a CSTNode<'a>, right: &'a CSTNode<'a>, score: usize) -> Self {
-        Matchings {
-            matching_entries: HashMap::from([(
-                UnorderedPair(left, right),
-                MatchingEntry::new(left, right, score),
-            )]),
-            individual_matchings: HashMap::from([(left, right), (right, left)]),
-        }
-    }
-
     pub fn new(matching_entries: HashMap<UnorderedPair<&'a CSTNode<'a>>, MatchingEntry>) -> Self {
         let mut individual_matchings = HashMap::with_capacity(matching_entries.len() * 2);
         for key in matching_entries.keys() {
@@ -109,17 +99,6 @@ impl Default for Matchings<'_> {
     }
 }
 
-impl<'a> IntoIterator for Matchings<'a> {
-    type Item = (UnorderedPair<&'a CSTNode<'a>>, MatchingEntry);
-
-    type IntoIter =
-        std::collections::hash_map::IntoIter<UnorderedPair<&'a CSTNode<'a>>, MatchingEntry>;
-
-    fn into_iter(self) -> Self::IntoIter {
-        self.matching_entries.into_iter()
-    }
-}
-
 #[cfg(test)]
 mod tests {
     use model::{cst_node::Terminal, Point};
@@ -165,5 +144,27 @@ mod tests {
             }),
             Matchings::new(matchings).find_matching_for(&a_node)
         )
+    }
+
+    #[test]
+    fn if_there_are_no_matchings_is_empty_returns_true() {
+        let matchings = Matchings::empty();
+        assert!(matchings.is_empty());
+    }
+
+    #[test]
+    fn if_there_is_already_a_matching_with_higher_score_push_has_no_action() {
+        let mut matchings = Matchings::empty();
+        let left = CSTNode::Terminal(Terminal::default());
+        let right = CSTNode::Terminal(Terminal::default());
+
+        matchings.push(&left, &right, 20);
+        matchings.push(&left, &right, 10);
+
+        let matching = matchings
+            .get_matching_entry(&left, &right)
+            .expect("matching should exist");
+
+        assert_eq!(20, matching.score);
     }
 }

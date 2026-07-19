@@ -90,13 +90,6 @@ impl CSTNode<'_> {
         self.get_subtree_size_without_delimiters() + 1
     }
 
-    pub fn has_identifier(&self) -> bool {
-        match self {
-            CSTNode::Terminal(_) => true,
-            CSTNode::NonTerminal(node) => node.get_identifier().is_some(),
-        }
-    }
-
     pub fn leading_white_space(&self) -> Option<&str> {
         match self {
             CSTNode::Terminal(node) => node.leading_white_space,
