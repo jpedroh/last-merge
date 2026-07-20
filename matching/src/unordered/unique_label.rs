@@ -74,7 +74,7 @@ pub fn calculate_label_matchings<'a>(
 }
 
 fn identifier_counts<'a>(children: &[&'a CSTNode<'a>]) -> HashMap<String, usize, FxBuildHasher> {
-    let mut counts = HashMap::with_capacity_and_hasher(children.len(), FxBuildHasher::default());
+    let mut counts = HashMap::with_capacity_and_hasher(children.len(), FxBuildHasher);
 
     for child in children {
         if let Some(identifier) = child_identifier(child) {

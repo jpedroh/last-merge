@@ -16,11 +16,8 @@ pub struct Matchings<'a> {
 impl<'a> Matchings<'a> {
     pub fn with_capacity(capacity: usize) -> Self {
         Matchings {
-            matching_entries: HashMap::with_capacity_and_hasher(capacity, FxBuildHasher::default()),
-            individual_matchings: HashMap::with_capacity_and_hasher(
-                capacity * 2,
-                FxBuildHasher::default(),
-            ),
+            matching_entries: HashMap::with_capacity_and_hasher(capacity, FxBuildHasher),
+            individual_matchings: HashMap::with_capacity_and_hasher(capacity * 2, FxBuildHasher),
         }
     }
 
@@ -35,7 +32,7 @@ impl<'a> Matchings<'a> {
         matching_entries: HashMap<UnorderedPair<&'a CSTNode<'a>>, MatchingEntry, FxBuildHasher>,
     ) -> Self {
         let mut individual_matchings =
-            HashMap::with_capacity_and_hasher(matching_entries.len() * 2, FxBuildHasher::default());
+            HashMap::with_capacity_and_hasher(matching_entries.len() * 2, FxBuildHasher);
         for key in matching_entries.keys() {
             individual_matchings.insert(key.0, key.1);
             individual_matchings.insert(key.1, key.0);
@@ -137,7 +134,7 @@ mod tests {
             leading_white_space: None,
         });
 
-        let mut matchings = HashMap::with_hasher(FxBuildHasher::default());
+        let mut matchings = HashMap::with_hasher(FxBuildHasher);
         matchings.insert(
             UnorderedPair(&a_node, &a_node),
             MatchingEntry::new(&a_node, &a_node, 1),
