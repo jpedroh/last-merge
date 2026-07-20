@@ -18,6 +18,8 @@ pub fn remove_block_comments(root: CSTNode<'_>) -> CSTNode<'_> {
             identifier: non_terminal.identifier,
             leading_white_space: non_terminal.leading_white_space,
             delimiters: non_terminal.delimiters,
+            subtree_size_without_delimiters: non_terminal.subtree_size_without_delimiters,
+            subtree_size: non_terminal.subtree_size,
         }),
     }
 }

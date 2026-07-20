@@ -27,6 +27,8 @@ fn handle<'a>(
         identifier,
         leading_white_space,
         delimiters,
+        subtree_size_without_delimiters,
+        subtree_size,
     } = declaration;
 
     let internal_declaration_count = children
@@ -51,6 +53,8 @@ fn handle<'a>(
             identifier,
             leading_white_space,
             delimiters,
+            subtree_size_without_delimiters,
+            subtree_size,
         })
     } else {
         let trailing_nodes: Vec<_> = children.iter().take(2).cloned().collect();
@@ -77,6 +81,8 @@ fn handle<'a>(
             identifier: None,
             leading_white_space: None,
             delimiters: None,
+            subtree_size_without_delimiters: subtree_size_without_delimiters.clone(),
+            subtree_size: subtree_size.clone(),
         });
 
         let mut resulting_children = vec![];
@@ -94,6 +100,8 @@ fn handle<'a>(
             identifier,
             leading_white_space,
             delimiters,
+            subtree_size_without_delimiters,
+            subtree_size,
         })
     }
 }
@@ -116,6 +124,8 @@ mod tests {
             identifier: None,
             leading_white_space: None,
             delimiters: None,
+            subtree_size_without_delimiters: std::cell::OnceCell::new(),
+            subtree_size: std::cell::OnceCell::new(),
         })
     }
 

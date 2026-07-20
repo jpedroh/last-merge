@@ -66,6 +66,8 @@ mod tests {
             identifier: Some(vec!["unique"]),
             leading_white_space: None,
             delimiters: None,
+            subtree_size_without_delimiters: std::cell::OnceCell::new(),
+            subtree_size: std::cell::OnceCell::new(),
         });
         let unique_right_child = unique_left_child.clone();
 
@@ -79,6 +81,8 @@ mod tests {
             identifier: Some(vec!["dup"]),
             leading_white_space: None,
             delimiters: None,
+            subtree_size_without_delimiters: std::cell::OnceCell::new(),
+            subtree_size: std::cell::OnceCell::new(),
         });
         let duplicate_right_child = duplicate_left_child.clone();
 
@@ -96,6 +100,8 @@ mod tests {
             identifier: None,
             leading_white_space: None,
             delimiters: None,
+            subtree_size_without_delimiters: std::cell::OnceCell::new(),
+            subtree_size: std::cell::OnceCell::new(),
         };
         let right = NonTerminal {
             id: uuid::Uuid::new_v4(),
@@ -111,6 +117,8 @@ mod tests {
             identifier: None,
             leading_white_space: None,
             delimiters: None,
+            subtree_size_without_delimiters: std::cell::OnceCell::new(),
+            subtree_size: std::cell::OnceCell::new(),
         };
 
         let mut matchings = Matchings::empty();

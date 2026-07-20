@@ -342,6 +342,8 @@ mod tests {
             identifier: None,
             leading_white_space: None,
             delimiters: Some(&Delimiters::new("{", "}")),
+            subtree_size_without_delimiters: std::cell::OnceCell::new(),
+            subtree_size: std::cell::OnceCell::new(),
             children: vec![
                 CSTNode::Terminal(Terminal {
                     id: uuid::Uuid::new_v4(),
@@ -372,6 +374,8 @@ mod tests {
             identifier: None,
             leading_white_space: None,
             delimiters: Some(&Delimiters::new("{", "}")),
+            subtree_size_without_delimiters: std::cell::OnceCell::new(),
+            subtree_size: std::cell::OnceCell::new(),
             children: vec![
                 CSTNode::Terminal(Terminal {
                     id: uuid::Uuid::new_v4(),
@@ -410,6 +414,8 @@ mod tests {
             delimiters: Some(&Delimiters::new("{", "}")),
             identifier: None,
             leading_white_space: None,
+            subtree_size_without_delimiters: std::cell::OnceCell::new(),
+            subtree_size: std::cell::OnceCell::new(),
             children: vec![
                 CSTNode::Terminal(Terminal {
                     id: uuid::Uuid::new_v4(),
@@ -468,6 +474,8 @@ mod tests {
             identifier: None,
             leading_white_space: None,
             delimiters: Some(&Delimiters::new("{", "}")),
+            subtree_size_without_delimiters: std::cell::OnceCell::new(),
+            subtree_size: std::cell::OnceCell::new(),
             children: vec![
                 CSTNode::Terminal(Terminal {
                     id: uuid::Uuid::new_v4(),
@@ -498,6 +506,8 @@ mod tests {
             identifier: None,
             leading_white_space: None,
             delimiters: Some(&Delimiters::new("{", "}")),
+            subtree_size_without_delimiters: std::cell::OnceCell::new(),
+            subtree_size: std::cell::OnceCell::new(),
             children: vec![
                 CSTNode::Terminal(Terminal {
                     id: uuid::Uuid::new_v4(),
@@ -544,6 +554,8 @@ mod tests {
             identifier: None,
             leading_white_space: None,
             delimiters: Some(&Delimiters::new("{", "}")),
+            subtree_size_without_delimiters: std::cell::OnceCell::new(),
+            subtree_size: std::cell::OnceCell::new(),
             children: vec![
                 CSTNode::Terminal(Terminal {
                     id: uuid::Uuid::new_v4(),
@@ -795,6 +807,8 @@ mod tests {
             identifier: None,
             leading_white_space: None,
             delimiters: Some(&Delimiters::new("{", "}")),
+            subtree_size_without_delimiters: std::cell::OnceCell::new(),
+            subtree_size: std::cell::OnceCell::new(),
             children: vec![
                 CSTNode::Terminal(Terminal {
                     id: uuid::Uuid::new_v4(),
@@ -868,6 +882,8 @@ mod tests {
             identifier: None,
             leading_white_space: None,
             delimiters: Some(&Delimiters::new("{", "}")),
+            subtree_size_without_delimiters: std::cell::OnceCell::new(),
+            subtree_size: std::cell::OnceCell::new(),
             children: vec![
                 CSTNode::Terminal(Terminal {
                     id: uuid::Uuid::new_v4(),
@@ -883,6 +899,8 @@ mod tests {
                     are_children_unordered: false,
                     start_position: model::Point { row: 1, column: 0 },
                     end_position: model::Point { row: 1, column: 4 },
+                    subtree_size_without_delimiters: std::cell::OnceCell::new(),
+                    subtree_size: std::cell::OnceCell::new(),
                     children: vec![
                         CSTNode::Terminal(Terminal {
                             id: uuid::Uuid::new_v4(),
@@ -959,6 +977,8 @@ mod tests {
                     leading_white_space: None,
                 }),
             ],
+            subtree_size_without_delimiters: std::cell::OnceCell::new(),
+            subtree_size: std::cell::OnceCell::new(),
         });
 
         assert_merge_output_is(
