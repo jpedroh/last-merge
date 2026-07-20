@@ -1,7 +1,7 @@
 mod identical;
 mod yang;
 
-use model::cst_node::NonTerminal;
+use model::{cst_node::NonTerminal, CSTNode};
 
 use crate::Matchings;
 
@@ -22,7 +22,7 @@ pub fn calculate_subtree_matching<'a>(
     let remaining_children_left = left_children[prefix..left_children.len() - suffix].as_ref();
     let remaining_children_right = right_children[prefix..right_children.len() - suffix].as_ref();
 
-    if remaining_children_left.len() == 0 || remaining_children_right.len() == 0 {
+    if remaining_children_left.is_empty() || remaining_children_right.is_empty() {
         log::debug!("Identical suffix/prefix fully reduced search space");
         identical_children_score
     } else {
@@ -33,11 +33,55 @@ pub fn calculate_subtree_matching<'a>(
             remaining_children_left.len(),
             remaining_children_right.len(),
         );
-
-        let maximum_children_score =
-            yang::yang(remaining_children_left, remaining_children_right, matchings);
-        identical_children_score + maximum_children_score
+        identical_children_score
+            + calculate_remaining_children_matching(
+                remaining_children_left,
+                remaining_children_right,
+                matchings,
+            )
     }
+}
+
+fn calculate_remaining_children_matching<'a>(
+    left: &'a [CSTNode<'a>],
+    right: &'a [CSTNode<'a>],
+    matchings: &mut Matchings<'a>,
+) -> usize {
+    match (left.len(), right.len()) {
+        (0, _) | (_, 0) => 0,
+        (1, _) => match_single_child(&left[0], right, matchings),
+        (_, 1) => match_single_child(&right[0], left, matchings),
+        _ => yang::yang(left, right, matchings),
+    }
+}
+
+fn match_single_child<'a>(
+    single_child: &'a CSTNode<'a>,
+    other_children: &'a [CSTNode<'a>],
+    matchings: &mut Matchings<'a>,
+) -> usize {
+    let mut best_score = 0;
+    let mut best_matchings = None;
+
+    for other_child in other_children {
+        let candidate = crate::calculate_matchings(single_child, other_child);
+
+        let score = candidate
+            .get_matching_entry(single_child, other_child)
+            .map(|m| m.score)
+            .unwrap_or(0);
+
+        if score > best_score {
+            best_score = score;
+            best_matchings = Some(candidate);
+        }
+    }
+
+    if let Some(best_matchings) = best_matchings {
+        matchings.extend(best_matchings);
+    }
+
+    best_score
 }
 
 #[cfg(test)]
