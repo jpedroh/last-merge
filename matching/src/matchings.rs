@@ -28,6 +28,9 @@ impl<'a> Matchings<'a> {
         }
     }
 
+    // Safe because Hash/Eq are based exclusively on the immutable node id.
+    // Cached fields are not considered for identity.
+    #[allow(clippy::mutable_key_type)]
     pub fn new(
         matching_entries: HashMap<UnorderedPair<&'a CSTNode<'a>>, MatchingEntry, FxBuildHasher>,
     ) -> Self {
