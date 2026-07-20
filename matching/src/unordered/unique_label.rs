@@ -1,6 +1,7 @@
 use std::collections::{HashMap, HashSet};
 
 use model::cst_node::{CSTNode, Delimiters};
+use rustc_hash::FxBuildHasher;
 
 pub fn calculate_label_matchings<'a>(
     left_nt: &'a model::cst_node::NonTerminal<'a>,
@@ -27,7 +28,7 @@ pub fn calculate_label_matchings<'a>(
     let shared_unique_identifiers =
         shared_unique_identifiers(&left_identifier_counts, &right_identifier_counts);
 
-    let right_children_by_identifier: HashMap<_, _> = right_children
+    let right_children_by_identifier: HashMap<_, _, FxBuildHasher> = right_children
         .iter()
         .filter_map(|child| child_identifier(child).map(|identifier| (identifier, *child)))
         .collect();
@@ -72,8 +73,8 @@ pub fn calculate_label_matchings<'a>(
     (result, label_score, remaining_left, remaining_right)
 }
 
-fn identifier_counts<'a>(children: &[&'a CSTNode<'a>]) -> HashMap<String, usize> {
-    let mut counts = HashMap::with_capacity(children.len());
+fn identifier_counts<'a>(children: &[&'a CSTNode<'a>]) -> HashMap<String, usize, FxBuildHasher> {
+    let mut counts = HashMap::with_capacity_and_hasher(children.len(), FxBuildHasher::default());
 
     for child in children {
         if let Some(identifier) = child_identifier(child) {
@@ -85,9 +86,9 @@ fn identifier_counts<'a>(children: &[&'a CSTNode<'a>]) -> HashMap<String, usize>
 }
 
 fn shared_unique_identifiers(
-    left_counts: &HashMap<String, usize>,
-    right_counts: &HashMap<String, usize>,
-) -> HashSet<String> {
+    left_counts: &HashMap<String, usize, FxBuildHasher>,
+    right_counts: &HashMap<String, usize, FxBuildHasher>,
+) -> HashSet<String, FxBuildHasher> {
     left_counts
         .iter()
         .filter_map(|(identifier, left_count)| {

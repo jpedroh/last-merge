@@ -5,30 +5,37 @@ use unordered_pair::UnorderedPair;
 
 use crate::matching::Matching;
 use crate::matching_entry::MatchingEntry;
+use rustc_hash::FxBuildHasher;
 
 #[derive(Debug, Clone)]
 pub struct Matchings<'a> {
-    matching_entries: HashMap<UnorderedPair<&'a CSTNode<'a>>, MatchingEntry>,
-    individual_matchings: HashMap<&'a CSTNode<'a>, &'a CSTNode<'a>>,
+    matching_entries: HashMap<UnorderedPair<&'a CSTNode<'a>>, MatchingEntry, FxBuildHasher>,
+    individual_matchings: HashMap<&'a CSTNode<'a>, &'a CSTNode<'a>, FxBuildHasher>,
 }
 
 impl<'a> Matchings<'a> {
     pub fn with_capacity(capacity: usize) -> Self {
         Matchings {
-            matching_entries: HashMap::with_capacity(capacity),
-            individual_matchings: HashMap::with_capacity(capacity * 2),
+            matching_entries: HashMap::with_capacity_and_hasher(capacity, FxBuildHasher::default()),
+            individual_matchings: HashMap::with_capacity_and_hasher(
+                capacity * 2,
+                FxBuildHasher::default(),
+            ),
         }
     }
 
     pub fn empty() -> Self {
         Matchings {
-            matching_entries: HashMap::new(),
-            individual_matchings: HashMap::new(),
+            matching_entries: HashMap::default(),
+            individual_matchings: HashMap::default(),
         }
     }
 
-    pub fn new(matching_entries: HashMap<UnorderedPair<&'a CSTNode<'a>>, MatchingEntry>) -> Self {
-        let mut individual_matchings = HashMap::with_capacity(matching_entries.len() * 2);
+    pub fn new(
+        matching_entries: HashMap<UnorderedPair<&'a CSTNode<'a>>, MatchingEntry, FxBuildHasher>,
+    ) -> Self {
+        let mut individual_matchings =
+            HashMap::with_capacity_and_hasher(matching_entries.len() * 2, FxBuildHasher::default());
         for key in matching_entries.keys() {
             individual_matchings.insert(key.0, key.1);
             individual_matchings.insert(key.1, key.0);
@@ -130,7 +137,7 @@ mod tests {
             leading_white_space: None,
         });
 
-        let mut matchings = HashMap::new();
+        let mut matchings = HashMap::with_hasher(FxBuildHasher::default());
         matchings.insert(
             UnorderedPair(&a_node, &a_node),
             MatchingEntry::new(&a_node, &a_node, 1),

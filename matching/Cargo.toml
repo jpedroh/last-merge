@@ -10,6 +10,7 @@ model = { path = "../model" }
 unordered-pair = "0.2.4"
 log = { workspace = true }
 pathfinding = "4.9.1"
+rustc-hash = "2.1.3"
 
 [dev-dependencies]
 uuid = { workspace = true }
