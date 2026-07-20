@@ -39,6 +39,7 @@ pub fn tweak_source_file(root: CSTNode<'_>) -> CSTNode<'_> {
                 leading_white_space: None,
                 delimiters: None,
                 subtree_size_without_delimiters: OnceCell::new(),
+                subtree_size: OnceCell::new(),
             });
 
             let mut new_program_children: Vec<CSTNode<'_>> = vec![];
@@ -55,7 +56,8 @@ pub fn tweak_source_file(root: CSTNode<'_>) -> CSTNode<'_> {
                 identifier: source_file.identifier,
                 leading_white_space: None,
                 delimiters: source_file.delimiters,
-                subtree_size_without_delimiters: OnceCell::new(),
+                subtree_size_without_delimiters: source_file.subtree_size_without_delimiters,
+                subtree_size: source_file.subtree_size,
             })
         }
         _ => root,

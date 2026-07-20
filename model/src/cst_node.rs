@@ -57,12 +57,7 @@ impl CSTNode<'_> {
     fn get_subtree_size(&self) -> usize {
         match self {
             CSTNode::Terminal(_) => 0,
-            CSTNode::NonTerminal(node) => node
-                .children
-                .iter()
-                .fold(node.children.len(), |acc, child| {
-                    acc + child.get_subtree_size()
-                }),
+            CSTNode::NonTerminal(node) => node.get_subtree_size(),
         }
     }
 
@@ -152,6 +147,7 @@ pub struct NonTerminal<'a> {
     pub identifier: Option<Vec<&'a str>>,
     pub leading_white_space: Option<&'a str>,
     pub delimiters: Option<&'a Delimiters<'a>>,
+    pub subtree_size: OnceCell<usize>,
     pub subtree_size_without_delimiters: OnceCell<usize>,
 }
 
@@ -212,6 +208,16 @@ impl NonTerminal<'_> {
                     .count(),
                 |acc, child| acc + child.get_subtree_size_without_delimiters(),
             )
+        })
+    }
+
+    pub fn get_subtree_size(&self) -> usize {
+        *self.subtree_size.get_or_init(|| {
+            self.children
+                .iter()
+                .fold(self.children.len(), |acc, child| {
+                    acc + child.get_subtree_size()
+                })
         })
     }
 }

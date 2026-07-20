@@ -160,6 +160,7 @@ mod tests {
             leading_white_space: None,
             delimiters: None,
             subtree_size_without_delimiters: std::cell::OnceCell::new(),
+            subtree_size: std::cell::OnceCell::new(),
         };
 
         assert!(all_children_have_unique_identifiers(&node));
@@ -178,6 +179,7 @@ mod tests {
             leading_white_space: None,
             delimiters: None,
             subtree_size_without_delimiters: std::cell::OnceCell::new(),
+            subtree_size: std::cell::OnceCell::new(),
         });
         let node = NonTerminal {
             id: uuid::Uuid::new_v4(),
@@ -190,6 +192,7 @@ mod tests {
             leading_white_space: None,
             delimiters: None,
             subtree_size_without_delimiters: std::cell::OnceCell::new(),
+            subtree_size: std::cell::OnceCell::new(),
         };
 
         assert!(!all_children_have_unique_identifiers(&node));

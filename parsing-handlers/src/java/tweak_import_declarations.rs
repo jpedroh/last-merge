@@ -34,6 +34,7 @@ pub fn tweak_import_declarations(root: CSTNode<'_>) -> CSTNode<'_> {
                 leading_white_space: Some("\n"),
                 delimiters: None,
                 subtree_size_without_delimiters: OnceCell::new(),
+                subtree_size: OnceCell::new(),
             });
 
             let first_import_declaration_index = program
@@ -66,7 +67,8 @@ pub fn tweak_import_declarations(root: CSTNode<'_>) -> CSTNode<'_> {
                 identifier: program.identifier,
                 leading_white_space: None,
                 delimiters: program.delimiters,
-                subtree_size_without_delimiters: OnceCell::new(),
+                subtree_size_without_delimiters: program.subtree_size_without_delimiters,
+                subtree_size: program.subtree_size,
             })
         }
         _ => root,

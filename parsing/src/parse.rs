@@ -58,6 +58,7 @@ fn explore_node<'a>(node: Node, src: &'a str, config: &'a ParserConfiguration) -
             are_children_unordered: config.kinds_with_unordered_children.contains(node.kind()),
             delimiters: config.delimiters.get(node.kind()),
             subtree_size_without_delimiters: OnceCell::new(),
+            subtree_size: OnceCell::new(),
         })
     }
 }
