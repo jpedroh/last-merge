@@ -8,6 +8,9 @@ pub fn tweak_declarations_list(root: CSTNode<'_>) -> CSTNode<'_> {
         CSTNode::NonTerminal(nt) if nt.kind == "type_declaration" => {
             handle(nt, "type_spec", "type_spec_list")
         }
+        CSTNode::NonTerminal(nt) if nt.kind == "interface_type" => {
+            handle(nt, "method_elem", "method_elem_list")
+        }
         _ => root,
     }
 }

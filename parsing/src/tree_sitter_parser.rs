@@ -91,17 +91,17 @@ impl From<Language> for ParserConfiguration {
                 language: tree_sitter_go::LANGUAGE.into(),
                 stop_compilation_at: [].into(),
                 kinds_with_unordered_children: [
-                    "interface_type",
                     "import_spec_list",
                     "field_declaration_list",
                     "source_file_synthetic_tail",
                     "var_spec_list",
+                    "method_elem_list", // This is synthetic (handler made)
                     "const_spec_list", // This is synthetic (handler made)
                     "type_spec_list",  // This is synthetic (handler made)
                 ]
                 .into(),
                 delimiters: HashMap::from([
-                    ("interface_type", Delimiters::new("interface", "}")),
+                    ("method_elem_list", Delimiters::new( "{", "}")),
                     ("import_spec_list", Delimiters::new("(", ")")),
                     ("field_declaration_list", Delimiters::new("{", "}")),
                     ("var_spec_list", Delimiters::new("(", ")")),
