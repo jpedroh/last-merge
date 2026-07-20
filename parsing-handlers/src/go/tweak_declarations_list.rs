@@ -3,13 +3,13 @@ use model::{cst_node::NonTerminal, CSTNode};
 pub fn tweak_declarations_list(root: CSTNode<'_>) -> CSTNode<'_> {
     match root {
         CSTNode::NonTerminal(nt) if nt.kind == "const_declaration" => {
-            handle(nt, "const_spec", "const_spec_list")
+            handle(nt, &["const_spec"], "const_spec_list")
         }
         CSTNode::NonTerminal(nt) if nt.kind == "type_declaration" => {
-            handle(nt, "type_spec", "type_spec_list")
+            handle(nt, &["type_spec"], "type_spec_list")
         }
         CSTNode::NonTerminal(nt) if nt.kind == "interface_type" => {
-            handle(nt, "method_elem", "method_elem_list")
+            handle(nt, &["method_elem", "type_elem"], "method_elem_list")
         }
         _ => root,
     }
@@ -17,7 +17,7 @@ pub fn tweak_declarations_list(root: CSTNode<'_>) -> CSTNode<'_> {
 
 fn handle<'a>(
     declaration: NonTerminal<'a>,
-    child_name: &'static str,
+    children_name: &[&'static str],
     new_kind: &'static str,
 ) -> CSTNode<'a> {
     let NonTerminal {
@@ -36,13 +36,13 @@ fn handle<'a>(
 
     let internal_declaration_count = children
         .iter()
-        .filter(|node| node.kind() == child_name)
+        .filter(|node| children_name.iter().any(|c| *c == node.kind()))
         .count();
 
     log::debug!(
-        "Found {:?} declarations of type {:?}",
+        "Found {:?} declarations of types {:?}",
         internal_declaration_count,
-        child_name
+        children_name
     );
 
     if internal_declaration_count <= 1 {
@@ -65,7 +65,7 @@ fn handle<'a>(
 
         let internal_declarations: Vec<_> = children
             .into_iter()
-            .filter(|node| node.kind() == child_name)
+            .filter(|node| children_name.iter().any(|c| *c == node.kind()))
             .collect();
 
         let declaration_list_node = CSTNode::NonTerminal(NonTerminal {
@@ -88,7 +88,7 @@ fn handle<'a>(
             subtree_size: subtree_size.clone(),
         });
 
-        let mut resulting_children = vec![];
+        let mut resulting_children = Vec::with_capacity(trailing_nodes.len() + 2);
         resulting_children.extend(trailing_nodes);
         resulting_children.push(declaration_list_node);
         resulting_children.push(final_node);

@@ -96,12 +96,12 @@ impl From<Language> for ParserConfiguration {
                     "source_file_synthetic_tail",
                     "var_spec_list",
                     "method_elem_list", // This is synthetic (handler made)
-                    "const_spec_list", // This is synthetic (handler made)
-                    "type_spec_list",  // This is synthetic (handler made)
+                    "const_spec_list",  // This is synthetic (handler made)
+                    "type_spec_list",   // This is synthetic (handler made)
                 ]
                 .into(),
                 delimiters: HashMap::from([
-                    ("method_elem_list", Delimiters::new( "{", "}")),
+                    ("method_elem_list", Delimiters::new("{", "}")),
                     ("import_spec_list", Delimiters::new("(", ")")),
                     ("field_declaration_list", Delimiters::new("{", "}")),
                     ("var_spec_list", Delimiters::new("(", ")")),
@@ -117,7 +117,9 @@ impl From<Language> for ParserConfiguration {
                         "field_declaration": r#"(field_identifier) @field_name"#,
                         "var_spec": r#"(identifier) @name"#,
                         "const_spec": r#"(identifier) @name"#,
-                        "type_spec": r#"(type_spec (type_identifier) @name)"#
+                        "type_spec": r#"(type_spec name: _ @name)"#,
+                        "type_declaration": r#"(type_declaration (type_spec name: _ @name))"#,
+                        "type_elem": r#"(type_elem (type_identifier) @name)"#
                     }
                 },
             },
