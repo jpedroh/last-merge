@@ -1,3 +1,4 @@
+use std::cell::OnceCell;
 use std::cmp::Ordering;
 use std::hash::{Hash, Hasher};
 
@@ -72,17 +73,7 @@ impl CSTNode<'_> {
     fn get_subtree_size_without_delimiters(&self) -> usize {
         match self {
             CSTNode::Terminal(_) => 0,
-            CSTNode::NonTerminal(node) => node.children.iter().fold(
-                node.children
-                    .iter()
-                    .filter(|child| {
-                        node.delimiters
-                            .map(|delimiters| !delimiters.is_delimiter(child))
-                            .unwrap_or(true)
-                    })
-                    .count(),
-                |acc, child| acc + child.get_subtree_size_without_delimiters(),
-            ),
+            CSTNode::NonTerminal(node) => node.get_subtree_size_without_delimiters(),
         }
     }
 
@@ -161,6 +152,7 @@ pub struct NonTerminal<'a> {
     pub identifier: Option<Vec<&'a str>>,
     pub leading_white_space: Option<&'a str>,
     pub delimiters: Option<&'a Delimiters<'a>>,
+    pub subtree_size_without_delimiters: OnceCell<usize>,
 }
 
 impl PartialEq for NonTerminal<'_> {
@@ -205,6 +197,22 @@ impl NonTerminal<'_> {
 
     pub fn get_children(&self) -> &[CSTNode<'_>] {
         self.children.as_slice()
+    }
+
+    pub fn get_subtree_size_without_delimiters(&self) -> usize {
+        *self.subtree_size_without_delimiters.get_or_init(|| {
+            self.children.iter().fold(
+                self.children
+                    .iter()
+                    .filter(|child| {
+                        self.delimiters
+                            .map(|delimiters| !delimiters.is_delimiter(child))
+                            .unwrap_or(true)
+                    })
+                    .count(),
+                |acc, child| acc + child.get_subtree_size_without_delimiters(),
+            )
+        })
     }
 }
 

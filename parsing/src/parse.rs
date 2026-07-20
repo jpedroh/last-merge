@@ -1,3 +1,5 @@
+use std::cell::OnceCell;
+
 use crate::tree_sitter_parser::ParserConfiguration;
 use model::{
     cst_node::{NonTerminal, Terminal},
@@ -55,6 +57,7 @@ fn explore_node<'a>(node: Node, src: &'a str, config: &'a ParserConfiguration) -
                 .map(|previous| &src[previous.end_byte()..node.start_byte()]),
             are_children_unordered: config.kinds_with_unordered_children.contains(node.kind()),
             delimiters: config.delimiters.get(node.kind()),
+            subtree_size_without_delimiters: OnceCell::new(),
         })
     }
 }
