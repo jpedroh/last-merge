@@ -93,11 +93,11 @@ impl From<Language> for ParserConfiguration {
                 kinds_with_unordered_children: [
                     "import_spec_list",
                     "field_declaration_list",
-                    "source_file_synthetic_tail",
                     "var_spec_list",
-                    "method_elem_list", // This is synthetic (handler made)
-                    "const_spec_list",  // This is synthetic (handler made)
-                    "type_spec_list",   // This is synthetic (handler made)
+                    "source_file_synthetic_tail", // This is synthetic (handler made)
+                    "method_elem_list",           // This is synthetic (handler made)
+                    "const_spec_list",            // This is synthetic (handler made)
+                    "type_spec_list",             // This is synthetic (handler made)
                 ]
                 .into(),
                 delimiters: HashMap::from([
