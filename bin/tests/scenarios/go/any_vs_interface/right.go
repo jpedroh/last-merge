@@ -1,3 +1,3 @@
 package anyvsinterface
 
-var teste = make(map[string] any)
+var teste = make(map[string]any)
