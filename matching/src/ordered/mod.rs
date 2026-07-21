@@ -10,11 +10,14 @@ pub fn calculate_subtree_matching<'a>(
     right: &'a NonTerminal<'a>,
     matchings: &mut Matchings<'a>,
 ) -> usize {
-    let (prefix, suffix, identical_children_score) =
-        identical::identical_matches(left.get_children(), right.get_children(), matchings);
+    let left_children: Vec<_> = left.children_without_delimiters().collect();
+    let right_children: Vec<_> = right.children_without_delimiters().collect();
 
-    let left_children = left.get_children();
-    let right_children = right.get_children();
+    let (prefix, suffix, identical_children_score) = identical::identical_matches(
+        left_children.as_slice(),
+        right_children.as_slice(),
+        matchings,
+    );
 
     debug_assert!(prefix + suffix <= left_children.len());
     debug_assert!(prefix + suffix <= right_children.len());
@@ -42,23 +45,23 @@ pub fn calculate_subtree_matching<'a>(
     }
 }
 
-fn calculate_remaining_children_matching<'a>(
-    left: &'a [CSTNode<'a>],
-    right: &'a [CSTNode<'a>],
-    matchings: &mut Matchings<'a>,
+fn calculate_remaining_children_matching<'tree>(
+    left: &[&'tree CSTNode<'tree>],
+    right: &[&'tree CSTNode<'tree>],
+    matchings: &mut Matchings<'tree>,
 ) -> usize {
     match (left.len(), right.len()) {
         (0, _) | (_, 0) => 0,
-        (1, _) => match_single_child(&left[0], right, matchings),
-        (_, 1) => match_single_child(&right[0], left, matchings),
+        (1, _) => match_single_child(left[0], right, matchings),
+        (_, 1) => match_single_child(right[0], left, matchings),
         _ => yang::yang(left, right, matchings),
     }
 }
 
-fn match_single_child<'a>(
-    single_child: &'a CSTNode<'a>,
-    other_children: &'a [CSTNode<'a>],
-    matchings: &mut Matchings<'a>,
+fn match_single_child<'tree>(
+    single_child: &'tree CSTNode<'tree>,
+    other_children: &[&'tree CSTNode<'tree>],
+    matchings: &mut Matchings<'tree>,
 ) -> usize {
     let mut best_score = 0;
     let mut best_matchings = None;

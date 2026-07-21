@@ -94,7 +94,6 @@ impl From<Language> for ParserConfiguration {
                     "interface_type",
                     "import_spec_list",
                     "field_declaration_list",
-                    "source_file_synthetic_tail",
                     "var_spec_list",
                     "const_spec_list", // This is synthetic (handler made)
                     "type_spec_list",  // This is synthetic (handler made)

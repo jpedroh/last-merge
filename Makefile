@@ -27,7 +27,7 @@ run_merge_on_dir:
 		--left-path=$(DIR)/left$(SUFFIX) \
 		--base-path=$(DIR)/base$(SUFFIX) \
 		--right-path=$(DIR)/right$(SUFFIX) \
-		--merge-path=$(DIR)/merge$(SUFFIX) \
+		--merge-path=$(DIR)/merge.output$(SUFFIX) \
 		--log-level=$(LOG_LEVEL)
 
 run_diff:
