@@ -111,7 +111,7 @@ impl From<Language> for ParserConfiguration {
                     language: tree_sitter_go::LANGUAGE,
                     queries: {
                         "method_elem": r#"(field_identifier) @method_name"#,
-                        "method_declaration": r#"(method_declaration name: _ @method_name)"#,
+                        "method_declaration": r#"(method_declaration receiver: (parameter_list (parameter_declaration type: _ @receiver_name)) name: (field_identifier) @method_name)"#,
                         "function_declaration": r#"(function_declaration name: _ @function_name)"#,
                         "import_spec": r#"(_) @import_name"#,
                         "field_declaration": r#"(field_identifier) @field_name"#,
