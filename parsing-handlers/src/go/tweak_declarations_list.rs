@@ -100,8 +100,8 @@ fn handle<'a>(
             identifier,
             leading_white_space,
             delimiters,
-            subtree_size_without_delimiters: subtree_size_without_delimiters.clone(),
-            subtree_size: subtree_size.clone(),
+            subtree_size_without_delimiters,
+            subtree_size,
         })
     }
 }
