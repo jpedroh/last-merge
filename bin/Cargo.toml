@@ -15,6 +15,9 @@ clap = { version = "4.4.8", features = ["derive"] }
 log = { workspace = true }
 env_logger = "0.10.1"
 
+[dev-dependencies]
+rstest = "0.26.1"
+
 [[bin]]
 name = "last-merge"
 path = "src/main.rs"
