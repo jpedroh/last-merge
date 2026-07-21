@@ -70,7 +70,7 @@ pub fn yang<'a>(
             Direction::Left => j -= 1,
             Direction::Diag => {
                 if matrix_m[i][j] > matrix_m[i - 1][j - 1] {
-                    matchings.extend(matrix_t[i][j].1.clone());
+                    matchings.extend(std::mem::take(&mut matrix_t[i][j].1));
                 }
                 i -= 1;
                 j -= 1;

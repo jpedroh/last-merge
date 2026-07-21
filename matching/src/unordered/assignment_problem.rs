@@ -29,7 +29,7 @@ pub fn calculate_matchings_for_children<'a>(
 }
 
 fn solve_assignment_problem<'a>(
-    children_matchings: Vec<Vec<(usize, Matchings<'a>)>>,
+    mut children_matchings: Vec<Vec<(usize, Matchings<'a>)>>,
     matchings: &mut Matchings<'a>,
 ) -> usize {
     let m = children_matchings.len();
@@ -51,7 +51,7 @@ fn solve_assignment_problem<'a>(
         }
     }
 
-    let weights_matrix = matrix::Matrix::from_rows(matrix)
+    let weights_matrix: pathfinding::prelude::Matrix<i32> = matrix::Matrix::from_rows(matrix)
         .expect("Could not build weights matrix for assignment problem.");
     let (max_matching, best_matches) = pathfinding::kuhn_munkres::kuhn_munkres(&weights_matrix);
 
@@ -59,7 +59,7 @@ fn solve_assignment_problem<'a>(
         let j = best_matches[i];
         let cur_matching = weights_matrix.at(i, j);
         if cur_matching > 0 {
-            matchings.extend(children_matchings[i][j].1.clone());
+            matchings.extend(std::mem::take(&mut children_matchings[i][j].1));
         }
     }
 
