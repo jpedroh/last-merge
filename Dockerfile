@@ -1,4 +1,4 @@
-FROM rust:1.78.0-slim-bullseye AS build
+FROM rust:1.97.1-slim-bullseye AS build
 
 WORKDIR /usr/src/last-merge
 
