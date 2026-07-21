@@ -2,10 +2,10 @@ use model::CSTNode;
 
 use crate::{can_match::CanMatch, Matchings};
 
-pub fn identical_matches<'a>(
-    left_children: &'a [CSTNode<'a>],
-    right_children: &'a [CSTNode<'a>],
-    matchings: &mut Matchings<'a>,
+pub fn identical_matches<'tree>(
+    left_children: &[&'tree CSTNode<'tree>],
+    right_children: &[&'tree CSTNode<'tree>],
+    matchings: &mut Matchings<'tree>,
 ) -> (usize, usize, usize) {
     let len = left_children.len().min(right_children.len());
 
@@ -14,8 +14,7 @@ pub fn identical_matches<'a>(
 
     // Find common prefix
     for i in 0..len {
-        if let Some(child_score) = identical_match(&left_children[i], &right_children[i], matchings)
-        {
+        if let Some(child_score) = identical_match(left_children[i], right_children[i], matchings) {
             score += child_score;
             prefix += 1;
         } else {
@@ -31,8 +30,8 @@ pub fn identical_matches<'a>(
         let right_index = right_children.len() - suffix - 1;
 
         if let Some(child_score) = identical_match(
-            &left_children[left_index],
-            &right_children[right_index],
+            left_children[left_index],
+            right_children[right_index],
             matchings,
         ) {
             score += child_score;
@@ -45,10 +44,10 @@ pub fn identical_matches<'a>(
     (prefix, suffix, score)
 }
 
-fn identical_match<'a>(
-    left: &'a CSTNode<'a>,
-    right: &'a CSTNode<'a>,
-    matchings: &mut Matchings<'a>,
+fn identical_match<'tree>(
+    left: &'tree CSTNode<'tree>,
+    right: &'tree CSTNode<'tree>,
+    matchings: &mut Matchings<'tree>,
 ) -> Option<usize> {
     if !left.can_match(right) {
         return None;
@@ -62,8 +61,8 @@ fn identical_match<'a>(
         }
 
         (CSTNode::NonTerminal(nt_left), CSTNode::NonTerminal(nt_right)) => {
-            let left_children = nt_left.get_children();
-            let right_children = nt_right.get_children();
+            let left_children: Vec<_> = nt_left.children_without_delimiters().collect();
+            let right_children: Vec<_> = nt_right.children_without_delimiters().collect();
 
             if left_children.len() != right_children.len() {
                 return None;

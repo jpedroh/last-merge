@@ -195,6 +195,12 @@ impl NonTerminal<'_> {
         self.children.as_slice()
     }
 
+    pub fn children_without_delimiters(&self) -> impl Iterator<Item = &CSTNode<'_>> {
+        self.children
+            .iter()
+            .filter(|child| !self.delimiters.is_some_and(|d| d.is_delimiter(child)))
+    }
+
     pub fn get_subtree_size_without_delimiters(&self) -> usize {
         *self.subtree_size_without_delimiters.get_or_init(|| {
             self.children.iter().fold(

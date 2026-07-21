@@ -18,8 +18,8 @@ impl Default for Entry<'_> {
 
 // Returns the maximum matching between the children
 pub fn yang<'a>(
-    left_children: &'a [model::CSTNode],
-    right_children: &'a [model::CSTNode],
+    left_children: &[&'a model::CSTNode<'a>],
+    right_children: &[&'a model::CSTNode<'a>],
     matchings: &mut Matchings<'a>,
 ) -> usize {
     let m = left_children.len();
