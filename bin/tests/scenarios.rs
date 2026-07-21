@@ -1,124 +1,44 @@
-#[test]
-fn all_java_samples_work_correctly() -> Result<(), Box<dyn std::error::Error>> {
-    let sample_names = get_samples_names(model::Language::Java)?;
+use std::{
+    assert_eq,
+    path::{Path, PathBuf},
+};
 
-    for sample_path in sample_names {
-        let base = std::fs::read_to_string(format!("{}/base.java", sample_path.display()))?;
-        let left = std::fs::read_to_string(format!("{}/left.java", sample_path.display()))?;
-        let right = std::fs::read_to_string(format!("{}/right.java", sample_path.display()))?;
+use model::Language;
+use rstest::rstest;
 
-        let expected = std::fs::read_to_string(format!("{}/merge.java", sample_path.display()))?;
-
-        let result =
-            bin::run_tool_on_merge_scenario(model::Language::Java, &base, &left, &right, false)
-                .map_err(|err| format!("Failed on {} with error: {}", sample_path.display(), err));
-
-        assert_eq!(
-            expected.trim(),
-            result?.to_string().trim(),
-            "Failed on {}",
-            sample_path.display()
-        );
-    }
-
-    Ok(())
+#[rstest]
+fn java_samples(#[files("tests/scenarios/java/**/merge.java")] path: PathBuf) {
+    run_sample(path.parent().unwrap(), Language::Java, "java");
 }
 
-#[test]
-fn all_csharp_samples_work_correctly() -> Result<(), Box<dyn std::error::Error>> {
-    let sample_names = get_samples_names(model::Language::CSharp)?;
-
-    for sample_path in sample_names {
-        let base = std::fs::read_to_string(format!("{}/base.cs", sample_path.display()))?;
-        let left = std::fs::read_to_string(format!("{}/left.cs", sample_path.display()))?;
-        let right = std::fs::read_to_string(format!("{}/right.cs", sample_path.display()))?;
-
-        let expected = std::fs::read_to_string(format!("{}/merge.cs", sample_path.display()))?;
-        let result =
-            bin::run_tool_on_merge_scenario(model::Language::CSharp, &base, &left, &right, false)
-                .map_err(|err| format!("Failed on {} with error: {}", sample_path.display(), err));
-
-        assert_eq!(
-            expected.trim(),
-            result?.to_string().trim(),
-            "Failed on {}",
-            sample_path.display()
-        );
-    }
-
-    Ok(())
+#[rstest]
+fn csharp_samples(#[files("tests/scenarios/csharp/**/merge.cs")] path: PathBuf) {
+    run_sample(path.parent().unwrap(), Language::CSharp, "cs");
 }
 
-#[test]
-fn all_js_samples_work_correctly() -> Result<(), Box<dyn std::error::Error>> {
-    let sample_names = get_samples_names(model::Language::JavaScript)?;
-
-    for sample_path in sample_names {
-        let base = std::fs::read_to_string(format!("{}/base.js", sample_path.display()))?;
-        let left = std::fs::read_to_string(format!("{}/left.js", sample_path.display()))?;
-        let right = std::fs::read_to_string(format!("{}/right.js", sample_path.display()))?;
-
-        let expected = std::fs::read_to_string(format!("{}/merge.js", sample_path.display()))?;
-        let result = bin::run_tool_on_merge_scenario(
-            model::Language::JavaScript,
-            &base,
-            &left,
-            &right,
-            false,
-        )
-        .map_err(|err| format!("Failed on {} with error: {}", sample_path.display(), err));
-
-        assert_eq!(
-            expected.trim(),
-            result?.to_string().trim(),
-            "Failed on {}",
-            sample_path.display()
-        );
-    }
-
-    Ok(())
+#[rstest]
+fn javascript_samples(#[files("tests/scenarios/javascript/**/merge.js")] path: PathBuf) {
+    run_sample(path.parent().unwrap(), Language::JavaScript, "js");
 }
 
-#[test]
-fn all_go_samples_work_correctly() -> Result<(), Box<dyn std::error::Error>> {
-    let sample_names = get_samples_names(model::Language::Go)?;
-
-    for sample_path in sample_names {
-        let base = std::fs::read_to_string(format!("{}/base.go", sample_path.display()))?;
-        let left = std::fs::read_to_string(format!("{}/left.go", sample_path.display()))?;
-        let right = std::fs::read_to_string(format!("{}/right.go", sample_path.display()))?;
-
-        let expected = std::fs::read_to_string(format!("{}/merge.go", sample_path.display()))?;
-        let result =
-            bin::run_tool_on_merge_scenario(model::Language::Go, &base, &left, &right, false)
-                .map_err(|err| format!("Failed on {} with error: {}", sample_path.display(), err));
-
-        assert_eq!(
-            expected.trim(),
-            result?.to_string().trim(),
-            "Failed on {}",
-            sample_path.display()
-        );
-    }
-
-    Ok(())
+#[rstest]
+fn go_samples(#[files("tests/scenarios/go/**/merge.go")] path: PathBuf) {
+    run_sample(path.parent().unwrap(), Language::Go, "go");
 }
 
-fn get_samples_names(language: model::Language) -> Result<Vec<std::path::PathBuf>, std::io::Error> {
-    let language_directory = match language {
-        model::Language::Java => "java",
-        model::Language::CSharp => "csharp",
-        model::Language::JavaScript => "javascript",
-        model::Language::Go => "go",
-    };
+fn run_sample(path: &Path, language: Language, extension: &str) {
+    use std::fs::read_to_string;
+    let base =
+        read_to_string(path.join(format!("base.{}", extension))).expect("Could not read base");
+    let left =
+        read_to_string(path.join(format!("left.{}", extension))).expect("Could not read left");
+    let right =
+        read_to_string(path.join(format!("right.{}", extension))).expect("Could not read right");
+    let expected =
+        read_to_string(path.join(format!("merge.{}", extension))).expect("Could not read merge");
 
-    std::fs::read_dir(format!("tests/scenarios/{language_directory}"))?
-        .filter(|sample| {
-            sample
-                .as_ref()
-                .map(|sample| sample.path().is_dir())
-                .unwrap_or(false)
-        })
-        .map(|sample| sample.map(|sample| sample.path()))
-        .collect()
+    let result = bin::run_tool_on_merge_scenario(language, &base, &left, &right, false)
+        .expect("Unknown error during merge");
+
+    assert_eq!(expected.trim(), result.to_string().trim());
 }
