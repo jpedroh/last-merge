@@ -64,7 +64,7 @@ fn explore_node<'a>(node: Node, src: &'a str, config: &'a ParserConfiguration) -
     }
 }
 
-#[tracing::instrument(skip(src, config))]
+#[tracing::instrument(skip_all)]
 pub fn parse_string<'a>(
     src: &'a str,
     config: &'a ParserConfiguration,
