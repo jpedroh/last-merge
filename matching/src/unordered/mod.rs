@@ -14,10 +14,11 @@ pub fn calculate_subtree_matching<'a>(
         right.get_children().len()
     );
 
-    let (label_matchings, label_score, remaining_left_children, remaining_right_children) =
-        unique_label::calculate_label_matchings(left, right);
+    let left_children: Vec<_> = left.children_without_delimiters().collect();
+    let right_children: Vec<_> = right.children_without_delimiters().collect();
 
-    matchings.extend(label_matchings);
+    let (label_score, remaining_left_children, remaining_right_children) =
+        unique_label::calculate_label_matchings(&left_children, &right_children, matchings);
 
     log::debug!(
         "After matching with label there are {:?} and {:?} remaining children",
@@ -27,26 +28,21 @@ pub fn calculate_subtree_matching<'a>(
 
     if remaining_left_children.is_empty() && remaining_right_children.is_empty() {
         log::debug!(
-            "Matching children of \"{}\" with \"{}\" using unique label matching.",
+            "Matching children of {} with {} using unique label matching.",
             left.kind,
             right.kind
         );
-        label_score
-    } else {
-        log::debug!(
-                    "Matching children of \"{}\" with \"{}\" using hybrid unique label plus assignment problem matching.",
-                    left.kind,
-                    right.kind
-                );
-
-        let assignment_score = assignment_problem::calculate_matchings_for_children(
-            &remaining_left_children,
-            &remaining_right_children,
-            matchings,
-        );
-
-        label_score + assignment_score
+        return label_score;
     }
+    log::debug!("Matching children of {} with {} using hybrid unique label plus assignment problem matching.",left.kind,right.kind);
+
+    let assignment_score = assignment_problem::calculate_matchings_for_children(
+        &remaining_left_children,
+        &remaining_right_children,
+        matchings,
+    );
+
+    label_score + assignment_score
 }
 
 #[cfg(test)]

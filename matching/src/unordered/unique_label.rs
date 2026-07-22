@@ -1,29 +1,17 @@
 use std::collections::{HashMap, HashSet};
 
-use model::cst_node::{CSTNode, Delimiters};
+use model::cst_node::CSTNode;
 use rustc_hash::FxBuildHasher;
 
-pub fn calculate_label_matchings<'a>(
-    left_nt: &'a model::cst_node::NonTerminal<'a>,
-    right_nt: &'a model::cst_node::NonTerminal<'a>,
-) -> (
-    crate::Matchings<'a>,
-    usize,
-    Vec<&'a CSTNode<'a>>,
-    Vec<&'a CSTNode<'a>>,
-) {
-    let left_children: Vec<&'a CSTNode<'a>> = left_nt
-        .get_children()
-        .iter()
-        .filter(|child| !is_delimiter(child, left_nt.delimiters))
-        .collect();
-    let right_children: Vec<&'a CSTNode<'a>> = right_nt
-        .get_children()
-        .iter()
-        .filter(|child| !is_delimiter(child, right_nt.delimiters))
-        .collect();
+use crate::Matchings;
 
-    let left_identifier_counts = identifier_counts(&left_children);
+pub fn calculate_label_matchings<'a>(
+    left_children: &[&'a model::CSTNode<'a>],
+    right_children: &[&'a model::CSTNode<'a>],
+    matchings: &mut Matchings<'a>,
+) -> (usize, Vec<&'a CSTNode<'a>>, Vec<&'a CSTNode<'a>>) {
+    let left_identifier_counts: HashMap<String, usize, FxBuildHasher> =
+        identifier_counts(&left_children);
     let right_identifier_counts = identifier_counts(&right_children);
     let shared_unique_identifiers =
         shared_unique_identifiers(&left_identifier_counts, &right_identifier_counts);
@@ -33,7 +21,6 @@ pub fn calculate_label_matchings<'a>(
         .filter_map(|child| child_identifier(child).map(|identifier| (identifier, *child)))
         .collect();
 
-    let mut result = crate::Matchings::empty();
     let mut matched_identifiers = HashSet::new();
     let mut remaining_left = Vec::new();
     let mut label_score = 0;
@@ -50,15 +37,15 @@ pub fn calculate_label_matchings<'a>(
                         if matching_entry.score >= 1 {
                             matched_identifiers.insert(identifier);
                             label_score += matching_entry.score;
-                            result.extend(child_matchings);
+                            matchings.extend(child_matchings);
                             continue;
                         }
                     }
                 }
 
-                remaining_left.push(left_child);
+                remaining_left.push(*left_child);
             }
-            _ => remaining_left.push(left_child),
+            _ => remaining_left.push(*left_child),
         }
     }
 
@@ -66,11 +53,11 @@ pub fn calculate_label_matchings<'a>(
     for right_child in right_children {
         match child_identifier(right_child) {
             Some(identifier) if matched_identifiers.contains(&identifier) => {}
-            _ => remaining_right.push(right_child),
+            _ => remaining_right.push(*right_child),
         }
     }
 
-    (result, label_score, remaining_left, remaining_right)
+    (label_score, remaining_left, remaining_right)
 }
 
 fn identifier_counts<'a>(children: &[&'a CSTNode<'a>]) -> HashMap<String, usize, FxBuildHasher> {
@@ -112,10 +99,6 @@ fn child_identifier<'a>(child: &'a CSTNode<'a>) -> Option<String> {
             )
         }),
     }
-}
-
-fn is_delimiter(child: &CSTNode<'_>, delimiters: Option<&Delimiters<'_>>) -> bool {
-    delimiters.is_some_and(|delimiters| delimiters.is_delimiter(child))
 }
 
 #[cfg(test)]
