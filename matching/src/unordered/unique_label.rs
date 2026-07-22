@@ -1,6 +1,6 @@
 use std::collections::{HashMap, HashSet};
 
-use model::cst_node::{CSTNode, Delimiters};
+use model::cst_node::CSTNode;
 use rustc_hash::FxBuildHasher;
 
 use crate::Matchings;

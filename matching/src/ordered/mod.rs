@@ -2,10 +2,21 @@ mod identical;
 mod yang;
 
 use model::{cst_node::NonTerminal, CSTNode};
+use tracing::Span;
 
 use crate::Matchings;
 
-#[tracing::instrument(skip(matchings))]
+
+#[tracing::instrument(
+    name = "calculate_ordered_subtrees_matching",
+    skip(matchings),
+    fields(
+        left_children_len=left.get_children().len(),
+        right_children_len=right.get_children().len(),
+        prefix=tracing::field::Empty,
+        suffix=tracing::field::Empty
+    )
+)]
 pub fn calculate_subtree_matching<'a>(
     left: &'a NonTerminal<'a>,
     right: &'a NonTerminal<'a>,
@@ -19,18 +30,20 @@ pub fn calculate_subtree_matching<'a>(
         right_children.as_slice(),
         matchings,
     );
+    Span::current().record("prefix", prefix);
+    Span::current().record("suffix", suffix);
 
     debug_assert!(prefix + suffix <= left_children.len());
     debug_assert!(prefix + suffix <= right_children.len());
 
     let remaining_children_left = left_children[prefix..left_children.len() - suffix].as_ref();
-    let remaining_children_right = right_children[prefix..right_children.len() - suffix].as_ref();
+    let remaining_children_right: &[&CSTNode<'_>] = right_children[prefix..right_children.len() - suffix].as_ref();
 
     if remaining_children_left.is_empty() || remaining_children_right.is_empty() {
-        log::debug!("Identical suffix/prefix fully reduced search space");
+        tracing::debug!("Identical suffix/prefix fully reduced search space");
         identical_children_score
     } else {
-        log::debug!(
+        tracing::debug!(
             "Identical suffix/prefix reduced search space from {:?}x{:?} to {:?}x{:?}",
             left_children.len(),
             right_children.len(),
@@ -70,7 +83,7 @@ fn match_single_child<'tree>(
     for other_child in other_children {
         let candidate = crate::calculate_matchings(single_child, other_child);
 
-        let score = candidate
+        let score: usize = candidate
             .get_matching_entry(single_child, other_child)
             .map(|m| m.score)
             .unwrap_or(0);
