@@ -17,6 +17,14 @@ impl Default for Entry<'_> {
 }
 
 // Returns the maximum matching between the children
+#[tracing::instrument(level="trace", 
+    name = "yang_subtree_matcher",
+    skip_all,
+    fields(
+        left_children_len=left_children.len(),
+        right_children_len=right_children.len()
+    )
+)]
 pub fn yang<'a>(
     left_children: &[&'a model::CSTNode<'a>],
     right_children: &[&'a model::CSTNode<'a>],
@@ -24,7 +32,7 @@ pub fn yang<'a>(
 ) -> usize {
     let m = left_children.len();
     let n = right_children.len();
-    log::debug!(
+    tracing::debug!(
         "Starting Yang algorithm comparing {:?} and {:?} children",
         m,
         n

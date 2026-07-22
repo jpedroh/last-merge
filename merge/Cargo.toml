@@ -11,3 +11,4 @@ matching = { path = "../matching" }
 diffy = "0.3.0"
 log = { workspace = true }
 uuid = { workspace = true }
+tracing = { workspace = true }

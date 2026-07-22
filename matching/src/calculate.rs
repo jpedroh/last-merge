@@ -1,36 +1,40 @@
-use crate::{can_match::CanMatch, ordered, unordered, Matchings};
+use model::{cst_node::NonTerminal, CSTNode};
+use tracing::Span;
 
-pub fn calculate_matchings<'a>(
-    left: &'a model::CSTNode,
-    right: &'a model::CSTNode,
-) -> Matchings<'a> {
+use crate::{can_match::CanMatch, ordered, unordered, MatchingEntry, Matchings};
+
+#[tracing::instrument(level = "trace", fields(score, is_perfect_match))]
+pub fn calculate_matchings<'a>(left: &'a CSTNode, right: &'a CSTNode) -> Matchings<'a> {
     let mut matchings = Matchings::with_capacity(left.get_tree_size().max(right.get_tree_size()));
     if !left.can_match(right) {
         return matchings;
     }
 
-    let subtrees_matching = calculate_subtree_matching(left, right, &mut matchings);
-    let root_matching = 1;
-    matchings.push(left, right, root_matching + subtrees_matching);
+    let subtrees_matching_score =
+        if let (CSTNode::NonTerminal(left), CSTNode::NonTerminal(right)) = (left, right) {
+            calculate_subtree_matching(left, right, &mut matchings)
+        } else {
+            0
+        };
+
+    let matching_entry = MatchingEntry::new(left, right, 1 + subtrees_matching_score);
+    Span::current().record("score", matching_entry.score);
+    Span::current().record("is_perfect_match", matching_entry.is_perfect_match);
+
+    matchings.insert_entry(left, right, matching_entry);
 
     matchings
 }
 
 fn calculate_subtree_matching<'a>(
-    left: &'a model::CSTNode<'a>,
-    right: &'a model::CSTNode<'a>,
+    left: &'a NonTerminal<'a>,
+    right: &'a NonTerminal<'a>,
     matchings: &mut Matchings<'a>,
 ) -> usize {
-    match (left, right) {
-        (model::CSTNode::NonTerminal(nt_left), model::CSTNode::NonTerminal(nt_right)) => {
-            if nt_left.are_children_unordered && nt_right.are_children_unordered {
-                unordered::calculate_subtree_matching(nt_left, nt_right, matchings)
-            } else {
-                ordered::calculate_subtree_matching(nt_left, nt_right, matchings)
-            }
-        }
-        (model::CSTNode::Terminal(_), model::CSTNode::Terminal(_)) => 0,
-        _ => unreachable!("can_match guarantees both nodes have the same variant"),
+    if left.are_children_unordered && right.are_children_unordered {
+        unordered::calculate_subtree_matching(left, right, matchings)
+    } else {
+        ordered::calculate_subtree_matching(left, right, matchings)
     }
 }
 

@@ -1,5 +1,6 @@
 use std::cell::OnceCell;
 use std::cmp::Ordering;
+use std::fmt::Debug;
 use std::hash::{Hash, Hasher};
 
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, PartialOrd, Ord, Hash)]
@@ -8,7 +9,7 @@ pub struct Point {
     pub column: usize,
 }
 
-#[derive(Debug, PartialEq, Clone, Eq, PartialOrd, Ord, Hash)]
+#[derive(PartialEq, Clone, Eq, PartialOrd, Ord, Hash)]
 pub enum CSTNode<'a> {
     Terminal(Terminal<'a>),
     NonTerminal(NonTerminal<'a>),
@@ -84,7 +85,25 @@ impl CSTNode<'_> {
     }
 }
 
-#[derive(Debug, Default, Clone)]
+impl Debug for CSTNode<'_> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "{{Node {} {} - {}}}",
+            self.kind(),
+            self.start_position(),
+            self.end_position()
+        )
+    }
+}
+
+impl std::fmt::Display for Point {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        write!(f, "({}, {})", self.row, self.column)
+    }
+}
+
+#[derive(Default, Clone)]
 pub struct Delimiters<'a> {
     start: &'a str,
     end: &'a str,
@@ -136,7 +155,7 @@ impl Delimiters<'_> {
     }
 }
 
-#[derive(Debug, Default, Clone)]
+#[derive(Default, Clone)]
 pub struct NonTerminal<'a> {
     pub id: uuid::Uuid,
     pub kind: &'a str,
@@ -174,6 +193,16 @@ impl Ord for NonTerminal<'_> {
 impl Hash for NonTerminal<'_> {
     fn hash<H: Hasher>(&self, state: &mut H) {
         self.id.hash(state)
+    }
+}
+
+impl Debug for NonTerminal<'_> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "{{Node {} {} - {}}}",
+            self.kind, self.start_position, self.end_position
+        )
     }
 }
 

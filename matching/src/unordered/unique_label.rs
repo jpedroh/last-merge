@@ -5,13 +5,13 @@ use rustc_hash::FxBuildHasher;
 
 use crate::Matchings;
 
+#[tracing::instrument(level = "trace", name = "unique_label_matcher", skip_all)]
 pub fn calculate_label_matchings<'a>(
     left_children: &[&'a model::CSTNode<'a>],
     right_children: &[&'a model::CSTNode<'a>],
     matchings: &mut Matchings<'a>,
 ) -> (usize, Vec<&'a CSTNode<'a>>, Vec<&'a CSTNode<'a>>) {
-    let left_identifier_counts: HashMap<String, usize, FxBuildHasher> =
-        identifier_counts(&left_children);
+    let left_identifier_counts = identifier_counts(&left_children);
     let right_identifier_counts = identifier_counts(&right_children);
     let shared_unique_identifiers =
         shared_unique_identifiers(&left_identifier_counts, &right_identifier_counts);

@@ -16,3 +16,4 @@ model = { path = "../model" }
 parsing-handlers = { path = "../parsing-handlers" }
 log = { workspace = true }
 uuid = { workspace = true }
+tracing = { workspace = true }

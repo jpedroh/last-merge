@@ -7,6 +7,7 @@ use model::{
 };
 use tree_sitter::Node;
 
+#[tracing::instrument(level="trace", skip_all, fields(kind = node.kind()))]
 fn explore_node<'a>(node: Node, src: &'a str, config: &'a ParserConfiguration) -> CSTNode<'a> {
     if node.child_count() == 0 || config.stop_compilation_at.contains(node.kind()) {
         CSTNode::Terminal(Terminal {
@@ -63,6 +64,7 @@ fn explore_node<'a>(node: Node, src: &'a str, config: &'a ParserConfiguration) -
     }
 }
 
+#[tracing::instrument(level = "trace", skip_all)]
 pub fn parse_string<'a>(
     src: &'a str,
     config: &'a ParserConfiguration,

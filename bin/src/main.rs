@@ -1,104 +1,142 @@
+use std::{
+    process::ExitCode,
+    time::{Instant, SystemTime, UNIX_EPOCH},
+};
+
+use tracing_subscriber::fmt::format::FmtSpan;
+
 use clap::Parser;
 use cli_args::{CliArgs, CliSubCommands, DiffCliArgs, MergeCliArgs};
+use tracing_chrome::ChromeLayerBuilder;
+use tracing_subscriber::{
+    fmt::{self, format},
+    prelude::*,
+    EnvFilter,
+};
 
 mod cli_args;
 mod cli_exit_codes;
 mod control;
 mod language;
 
-fn main() {
+fn setup_tracing() {
+    let registry_builder = tracing_subscriber::registry();
+}
+
+fn main() -> std::process::ExitCode {
     let args = CliArgs::parse();
-    env_logger::builder().filter_level(args.log_level).init();
 
-    log::info!("Starting last Merge tool execution");
-    log::debug!("Parsed arguments: {:?}", args);
+    let (chrome_layer, _guard) = ChromeLayerBuilder::new()
+        .include_args(true)
+        .file(format!(
+            "./traces/trace-{}.json",
+            SystemTime::now()
+                .duration_since(UNIX_EPOCH)
+                .unwrap()
+                .as_secs()
+        ))
+        .build();
 
-    match args.command {
+    tracing_subscriber::registry()
+        .with(fmt::layer().with_filter(EnvFilter::from("info")))
+        .with(chrome_layer)
+        .with(EnvFilter::from_default_env())
+        .init();
+
+    tracing::info!("Starting last Merge tool execution");
+    tracing::debug!("Parsed arguments: {:?}", args);
+
+    let result = match args.command {
         CliSubCommands::Diff(args) => run_diff(args),
         CliSubCommands::Merge(args) => run_merge(args),
+    };
+
+    match result {
+        Ok(exit_code) => ExitCode::from(exit_code),
+        Err(exit_code) => ExitCode::from(exit_code),
     }
 }
 
-fn run_merge(args: MergeCliArgs) {
-    let base = std::fs::read_to_string(&args.base_path).unwrap_or_else(|error| {
+fn run_merge(args: MergeCliArgs) -> Result<u8, u8> {
+    let base = std::fs::read_to_string(&args.base_path).map_err(|error| {
         log::error!("Error while reading base file: {}", error);
-        std::process::exit(cli_exit_codes::READING_FILE_ERROR)
-    });
-    let left = std::fs::read_to_string(&args.left_path).unwrap_or_else(|error| {
+        cli_exit_codes::READING_FILE_ERROR
+    })?;
+    let left = std::fs::read_to_string(&args.left_path).map_err(|error| {
         log::error!("Error while reading left file: {}", error);
-        std::process::exit(cli_exit_codes::READING_FILE_ERROR)
-    });
-    let right = std::fs::read_to_string(&args.right_path).unwrap_or_else(|error| {
+        cli_exit_codes::READING_FILE_ERROR
+    })?;
+    let right = std::fs::read_to_string(&args.right_path).map_err(|error| {
         log::error!("Error while reading right file: {}", error);
-        std::process::exit(cli_exit_codes::READING_FILE_ERROR)
-    });
+        cli_exit_codes::READING_FILE_ERROR
+    })?;
 
     let language = match args.language {
         Some(language) => language::get_language_from_name(&language),
         None => language::get_language_by_file_path(&args.base_path),
     }
-    .unwrap_or_else(|error| {
+    .map_err(|error| {
         log::error!("Error while retrieving language configuration: {}", error);
-        std::process::exit(cli_exit_codes::INVALID_LANGUAGE_ERROR)
-    });
+        cli_exit_codes::INVALID_LANGUAGE_ERROR
+    })?;
 
     let result =
         control::run_tool_on_merge_scenario(language, &base, &left, &right, args.print_chunks)
-            .unwrap_or_else(|error| {
+            .map_err(|error| {
                 log::error!("Error while running tool: {}", error);
-                std::process::exit(cli_exit_codes::INTERNAL_EXECUTION_ERROR)
-            });
+                cli_exit_codes::INTERNAL_EXECUTION_ERROR
+            })?;
 
-    std::fs::write(args.merge_path, result.to_string()).unwrap_or_else(|error| {
+    std::fs::write(args.merge_path, result.to_string()).map_err(|error| {
         log::error!("Error while writing output file: {}", error);
-        std::process::exit(cli_exit_codes::WRITING_FILE_ERROR)
-    });
+        cli_exit_codes::WRITING_FILE_ERROR
+    })?;
 
     match result {
         control::ExecutionResult::WithConflicts(_) => {
             log::info!("Execution finished with conflicts");
-            std::process::exit(cli_exit_codes::SUCCESS_WITH_CONFLICTS)
+            Ok(cli_exit_codes::SUCCESS_WITH_CONFLICTS)
         }
         control::ExecutionResult::WithoutConflicts(_) => {
             log::info!("Execution finished without conflicts");
-            std::process::exit(cli_exit_codes::SUCCESS_WITHOUT_CONFLICTS)
+            Ok(cli_exit_codes::SUCCESS_WITHOUT_CONFLICTS)
         }
     }
 }
 
-fn run_diff(args: DiffCliArgs) {
-    let left = std::fs::read_to_string(&args.left_path).unwrap_or_else(|error| {
+fn run_diff(args: DiffCliArgs) -> Result<u8, u8> {
+    let left = std::fs::read_to_string(&args.left_path).map_err(|error| {
         log::error!("Error while reading left file: {}", error);
-        std::process::exit(cli_exit_codes::READING_FILE_ERROR)
-    });
-    let right = std::fs::read_to_string(&args.right_path).unwrap_or_else(|error| {
+        cli_exit_codes::READING_FILE_ERROR
+    })?;
+    let right = std::fs::read_to_string(&args.right_path).map_err(|error| {
         log::error!("Error while reading right file: {}", error);
-        std::process::exit(cli_exit_codes::READING_FILE_ERROR)
-    });
+        cli_exit_codes::READING_FILE_ERROR
+    })?;
 
     let language = match args.language {
         Some(language) => language::get_language_from_name(&language),
         None => language::get_language_by_file_path(&args.left_path),
     }
-    .unwrap_or_else(|error| {
+    .map_err(|error| {
         log::error!("Error while retrieving language configuration: {}", error);
-        std::process::exit(cli_exit_codes::INVALID_LANGUAGE_ERROR)
-    });
+        cli_exit_codes::INVALID_LANGUAGE_ERROR
+    })?;
 
-    let result = control::run_diff_on_files(language, &left, &right).unwrap_or_else(|error| {
+    let result = control::run_diff_on_files(language, &left, &right).map_err(|error| {
         log::error!("Error while running tool: {}", error);
-        std::process::exit(cli_exit_codes::INTERNAL_EXECUTION_ERROR)
-    });
+        cli_exit_codes::INTERNAL_EXECUTION_ERROR
+    })?;
 
     log::info!("{:?}", result);
     match result.is_perfect_match {
         true => {
             log::info!("Both files are equivalent");
-            std::process::exit(cli_exit_codes::SUCCESS_FILES_FULLY_MATCH)
+            Ok(cli_exit_codes::SUCCESS_FILES_FULLY_MATCH)
         }
         false => {
             log::info!("Both files are different");
-            std::process::exit(cli_exit_codes::SUCCESS_FILES_DO_NOT_FULLY_MATCH)
+            Ok(cli_exit_codes::SUCCESS_FILES_DO_NOT_FULLY_MATCH)
         }
     }
 }
