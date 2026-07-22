@@ -52,16 +52,6 @@ pub fn run_tool_on_merge_scenario(
     right: &str,
     print_chunks: bool,
 ) -> Result<ExecutionResult, ExecutionError> {
-    if base == left {
-        tracing::info!("Early returning because base equals left");
-        return Ok(ExecutionResult::WithoutConflicts(right.to_string()));
-    }
-
-    if base == right {
-        tracing::info!("Early returning because base equals right");
-        return Ok(ExecutionResult::WithoutConflicts(left.to_string()));
-    }
-
     let parser_configuration = ParserConfiguration::from(language);
 
     let mut log_state = if print_chunks {

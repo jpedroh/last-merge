@@ -97,7 +97,7 @@ impl<'a> Matchings<'a> {
             .get_matching_entry(left, right)
             .filter(|existing| existing.score > entry.score)
         {
-            log::debug!("Early returning because a matching with higher score ({:?} vs {:?}) already exists for {:?} and {:?}", existing.score, entry.score, left.contents(), right.contents());
+            tracing::debug!("Early returning because a matching with higher score ({:?} vs {:?}) already exists for {:?} and {:?}", existing.score, entry.score, left.contents(), right.contents());
         } else {
             self.individual_matchings.insert(left, right);
             self.individual_matchings.insert(right, left);
