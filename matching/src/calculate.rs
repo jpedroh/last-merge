@@ -10,7 +10,7 @@ pub fn calculate_matchings<'a>(left: &'a CSTNode, right: &'a CSTNode) -> Matchin
         return matchings;
     }
 
-    let subtrees_matching_score: usize =
+    let subtrees_matching_score =
         if let (CSTNode::NonTerminal(left), CSTNode::NonTerminal(right)) = (left, right) {
             calculate_subtree_matching(left, right, &mut matchings)
         } else {

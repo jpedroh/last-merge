@@ -7,7 +7,7 @@ use model::{
 };
 use tree_sitter::Node;
 
-#[tracing::instrument(skip(src, config), fields(kind = node.kind()))]
+#[tracing::instrument(skip_all, fields(kind = node.kind()))]
 fn explore_node<'a>(node: Node, src: &'a str, config: &'a ParserConfiguration) -> CSTNode<'a> {
     if node.child_count() == 0 || config.stop_compilation_at.contains(node.kind()) {
         CSTNode::Terminal(Terminal {
