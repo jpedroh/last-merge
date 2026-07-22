@@ -28,11 +28,10 @@ fn explore_node<'a>(node: Node, src: &'a str, config: &'a ParserConfiguration) -
         })
     } else {
         let mut cursor = node.walk();
-        let identifier = config.identifier_extractors.get(node.kind()).and_then(
-            |extractor: &Box<dyn IdentifierExtractor>| {
-                extractor.extract_identifier_from_node(node, src)
-            },
-        );
+        let identifier = config
+            .identifier_extractors
+            .get(node.kind())
+            .and_then(|extractor| extractor.extract_identifier_from_node(node, src));
 
         if let Some(ref identifier) = identifier {
             log::debug!("Found identifier {:?} for node {:?}", identifier, node);

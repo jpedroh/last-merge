@@ -12,8 +12,8 @@ use crate::Matchings;
     fields(
         left_children_len=left.get_children().len(),
         right_children_len=right.get_children().len(),
-        prefix=tracing::field::Empty,
-        suffix=tracing::field::Empty
+        prefix,
+        suffix
     )
 )]
 pub fn calculate_subtree_matching<'a>(

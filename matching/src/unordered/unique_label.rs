@@ -5,10 +5,7 @@ use rustc_hash::FxBuildHasher;
 
 use crate::Matchings;
 
-#[tracing::instrument(
-    name = "unique_label_matcher",
-    skip(left_children, right_children, matchings)
-)]
+#[tracing::instrument(name = "unique_label_matcher", skip_all)]
 pub fn calculate_label_matchings<'a>(
     left_children: &[&'a model::CSTNode<'a>],
     right_children: &[&'a model::CSTNode<'a>],
