@@ -1,6 +1,6 @@
 use std::cell::OnceCell;
 
-use crate::{identifier_extractor::IdentifierExtractor, tree_sitter_parser::ParserConfiguration};
+use crate::tree_sitter_parser::ParserConfiguration;
 use model::{
     cst_node::{NonTerminal, Terminal},
     CSTNode, Point,

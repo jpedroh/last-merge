@@ -50,22 +50,17 @@ pub fn calculate_subtree_matching<'a>(
             left.kind,
             right.kind
         );
-        label_score
-    } else {
-        tracing::trace!(
-                    "Matching children of \"{}\" with \"{}\" using hybrid unique label plus assignment problem matching.",
-                    left.kind,
-                    right.kind
-                );
-
-        let assignment_score = assignment_problem::calculate_matchings_for_children(
-            &remaining_left_children,
-            &remaining_right_children,
-            matchings,
-        );
-
-        label_score + assignment_score
+        return label_score;
     }
+    log::debug!("Matching children of {} with {} using hybrid unique label plus assignment problem matching.",left.kind,right.kind);
+
+    let assignment_score = assignment_problem::calculate_matchings_for_children(
+        &remaining_left_children,
+        &remaining_right_children,
+        matchings,
+    );
+
+    label_score + assignment_score
 }
 
 #[cfg(test)]
