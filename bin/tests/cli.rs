@@ -12,7 +12,7 @@ fn if_there_is_a_conflict_it_returns_valid_exit_code() {
         .arg("--merge-path=tests/scenarios/java/smoke_java/merge.output.java")
         .arg("--language=java")
         .assert()
-        .code(bin::SUCCESS_WITH_CONFLICTS);
+        .code(bin::SUCCESS_WITH_CONFLICTS as i32);
 }
 
 #[test]
@@ -25,7 +25,7 @@ fn if_there_is_no_conflict_it_returns_valid_exit_code() {
         .arg("--merge-path=tests/scenarios/java/no_conflicts/merge.output.java")
         .arg("--language=java")
         .assert()
-        .code(bin::SUCCESS_WITHOUT_CONFLICTS);
+        .code(bin::SUCCESS_WITHOUT_CONFLICTS as i32);
 }
 
 #[test]
@@ -36,7 +36,7 @@ fn if_i_am_running_on_diff_mode_and_files_fully_match_it_returns_zero() {
         .arg("--right-path=tests/diff_scenarios/java_files_full_match/right.java")
         .arg("--language=java")
         .assert()
-        .code(bin::SUCCESS_FILES_FULLY_MATCH);
+        .code(bin::SUCCESS_FILES_FULLY_MATCH as i32);
 }
 
 #[test]
@@ -47,5 +47,5 @@ fn if_i_am_running_on_diff_mode_and_files_do_not_fully_match_it_returns_one() {
         .arg("--right-path=tests/diff_scenarios/java_files_not_fully_matching/right.java")
         .arg("--language=java")
         .assert()
-        .code(bin::SUCCESS_FILES_DO_NOT_FULLY_MATCH);
+        .code(bin::SUCCESS_FILES_DO_NOT_FULLY_MATCH as i32);
 }

@@ -6,7 +6,6 @@ use tracing::Span;
 
 use crate::Matchings;
 
-
 #[tracing::instrument(
     name = "calculate_ordered_subtrees_matching",
     skip(matchings),
@@ -37,7 +36,8 @@ pub fn calculate_subtree_matching<'a>(
     debug_assert!(prefix + suffix <= right_children.len());
 
     let remaining_children_left = left_children[prefix..left_children.len() - suffix].as_ref();
-    let remaining_children_right: &[&CSTNode<'_>] = right_children[prefix..right_children.len() - suffix].as_ref();
+    let remaining_children_right: &[&CSTNode<'_>] =
+        right_children[prefix..right_children.len() - suffix].as_ref();
 
     if remaining_children_left.is_empty() || remaining_children_right.is_empty() {
         tracing::debug!("Identical suffix/prefix fully reduced search space");
