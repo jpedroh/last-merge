@@ -36,8 +36,7 @@ pub fn calculate_subtree_matching<'a>(
     debug_assert!(prefix + suffix <= right_children.len());
 
     let remaining_children_left = left_children[prefix..left_children.len() - suffix].as_ref();
-    let remaining_children_right: &[&CSTNode<'_>] =
-        right_children[prefix..right_children.len() - suffix].as_ref();
+    let remaining_children_right = right_children[prefix..right_children.len() - suffix].as_ref();
 
     if remaining_children_left.is_empty() || remaining_children_right.is_empty() {
         tracing::debug!("Identical suffix/prefix fully reduced search space");
@@ -83,7 +82,7 @@ fn match_single_child<'tree>(
     for other_child in other_children {
         let candidate = crate::calculate_matchings(single_child, other_child);
 
-        let score: usize = candidate
+        let score = candidate
             .get_matching_entry(single_child, other_child)
             .map(|m| m.score)
             .unwrap_or(0);
