@@ -17,7 +17,7 @@ pub fn calculate_matchings_for_children<'a>(
                 .iter()
                 .map(|right_child| {
                     let w = crate::calculate_matchings(left_child, right_child);
-                    let matching: &crate::MatchingEntry = w
+                    let matching = w
                         .get_matching_entry(left_child, right_child)
                         .unwrap_or_default();
                     (matching.score, w)

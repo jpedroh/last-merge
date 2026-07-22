@@ -19,7 +19,7 @@ impl Default for Entry<'_> {
 // Returns the maximum matching between the children
 #[tracing::instrument(
     name = "yang_subtree_matcher",
-    skip(left_children, right_children, matchings),
+    skip_all,
     fields(
         left_children_len=left_children.len(),
         right_children_len=right_children.len()

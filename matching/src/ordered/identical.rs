@@ -2,10 +2,7 @@ use model::CSTNode;
 
 use crate::{can_match::CanMatch, Matchings};
 
-#[tracing::instrument(
-    name = "identical_subtree_matcher",
-    skip(left_children, right_children, matchings)
-)]
+#[tracing::instrument(name = "identical_subtree_matcher", skip_all)]
 pub fn identical_matches<'tree>(
     left_children: &[&'tree CSTNode<'tree>],
     right_children: &[&'tree CSTNode<'tree>],
