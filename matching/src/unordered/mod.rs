@@ -1,40 +1,50 @@
 mod assignment_problem;
 mod unique_label;
 
+use tracing::Span;
+
 use crate::Matchings;
 
-#[tracing::instrument(skip( matchings))]
+#[tracing::instrument(
+    skip(matchings),
+    fields(
+        left_children_len=left.get_children().len(),
+        right_children_len=right.get_children().len(),
+        remaining_left_children=tracing::field::Empty,
+        remaining_right_children=tracing::field::Empty
+    )
+)]
 pub fn calculate_subtree_matching<'a>(
     left: &'a model::cst_node::NonTerminal<'a>,
     right: &'a model::cst_node::NonTerminal<'a>,
     matchings: &mut Matchings<'a>,
 ) -> usize {
-    log::debug!(
+    tracing::trace!(
         "Starting matching between {:?} and {:?} children",
         left.get_children().len(),
-        right.get_children().len()
+        right.get_children().len(),
     );
 
-    let (label_matchings, label_score, remaining_left_children, remaining_right_children) =
-        unique_label::calculate_label_matchings(left, right);
+    let (label_score, remaining_left_children, remaining_right_children) =
+        unique_label::calculate_label_matchings(left, right, matchings);
 
-    matchings.extend(label_matchings);
-
-    log::debug!(
+    tracing::trace!(
         "After matching with label there are {:?} and {:?} remaining children",
         remaining_left_children.len(),
         remaining_right_children.len()
     );
+    Span::current().record("remaining_left_children", remaining_left_children.len());
+    Span::current().record("remaining_right_children", remaining_right_children.len());
 
     if remaining_left_children.is_empty() && remaining_right_children.is_empty() {
-        log::debug!(
+        tracing::trace!(
             "Matching children of \"{}\" with \"{}\" using unique label matching.",
             left.kind,
             right.kind
         );
         label_score
     } else {
-        log::debug!(
+        tracing::trace!(
                     "Matching children of \"{}\" with \"{}\" using hybrid unique label plus assignment problem matching.",
                     left.kind,
                     right.kind

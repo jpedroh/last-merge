@@ -3,25 +3,23 @@ use std::collections::{HashMap, HashSet};
 use model::cst_node::{CSTNode, Delimiters};
 use rustc_hash::FxBuildHasher;
 
-#[tracing::instrument()]
+use crate::Matchings;
+
+#[tracing::instrument(skip(matchings), name = "unique_label_matcher")]
 pub fn calculate_label_matchings<'a>(
-    left_nt: &'a model::cst_node::NonTerminal<'a>,
-    right_nt: &'a model::cst_node::NonTerminal<'a>,
-) -> (
-    crate::Matchings<'a>,
-    usize,
-    Vec<&'a CSTNode<'a>>,
-    Vec<&'a CSTNode<'a>>,
-) {
-    let left_children: Vec<&'a CSTNode<'a>> = left_nt
+    left: &'a model::cst_node::NonTerminal<'a>,
+    right: &'a model::cst_node::NonTerminal<'a>,
+    matchings: &mut Matchings<'a>,
+) -> (usize, Vec<&'a CSTNode<'a>>, Vec<&'a CSTNode<'a>>) {
+    let left_children: Vec<&'a CSTNode<'a>> = left
         .get_children()
         .iter()
-        .filter(|child| !is_delimiter(child, left_nt.delimiters))
+        .filter(|child| !is_delimiter(child, left.delimiters))
         .collect();
-    let right_children: Vec<&'a CSTNode<'a>> = right_nt
+    let right_children: Vec<&'a CSTNode<'a>> = right
         .get_children()
         .iter()
-        .filter(|child| !is_delimiter(child, right_nt.delimiters))
+        .filter(|child| !is_delimiter(child, right.delimiters))
         .collect();
 
     let left_identifier_counts = identifier_counts(&left_children);
@@ -34,7 +32,6 @@ pub fn calculate_label_matchings<'a>(
         .filter_map(|child| child_identifier(child).map(|identifier| (identifier, *child)))
         .collect();
 
-    let mut result = crate::Matchings::empty();
     let mut matched_identifiers = HashSet::new();
     let mut remaining_left = Vec::new();
     let mut label_score = 0;
@@ -51,7 +48,7 @@ pub fn calculate_label_matchings<'a>(
                         if matching_entry.score >= 1 {
                             matched_identifiers.insert(identifier);
                             label_score += matching_entry.score;
-                            result.extend(child_matchings);
+                            matchings.extend(child_matchings);
                             continue;
                         }
                     }
@@ -71,7 +68,7 @@ pub fn calculate_label_matchings<'a>(
         }
     }
 
-    (result, label_score, remaining_left, remaining_right)
+    (label_score, remaining_left, remaining_right)
 }
 
 fn identifier_counts<'a>(children: &[&'a CSTNode<'a>]) -> HashMap<String, usize, FxBuildHasher> {

@@ -26,18 +26,11 @@ pub fn calculate_matchings<'a>(left: &'a CSTNode, right: &'a CSTNode) -> Matchin
     matchings
 }
 
-#[tracing::instrument(skip(matchings), fields(left_children_len = tracing::field::Empty, right_children_len = tracing::field::Empty, left_children_ordered = tracing::field::Empty, right_children_ordered = tracing::field::Empty))]
 fn calculate_subtree_matching<'a>(
     left: &'a NonTerminal<'a>,
     right: &'a NonTerminal<'a>,
     matchings: &mut Matchings<'a>,
 ) -> usize {
-    Span::current().record("left_children_len", left.get_children().len());
-    Span::current().record("right_children_len", right.get_children().len());
-
-    Span::current().record("left_children_ordered", left.are_children_unordered);
-    Span::current().record("right_children_ordered", right.are_children_unordered);
-
     if left.are_children_unordered && right.are_children_unordered {
         unordered::calculate_subtree_matching(left, right, matchings)
     } else {

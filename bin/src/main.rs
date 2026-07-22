@@ -2,7 +2,6 @@ use clap::Parser;
 use cli_args::{CliArgs, CliSubCommands, DiffCliArgs, MergeCliArgs};
 use tracing_chrome::ChromeLayerBuilder;
 use tracing_subscriber::{fmt, prelude::*, EnvFilter};
-use tracing_subscriber::{prelude::*, registry::Registry};
 
 mod cli_args;
 mod cli_exit_codes;
@@ -14,7 +13,7 @@ fn main() {
 
     let (chrome_layer, _guard) = ChromeLayerBuilder::new().include_args(true).build();
     tracing_subscriber::registry()
-        .with(fmt::layer())
+        // .with(fmt::layer())
         .with(chrome_layer)
         .with(EnvFilter::from_default_env())
         .init();

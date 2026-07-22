@@ -201,9 +201,7 @@ impl Debug for NonTerminal<'_> {
         write!(
             f,
             "{{Node {} {} - {}}}",
-            self.kind,
-            self.start_position,
-            self.end_position
+            self.kind, self.start_position, self.end_position
         )
     }
 }

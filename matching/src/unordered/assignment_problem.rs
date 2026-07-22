@@ -4,7 +4,7 @@ use pathfinding::{kuhn_munkres::Weights, matrix};
 
 use crate::Matchings;
 
-#[tracing::instrument(skip(left_children, right_children, matchings))]
+#[tracing::instrument(skip(left_children, right_children, matchings), name= "assignment_problem_matcher")]
 pub fn calculate_matchings_for_children<'a>(
     left_children: &[&'a model::CSTNode<'a>],
     right_children: &[&'a model::CSTNode<'a>],
@@ -17,7 +17,7 @@ pub fn calculate_matchings_for_children<'a>(
                 .iter()
                 .map(|right_child| {
                     let w = crate::calculate_matchings(left_child, right_child);
-                    let matching = w
+                    let matching: &crate::MatchingEntry = w
                         .get_matching_entry(left_child, right_child)
                         .unwrap_or_default();
                     (matching.score, w)
