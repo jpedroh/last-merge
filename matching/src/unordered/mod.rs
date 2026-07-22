@@ -6,6 +6,7 @@ use tracing::Span;
 use crate::Matchings;
 
 #[tracing::instrument(
+    name = "calculate_unordered_subtrees_matching",
     skip(matchings),
     fields(
         left_children_len=left.get_children().len(),
@@ -25,8 +26,15 @@ pub fn calculate_subtree_matching<'a>(
         right.get_children().len(),
     );
 
+    let left_children_without_delimiters: Vec<_> = left.children_without_delimiters().collect();
+    let right_children_without_delimiters: Vec<_> = right.children_without_delimiters().collect();
+
     let (label_score, remaining_left_children, remaining_right_children) =
-        unique_label::calculate_label_matchings(left, right, matchings);
+        unique_label::calculate_label_matchings(
+            &left_children_without_delimiters,
+            &right_children_without_delimiters,
+            matchings,
+        );
 
     tracing::trace!(
         "After matching with label there are {:?} and {:?} remaining children",

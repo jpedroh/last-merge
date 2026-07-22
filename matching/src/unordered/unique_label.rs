@@ -5,23 +5,15 @@ use rustc_hash::FxBuildHasher;
 
 use crate::Matchings;
 
-#[tracing::instrument(skip(matchings), name = "unique_label_matcher")]
+#[tracing::instrument(
+    name = "unique_label_matcher",
+    skip(left_children, right_children, matchings)
+)]
 pub fn calculate_label_matchings<'a>(
-    left: &'a model::cst_node::NonTerminal<'a>,
-    right: &'a model::cst_node::NonTerminal<'a>,
+    left_children: &[&'a model::CSTNode<'a>],
+    right_children: &[&'a model::CSTNode<'a>],
     matchings: &mut Matchings<'a>,
 ) -> (usize, Vec<&'a CSTNode<'a>>, Vec<&'a CSTNode<'a>>) {
-    let left_children: Vec<&'a CSTNode<'a>> = left
-        .get_children()
-        .iter()
-        .filter(|child| !is_delimiter(child, left.delimiters))
-        .collect();
-    let right_children: Vec<&'a CSTNode<'a>> = right
-        .get_children()
-        .iter()
-        .filter(|child| !is_delimiter(child, right.delimiters))
-        .collect();
-
     let left_identifier_counts = identifier_counts(&left_children);
     let right_identifier_counts = identifier_counts(&right_children);
     let shared_unique_identifiers =
@@ -54,9 +46,9 @@ pub fn calculate_label_matchings<'a>(
                     }
                 }
 
-                remaining_left.push(left_child);
+                remaining_left.push(*left_child);
             }
-            _ => remaining_left.push(left_child),
+            _ => remaining_left.push(*left_child),
         }
     }
 
@@ -64,7 +56,7 @@ pub fn calculate_label_matchings<'a>(
     for right_child in right_children {
         match child_identifier(right_child) {
             Some(identifier) if matched_identifiers.contains(&identifier) => {}
-            _ => remaining_right.push(right_child),
+            _ => remaining_right.push(*right_child),
         }
     }
 
@@ -110,10 +102,6 @@ fn child_identifier<'a>(child: &'a CSTNode<'a>) -> Option<String> {
             )
         }),
     }
-}
-
-fn is_delimiter(child: &CSTNode<'_>, delimiters: Option<&Delimiters<'_>>) -> bool {
-    delimiters.is_some_and(|delimiters| delimiters.is_delimiter(child))
 }
 
 #[cfg(test)]
