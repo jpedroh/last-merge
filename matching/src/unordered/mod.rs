@@ -3,6 +3,7 @@ mod unique_label;
 
 use crate::Matchings;
 
+#[tracing::instrument(skip( matchings))]
 pub fn calculate_subtree_matching<'a>(
     left: &'a model::cst_node::NonTerminal<'a>,
     right: &'a model::cst_node::NonTerminal<'a>,

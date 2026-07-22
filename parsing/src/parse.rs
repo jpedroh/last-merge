@@ -1,12 +1,13 @@
 use std::cell::OnceCell;
 
-use crate::tree_sitter_parser::ParserConfiguration;
+use crate::{identifier_extractor::IdentifierExtractor, tree_sitter_parser::ParserConfiguration};
 use model::{
     cst_node::{NonTerminal, Terminal},
     CSTNode, Point,
 };
 use tree_sitter::Node;
 
+#[tracing::instrument(skip(src, config), fields(kind = node.kind()))]
 fn explore_node<'a>(node: Node, src: &'a str, config: &'a ParserConfiguration) -> CSTNode<'a> {
     if node.child_count() == 0 || config.stop_compilation_at.contains(node.kind()) {
         CSTNode::Terminal(Terminal {
@@ -27,10 +28,11 @@ fn explore_node<'a>(node: Node, src: &'a str, config: &'a ParserConfiguration) -
         })
     } else {
         let mut cursor = node.walk();
-        let identifier = config
-            .identifier_extractors
-            .get(node.kind())
-            .and_then(|extractor| extractor.extract_identifier_from_node(node, src));
+        let identifier = config.identifier_extractors.get(node.kind()).and_then(
+            |extractor: &Box<dyn IdentifierExtractor>| {
+                extractor.extract_identifier_from_node(node, src)
+            },
+        );
 
         if let Some(ref identifier) = identifier {
             log::debug!("Found identifier {:?} for node {:?}", identifier, node);
@@ -63,6 +65,7 @@ fn explore_node<'a>(node: Node, src: &'a str, config: &'a ParserConfiguration) -
     }
 }
 
+#[tracing::instrument(skip(src, config))]
 pub fn parse_string<'a>(
     src: &'a str,
     config: &'a ParserConfiguration,

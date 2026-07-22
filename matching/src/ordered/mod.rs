@@ -5,6 +5,7 @@ use model::{cst_node::NonTerminal, CSTNode};
 
 use crate::Matchings;
 
+#[tracing::instrument(skip(matchings))]
 pub fn calculate_subtree_matching<'a>(
     left: &'a NonTerminal<'a>,
     right: &'a NonTerminal<'a>,

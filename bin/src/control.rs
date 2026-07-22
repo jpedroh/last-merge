@@ -44,6 +44,7 @@ impl Display for ExecutionResult {
     }
 }
 
+#[tracing::instrument(skip(base, left, right))]
 pub fn run_tool_on_merge_scenario(
     language: model::Language,
     base: &str,
@@ -52,12 +53,12 @@ pub fn run_tool_on_merge_scenario(
     print_chunks: bool,
 ) -> Result<ExecutionResult, ExecutionError> {
     if base == left {
-        log::info!("Early returning because base equals left");
+        tracing::info!("Early returning because base equals left");
         return Ok(ExecutionResult::WithoutConflicts(right.to_string()));
     }
 
     if base == right {
-        log::info!("Early returning because base equals right");
+        tracing::info!("Early returning because base equals right");
         return Ok(ExecutionResult::WithoutConflicts(left.to_string()));
     }
 
@@ -70,49 +71,49 @@ pub fn run_tool_on_merge_scenario(
     };
 
     let start = Instant::now();
-    log::info!("Started parsing base file");
-    let base_tree =
+    tracing::info!("Started parsing base file");
+    let base_tree: model::CSTNode<'_> =
         parsing::parse_string(base, &parser_configuration).map_err(ExecutionError::ParsingError)?;
-    log::info!("Finished parsing base file in {:?}", start.elapsed());
+    tracing::info!("Finished parsing base file in {:?}", start.elapsed());
 
     let start = Instant::now();
-    log::info!("Started parsing left file");
+    tracing::info!("Started parsing left file");
     let left_tree =
         parsing::parse_string(left, &parser_configuration).map_err(ExecutionError::ParsingError)?;
-    log::info!("Finished parsing left file in {:?}", start.elapsed());
+    tracing::info!("Finished parsing left file in {:?}", start.elapsed());
 
     let start = Instant::now();
-    log::info!("Started parsing right file");
+    tracing::info!("Started parsing right file");
     let right_tree = parsing::parse_string(right, &parser_configuration)
         .map_err(ExecutionError::ParsingError)?;
-    log::info!("Finished parsing right file in {:?}", start.elapsed());
+    tracing::info!("Finished parsing right file in {:?}", start.elapsed());
 
     let start = Instant::now();
-    log::info!("Started calculation of matchings between left and base");
+    tracing::info!("Started calculation of matchings between left and base");
     let matchings_left_base = matching::calculate_matchings(&left_tree, &base_tree);
-    log::info!(
+    tracing::info!(
         "Finished calculation of matchings between left and base in {:?}",
         start.elapsed()
     );
 
     let start = Instant::now();
-    log::info!("Started calculation of matchings between right and base");
+    tracing::info!("Started calculation of matchings between right and base");
     let matchings_right_base = matching::calculate_matchings(&right_tree, &base_tree);
-    log::info!(
+    tracing::info!(
         "Finished calculation of matchings between right and base in {:?}",
         start.elapsed()
     );
 
     let start = Instant::now();
-    log::info!("Started calculation of matchings between left and right");
+    tracing::info!("Started calculation of matchings between left and right");
     let matchings_left_right = matching::calculate_matchings(&left_tree, &right_tree);
-    log::info!(
+    tracing::info!(
         "Finished calculation of matchings between left and right in {:?}",
         start.elapsed()
     );
 
     let start = Instant::now();
-    log::info!("Starting merge of the trees");
+    tracing::info!("Starting merge of the trees");
     let result = merge::merge(
         &base_tree,
         &left_tree,
@@ -123,7 +124,7 @@ pub fn run_tool_on_merge_scenario(
         &mut log_state,
     )
     .map_err(ExecutionError::MergeError)?;
-    log::info!("Finished merge of the trees in {:?}", start.elapsed());
+    tracing::info!("Finished merge of the trees in {:?}", start.elapsed());
 
     if let Some(final_log_state) = log_state {
         let format_node_list_detailed = |nodes: &Vec<&model::CSTNode>| -> String {
@@ -214,9 +215,9 @@ pub fn run_tool_on_merge_scenario(
     }
 
     let start = Instant::now();
-    log::info!("Started pretty-printing of final file");
+    tracing::info!("Started pretty-printing of final file");
     let pretty_printed_tree = result.to_string();
-    log::info!(
+    tracing::info!(
         "Finished pretty-printing of final file in {:?}",
         start.elapsed()
     );
@@ -234,21 +235,21 @@ pub fn run_diff_on_files(
 ) -> Result<MatchingEntry, ExecutionError> {
     let parser_configuration = ParserConfiguration::from(language);
 
-    log::info!("Started parsing left file");
+    tracing::info!("Started parsing left file");
     let left_tree_root =
         parsing::parse_string(left, &parser_configuration).map_err(ExecutionError::ParsingError)?;
-    log::info!("Finished parsing left file");
-    log::info!("Started parsing right file");
+    tracing::info!("Finished parsing left file");
+    tracing::info!("Started parsing right file");
     let right_tree_root = parsing::parse_string(right, &parser_configuration)
         .map_err(ExecutionError::ParsingError)?;
-    log::info!("Finished parsing right file");
+    tracing::info!("Finished parsing right file");
 
-    log::info!("Left tree size: {}", left_tree_root.get_tree_size());
-    log::info!("Right tree size: {}", right_tree_root.get_tree_size());
+    tracing::info!("Left tree size: {}", left_tree_root.get_tree_size());
+    tracing::info!("Right tree size: {}", right_tree_root.get_tree_size());
 
-    log::info!("Started calculation of matchings between left and right");
+    tracing::info!("Started calculation of matchings between left and right");
     let matchings_left_right = matching::calculate_matchings(&left_tree_root, &right_tree_root);
-    log::info!("Finished calculation of matchings between left and right");
+    tracing::info!("Finished calculation of matchings between left and right");
 
     Ok(matchings_left_right
         .get_matching_entry(&left_tree_root, &right_tree_root)

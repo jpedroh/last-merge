@@ -84,18 +84,25 @@ impl<'a> Matchings<'a> {
     }
 
     pub fn push(&mut self, left: &'a CSTNode<'a>, right: &'a CSTNode<'a>, score: usize) {
+        self.insert_entry(left, right, MatchingEntry::new(left, right, score));
+    }
+
+    pub fn insert_entry(
+        &mut self,
+        left: &'a CSTNode<'a>,
+        right: &'a CSTNode<'a>,
+        entry: MatchingEntry,
+    ) {
         if let Some(existing) = self
             .get_matching_entry(left, right)
-            .filter(|existing| existing.score > score)
+            .filter(|existing| existing.score > entry.score)
         {
-            log::debug!("Early returning because a matching with higher score ({:?} vs {:?}) already exists for {:?} and {:?}", existing.score, score, left.contents(), right.contents());
+            log::debug!("Early returning because a matching with higher score ({:?} vs {:?}) already exists for {:?} and {:?}", existing.score, entry.score, left.contents(), right.contents());
         } else {
             self.individual_matchings.insert(left, right);
             self.individual_matchings.insert(right, left);
-            self.matching_entries.insert(
-                UnorderedPair(left, right),
-                MatchingEntry::new(left, right, score),
-            );
+            self.matching_entries
+                .insert(UnorderedPair(left, right), entry);
         }
     }
 }

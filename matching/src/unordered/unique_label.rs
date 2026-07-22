@@ -3,6 +3,7 @@ use std::collections::{HashMap, HashSet};
 use model::cst_node::{CSTNode, Delimiters};
 use rustc_hash::FxBuildHasher;
 
+#[tracing::instrument()]
 pub fn calculate_label_matchings<'a>(
     left_nt: &'a model::cst_node::NonTerminal<'a>,
     right_nt: &'a model::cst_node::NonTerminal<'a>,

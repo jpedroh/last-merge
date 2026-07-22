@@ -12,3 +12,4 @@ members = [
 [workspace.dependencies]
 log = "0.4.20"
 uuid = { version = "1.7.0", features = ["v4"] }
+tracing = "0.1"

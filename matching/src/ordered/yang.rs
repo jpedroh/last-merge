@@ -17,6 +17,7 @@ impl Default for Entry<'_> {
 }
 
 // Returns the maximum matching between the children
+#[tracing::instrument(skip(left_children, right_children, matchings), fields(left_children_len=left_children.len(), right_children_len=right_children.len()))]
 pub fn yang<'a>(
     left_children: &[&'a model::CSTNode<'a>],
     right_children: &[&'a model::CSTNode<'a>],
