@@ -5,7 +5,7 @@ use tracing::Span;
 
 use crate::Matchings;
 
-#[tracing::instrument(
+#[tracing::instrument(level="trace", 
     name = "calculate_unordered_subtrees_matching",
     skip(matchings),
     fields(

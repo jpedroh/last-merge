@@ -1,21 +1,44 @@
-use std::process::ExitCode;
+use std::{
+    process::ExitCode,
+    time::{Instant, SystemTime, UNIX_EPOCH},
+};
+
+use tracing_subscriber::fmt::format::FmtSpan;
 
 use clap::Parser;
 use cli_args::{CliArgs, CliSubCommands, DiffCliArgs, MergeCliArgs};
 use tracing_chrome::ChromeLayerBuilder;
-use tracing_subscriber::{fmt, prelude::*, EnvFilter};
+use tracing_subscriber::{
+    fmt::{self, format},
+    prelude::*,
+    EnvFilter,
+};
 
 mod cli_args;
 mod cli_exit_codes;
 mod control;
 mod language;
 
+fn setup_tracing() {
+    let registry_builder = tracing_subscriber::registry();
+}
+
 fn main() -> std::process::ExitCode {
     let args = CliArgs::parse();
 
-    let (chrome_layer, _guard) = ChromeLayerBuilder::new().include_args(true).build();
+    let (chrome_layer, _guard) = ChromeLayerBuilder::new()
+        .include_args(true)
+        .file(format!(
+            "./traces/trace-{}.json",
+            SystemTime::now()
+                .duration_since(UNIX_EPOCH)
+                .unwrap()
+                .as_secs()
+        ))
+        .build();
+
     tracing_subscriber::registry()
-        // .with(fmt::layer())
+        .with(fmt::layer().with_filter(EnvFilter::from("info")))
         .with(chrome_layer)
         .with(EnvFilter::from_default_env())
         .init();

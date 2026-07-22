@@ -3,7 +3,7 @@ use tracing::Span;
 
 use crate::{can_match::CanMatch, ordered, unordered, MatchingEntry, Matchings};
 
-#[tracing::instrument(fields(score, is_perfect_match))]
+#[tracing::instrument(level = "trace", fields(score, is_perfect_match))]
 pub fn calculate_matchings<'a>(left: &'a CSTNode, right: &'a CSTNode) -> Matchings<'a> {
     let mut matchings = Matchings::with_capacity(left.get_tree_size().max(right.get_tree_size()));
     if !left.can_match(right) {

@@ -6,7 +6,7 @@ use tracing::Span;
 
 use crate::Matchings;
 
-#[tracing::instrument(
+#[tracing::instrument(level="trace", 
     name = "calculate_ordered_subtrees_matching",
     skip(matchings),
     fields(

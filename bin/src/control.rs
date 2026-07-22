@@ -44,7 +44,7 @@ impl Display for ExecutionResult {
     }
 }
 
-#[tracing::instrument(skip(base, left, right))]
+#[tracing::instrument(level = "trace", skip(base, left, right))]
 pub fn run_tool_on_merge_scenario(
     language: model::Language,
     base: &str,

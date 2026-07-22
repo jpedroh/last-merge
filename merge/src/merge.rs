@@ -8,7 +8,7 @@ use model::CSTNode;
 use crate::log_structures::{LogState, MergeChunk};
 use crate::merged_cst_node::MergedCSTNode;
 
-#[tracing::instrument(skip_all)]
+#[tracing::instrument(level = "trace", skip_all)]
 pub fn merge<'a>(
     base: &'a CSTNode<'a>,
     left: &'a CSTNode<'a>,
